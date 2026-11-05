@@ -40,11 +40,76 @@ const MOSAIC_ACCENTS = [
   { column: 2, row: 10, width: 1, height: 1, color: 0, opacity: 0.38 },
 ];
 
+
+const MONUMENT_REGIONS = [
+  {
+    id: 'lotus',
+    name: 'LOTUS TEMPLE',
+    bounds: { left: 0, top: 0.61, right: 0.23, bottom: 0.86 },
+    anchor: [0.12, 0.77],
+    colour: '#E8D9C5',
+    source: 'https://sahbaarchitect.com/lotus/',
+    quotes: [
+      { text: 'One of the most remarkable achievements of our time, proving that the drive and vision of spirit can achieve miracles.', attribution: 'Arthur Erickson · Canadian architect' },
+      { text: 'People visiting here, will find intense joy, love and peace.', attribution: 'Pandit Ravi Shankar' },
+    ],
+  },
+  {
+    id: 'qutub',
+    name: 'QUTUB MINAR',
+    bounds: { left: 0.275, top: 0.29, right: 0.35, bottom: 0.86 },
+    anchor: [0.315, 0.69],
+    colour: '#C99A5B',
+    source: 'https://ignca.gov.in/Asi_data/41873.pdf',
+    quotes: [
+      { text: 'May the inscrutable Creator preserve it from all calamities.', attribution: 'Qutub Minar inscription · 1369 translation' },
+      { text: 'Built this portion of the edifice with care.', attribution: 'Qutub Minar inscription · 1369 translation' },
+    ],
+  },
+  {
+    id: 'humayun',
+    name: "HUMAYUN’S TOMB",
+    bounds: { left: 0.35, top: 0.64, right: 0.48, bottom: 0.86 },
+    anchor: [0.415, 0.77],
+    colour: '#B86B54',
+    source: 'https://whc.unesco.org/en/list/232/',
+    quotes: [
+      { text: 'The first garden-tomb on the Indian subcontinent.', attribution: 'UNESCO World Heritage Centre' },
+      { text: 'The first of the grand dynastic mausoleums that were to become synonyms of Mughal architecture.', attribution: 'UNESCO World Heritage Centre' },
+    ],
+  },
+  {
+    id: 'india-gate',
+    name: 'INDIA GATE',
+    bounds: { left: 0.48, top: 0.42, right: 0.68, bottom: 0.86 },
+    anchor: [0.575, 0.69],
+    colour: '#D6C29A',
+    source: 'https://www.mea.gov.in/Uploads/PublicationDocs/23460_IWM_Book__11-06-2014_.pdf',
+    quotes: [
+      { text: 'To the dead of the Indian Armies who fell and are honoured…', attribution: 'India Gate memorial inscription' },
+      { text: '…and in Sacred Memory also of those whose names are here recorded.', attribution: 'India Gate memorial inscription' },
+    ],
+  },
+  {
+    id: 'akshardham',
+    name: 'AKSHARDHAM',
+    bounds: { left: 0.68, top: 0.52, right: 1, bottom: 0.86 },
+    anchor: [0.835, 0.74],
+    colour: '#C8A36B',
+    source: 'https://akshardham.com/',
+    quotes: [
+      { text: 'Each soul is potentially divine.', attribution: 'Akshardham · Spiritual premise' },
+      { text: 'Each service can help one move towards divinity.', attribution: 'Akshardham · Spiritual premise' },
+    ],
+  },
+];
+
 const Hero = () => {
   const prefersReducedMotion = useReducedMotion();
   const heroRef = useRef(null);
   const trailCanvasRef = useRef(null);
   const [countdown, setCountdown] = useState(null);
+  const [monumentCards, setMonumentCards] = useState({});
   const [editionData, setEditionData] = useState({
     theme: 'Break the Flow',
     date: '2025-11-11T09:00:00',
@@ -119,6 +184,26 @@ const Hero = () => {
 
     const cells = new Map();
     const textBlockedCells = new Set();
+    const regionCells = new Map();
+    const regionProgress = new Map();
+    const regionTimers = new Map();
+    const regionQuoteIndexes = new Map();
+
+    MONUMENT_REGIONS.forEach((region) => {
+      regionCells.set(region.id, new Set());
+      regionProgress.set(region.id, { visited: new Set(), completed: false });
+      regionQuoteIndexes.set(region.id, 0);
+    });
+
+    const resetRegionTracking = () => {
+      regionTimers.forEach((timer) => window.clearTimeout(timer));
+      regionTimers.clear();
+      regionProgress.forEach((progress) => {
+        progress.visited.clear();
+        progress.completed = false;
+      });
+      setMonumentCards({});
+    };
     const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
     const smoothStep = (value) => value * value * (3 - (2 * value));
 
@@ -172,21 +257,22 @@ const Hero = () => {
         artworkMask.height * coverTransform.scaleY
       );
 
-      // Preserve the original artwork alpha exactly; colour is clipped to its silhouette.
+      // Keep the supplied alpha artwork unchanged, then tint each landmark
+      // independently inside a fixed source-image region. No second image layer is added.
       colourContext.globalCompositeOperation = 'source-in';
-      const stone = colourContext.createLinearGradient(0, 0, width, 0);
-      stone.addColorStop(0, '#E8E0D2');
-      stone.addColorStop(0.19, '#D7C8B0');
-      stone.addColorStop(0.205, '#A94F36');
-      stone.addColorStop(0.38, '#C9784E');
-      stone.addColorStop(0.395, '#D8C19A');
-      stone.addColorStop(0.58, '#B88A5A');
-      stone.addColorStop(0.60, '#D8BD8D');
-      stone.addColorStop(0.78, '#C39A68');
-      stone.addColorStop(0.80, '#E0CBA5');
-      stone.addColorStop(1, '#B99568');
-      colourContext.fillStyle = stone;
-      colourContext.fillRect(0, 0, width, height);
+      MONUMENT_REGIONS.forEach((region) => {
+        const left = coverTransform.offsetX + (region.bounds.left * artworkMask.width * coverTransform.scaleX);
+        const top = coverTransform.offsetY + (region.bounds.top * artworkMask.height * coverTransform.scaleY);
+        const right = coverTransform.offsetX + (region.bounds.right * artworkMask.width * coverTransform.scaleX);
+        const bottom = coverTransform.offsetY + (region.bounds.bottom * artworkMask.height * coverTransform.scaleY);
+        colourContext.save();
+        colourContext.beginPath();
+        colourContext.rect(left, top, right - left, bottom - top);
+        colourContext.clip();
+        colourContext.fillStyle = region.colour;
+        colourContext.fillRect(0, 0, width, height);
+        colourContext.restore();
+      });
       colourContext.globalCompositeOperation = 'source-over';
     };
 
@@ -268,6 +354,14 @@ const Hero = () => {
       if (!artworkMask || !coverTransform || !gridColumns || !gridRows) return;
 
       const textRects = collectVisibleTextRects();
+      regionCells.forEach((regionSet) => regionSet.clear());
+      let maskPixels = null;
+      try {
+        maskPixels = colourContext.getImageData(0, 0, colourCanvas.width, colourCanvas.height).data;
+      } catch (error) {
+        console.warn('[TEDx hero] Landmark progress sampling is unavailable.', error);
+      }
+
       for (let row = 0; row < gridRows; row += 1) {
         for (let column = 0; column < gridColumns; column += 1) {
           const key = column + ':' + row;
@@ -281,7 +375,40 @@ const Hero = () => {
             top < rect.bottom + 2 && bottom > rect.top - 2
           ))) {
             textBlockedCells.add(key);
+            continue;
           }
+
+          if (!maskPixels) continue;
+
+          // A cell counts only when its tile samples the original opaque artwork
+          // inside one known landmark region. Empty background cells never count.
+          MONUMENT_REGIONS.forEach((region) => {
+            const samples = [0.22, 0.5, 0.78];
+            let touchesArtwork = false;
+            for (let sampleY = 0; sampleY < samples.length && !touchesArtwork; sampleY += 1) {
+              for (let sampleX = 0; sampleX < samples.length; sampleX += 1) {
+                const pointX = left + (tileSize * samples[sampleX]);
+                const pointY = top + (tileSize * samples[sampleY]);
+                const sourceX = (pointX - coverTransform.offsetX) / coverTransform.scaleX;
+                const sourceY = (pointY - coverTransform.offsetY) / coverTransform.scaleY;
+                const normalX = sourceX / artworkMask.width;
+                const normalY = sourceY / artworkMask.height;
+                if (
+                  normalX < region.bounds.left || normalX > region.bounds.right ||
+                  normalY < region.bounds.top || normalY > region.bounds.bottom
+                ) continue;
+
+                const pixelX = Math.min(colourCanvas.width - 1, Math.max(0, Math.round(pointX * pixelRatio)));
+                const pixelY = Math.min(colourCanvas.height - 1, Math.max(0, Math.round(pointY * pixelRatio)));
+                const alphaIndex = ((pixelY * colourCanvas.width) + pixelX) * 4 + 3;
+                if (maskPixels[alphaIndex] > 24) {
+                  touchesArtwork = true;
+                  break;
+                }
+              }
+            }
+            if (touchesArtwork) regionCells.get(region.id).add(key);
+          });
         }
       }
 
@@ -301,12 +428,58 @@ const Hero = () => {
       return !textBlockedCells.has(key);
     };
 
+    const completeRegion = (region) => {
+      const progress = regionProgress.get(region.id);
+      if (!progress || progress.completed) return;
+
+      const quotes = region.quotes;
+      const quoteIndex = regionQuoteIndexes.get(region.id) || 0;
+      const quote = quotes[quoteIndex % quotes.length];
+      regionQuoteIndexes.set(region.id, (quoteIndex + 1) % quotes.length);
+      progress.completed = true;
+
+      const anchorX = coverTransform.offsetX + (region.anchor[0] * artworkMask.width * coverTransform.scaleX);
+      const anchorY = coverTransform.offsetY + (region.anchor[1] * artworkMask.height * coverTransform.scaleY);
+      const card = {
+        ...quote,
+        source: region.source,
+        left: Math.min(width - 96, Math.max(96, anchorX)),
+        top: Math.min(height - 90, Math.max(20, anchorY)),
+      };
+      setMonumentCards((current) => ({ ...current, [region.id]: card }));
+
+      const timer = window.setTimeout(() => {
+        progress.visited.clear();
+        progress.completed = false;
+        regionTimers.delete(region.id);
+        setMonumentCards((current) => {
+          const next = { ...current };
+          delete next[region.id];
+          return next;
+        });
+      }, 4200);
+      regionTimers.set(region.id, timer);
+    };
+
+    const trackRegionProgress = (key) => {
+      MONUMENT_REGIONS.forEach((region) => {
+        const availableCells = regionCells.get(region.id);
+        const progress = regionProgress.get(region.id);
+        if (!availableCells || !progress || progress.completed || !availableCells.has(key)) return;
+
+        progress.visited.add(key);
+        const completionRatio = progress.visited.size / Math.max(1, availableCells.size);
+        if (completionRatio >= 0.58) completeRegion(region);
+      });
+    };
+
     const activateCell = (column, row, enteredAt) => {
       if (!cellIsSafe(column, row)) return;
 
       const key = column + ':' + row;
       cells.delete(key);
       cells.set(key, { column, row, enteredAt, eraseAt: enteredAt + HOLD_MS });
+      trackRegionProgress(key);
 
       while (cells.size > MAX_ACTIVE_CELLS) {
         cells.delete(cells.keys().next().value);
@@ -447,6 +620,7 @@ const Hero = () => {
 
       cells.clear();
       previousCell = null;
+      resetRegionTracking();
       context.clearRect(0, 0, width, height);
       updateCoverTransform();
       rebuildColourLayer();
@@ -526,6 +700,8 @@ const Hero = () => {
       section.removeEventListener('pointermove', handlePointerMove);
       section.removeEventListener('pointerleave', handlePointerLeave);
       cells.clear();
+      regionTimers.forEach((timer) => window.clearTimeout(timer));
+      regionTimers.clear();
       context.clearRect(0, 0, width, height);
     };
   }, [prefersReducedMotion]);
@@ -630,6 +806,42 @@ const Hero = () => {
         className="pointer-events-none absolute inset-0 z-10"
         aria-hidden="true"
       />
+
+      <div className="pointer-events-none absolute inset-0 z-30" aria-live="polite">
+        {Object.entries(monumentCards).map(([monumentId, card]) => {
+          const monument = MONUMENT_REGIONS.find((item) => item.id === monumentId);
+          if (!monument) return null;
+          return (
+            <motion.div
+              key={monumentId}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute w-[min(220px,68vw)] -translate-x-1/2 border-l-2 border-[#EB0028] bg-[#080808]/90 px-3 py-2.5 shadow-[0_8px_28px_rgba(0,0,0,0.28)] backdrop-blur-sm"
+              style={{ left: card.left, top: card.top }}
+              data-mosaic-exclusion
+            >
+              <div className="text-[9px] font-semibold tracking-[0.2em] text-[#EB0028]">
+                {monument.name}
+              </div>
+              <p className="mt-1 text-[11px] leading-[1.45] text-white/95">
+                “{card.text}”
+              </p>
+              <div className="mt-1.5 flex items-center justify-between gap-2">
+                <span className="text-[9px] leading-tight text-zinc-400">{card.attribution}</span>
+                <a
+                  href={card.source}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="pointer-events-auto shrink-0 text-[9px] font-medium text-zinc-300 underline decoration-white/40 underline-offset-2"
+                  aria-label={'Open source for ' + monument.name}
+                >
+                  SOURCE
+                </a>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
 
       <div className="relative z-20 mx-auto flex w-[88%] max-w-[1660px] items-center px-0 py-24 sm:py-28 lg:py-0">
         <motion.div
