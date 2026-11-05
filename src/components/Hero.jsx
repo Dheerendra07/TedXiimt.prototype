@@ -625,18 +625,18 @@ const Hero = () => {
         aria-hidden="true"
       />
 
-      {/* Transparent landmark artwork is preserved and aligned over its original base. */}
+      {/* Transparent landmark artwork shares the exact base-image transform. */}
       <div
         data-mosaic-surface
         className="pointer-events-none absolute z-[1] bg-cover bg-center bg-no-repeat"
         style={{
-          top: '-14%',
+          top: '-18%',
           right: '-7%',
-          bottom: '-14%',
+          bottom: '-10%',
           left: '-7%',
           backgroundImage: 'url(' + HERO_ARTWORK + ')',
-          backgroundSize: '122% auto',
-          backgroundPosition: 'center 66%',
+          backgroundSize: '136% auto',
+          backgroundPosition: 'center 78%',
           filter: 'brightness(1.34) contrast(1.14) saturate(0.84)',
           opacity: 0.74,
           mixBlendMode: 'screen',
