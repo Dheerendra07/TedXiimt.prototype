@@ -152,18 +152,14 @@ const Hero = () => {
       const sourceRight = (right - offsetX) / scale;
       const sourceBottom = (bottom - offsetY) / scale;
 
-      // Fail closed if any part cannot be mapped to the source image.
-      if (
-        sourceLeft < 0 || sourceTop < 0 ||
-        sourceRight > artworkMask.width ||
-        sourceBottom > artworkMask.height
-      ) return true;
-
-      const x0 = Math.max(0, Math.floor(sourceLeft));
-      const y0 = Math.max(0, Math.floor(sourceTop));
-      const x1 = Math.min(artworkMask.width, Math.ceil(sourceRight));
-      const y1 = Math.min(artworkMask.height, Math.ceil(sourceBottom));
-      if (x0 >= x1 || y0 >= y1) return true;
+      // Clip the safety margin at the source-image edge. The tile itself is
+      // already constrained to the hero bounds; an off-canvas margin is not
+      // evidence of heritage artwork and must not falsely block an edge cell.
+      const x0 = Math.max(0, Math.min(artworkMask.width, Math.floor(sourceLeft)));
+      const y0 = Math.max(0, Math.min(artworkMask.height, Math.floor(sourceTop)));
+      const x1 = Math.max(0, Math.min(artworkMask.width, Math.ceil(sourceRight)));
+      const y1 = Math.max(0, Math.min(artworkMask.height, Math.ceil(sourceBottom)));
+      if (x0 >= x1 || y0 >= y1) return false;
 
       const { integral, stride } = artworkMask;
       const count = (
@@ -213,6 +209,7 @@ const Hero = () => {
       ].filter(Boolean);
       const uniqueRoots = [...new Set(roots)];
       const textRects = [];
+      let wordCount = 0;
       const range = document.createRange();
 
       uniqueRoots.forEach((root) => {
@@ -243,6 +240,7 @@ const Hero = () => {
           const tokenPattern = /\S+/gu;
           let token;
           while ((token = tokenPattern.exec(value))) {
+            wordCount += 1;
             try {
               range.setStart(textNode, token.index);
               range.setEnd(textNode, token.index + token[0].length);
@@ -274,7 +272,7 @@ const Hero = () => {
       });
 
       range.detach?.();
-      return textRects;
+      return { rects: textRects, wordCount };
     };
 
     const rebuildGridMasks = () => {
@@ -288,7 +286,7 @@ const Hero = () => {
 
       if (!artworkMask || !coverTransform || !gridColumns || !gridRows) return;
 
-      const textRects = collectVisibleTextRects();
+      const textAudit = collectVisibleTextRects();
       const artworkLabels = [];
       const textLabels = [];
       const overlapLabels = [];
@@ -314,7 +312,7 @@ const Hero = () => {
             artworkLabels.push(label);
           }
 
-          const intersectsText = textRects.some((rect) => (
+          const intersectsText = textAudit.rects.some((rect) => (
             left < rect.right + 1.5 &&
             right > rect.left - 1.5 &&
             top < rect.bottom + 1.5 &&
@@ -359,7 +357,8 @@ const Hero = () => {
             cells: artworkLabels,
           },
           visibleText: {
-            wordRects: textRects.length,
+            words: textAudit.wordCount,
+            rectFragments: textAudit.rects.length,
             blockedCells: textLabels.length,
             cells: textLabels,
           },
@@ -374,7 +373,18 @@ const Hero = () => {
     };
 
     const cellIsSafe = (column, row) => {
-      if (!gridMaskReady) return false;
+      if (
+        !gridMaskReady ||
+        column < 0 || row < 0 ||
+        column >= gridColumns || row >= gridRows
+      ) return false;
+
+      const left = (column * CELL_SIZE) + CELL_INSET;
+      const top = (row * CELL_SIZE) + CELL_INSET;
+      const right = left + TILE_SIZE;
+      const bottom = top + TILE_SIZE;
+      if (left < 0 || top < 0 || right > width || bottom > height) return false;
+
       const key = column + ':' + row;
       return !artworkBlockedCells.has(key) && !textBlockedCells.has(key);
     };
