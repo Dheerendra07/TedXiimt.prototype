@@ -445,10 +445,6 @@ const Hero = () => {
       } else if (
         nextCell.column !== previousCell.column || nextCell.row !== previousCell.row
       ) {
-        const distance = Math.max(
-          Math.abs(nextCell.column - previousCell.column),
-          Math.abs(nextCell.row - previousCell.row)
-        );
         traceGridLine(previousCell, nextCell, previousCell.time, now);
       }
 
