@@ -64,38 +64,48 @@ const Hero = () => {
         background: '#178ffb',
         accent: '#fafafa',
         blocks: [
-          [0.08, 0.08, 0.28, 0.28],
-          [0.62, 0.08, 0.28, 0.28],
-          [0.34, 0.62, 0.28, 0.28],
+          [0.24, -0.04, 0.25, 0.30],
+          [0.64, -0.04, 0.25, 0.30],
+          [-0.08, 0.56, 0.25, 0.30],
+          [0.36, 0.56, 0.25, 0.30],
+          [0.80, 0.56, 0.25, 0.30],
         ],
       },
       {
         background: '#ae85ff',
         accent: '#583af7',
         blocks: [
-          [0.08, -0.08, 0.34, 0.34],
-          [0.42, 0.28, 0.34, 0.34],
-          [0.08, 0.64, 0.34, 0.34],
-          [0.64, -0.08, 0.34, 0.34],
+          [-0.08, -0.06, 0.34, 0.34],
+          [0.40, -0.06, 0.34, 0.34],
+          [0.72, -0.06, 0.34, 0.34],
+          [0.18, 0.33, 0.34, 0.34],
+          [0.66, 0.33, 0.34, 0.34],
+          [-0.08, 0.68, 0.34, 0.34],
+          [0.40, 0.68, 0.34, 0.34],
         ],
       },
       {
         background: '#08872b',
         accent: '#ff7ded',
         blocks: [
-          [0.08, 0.64, 0.30, 0.30],
-          [0.35, 0.35, 0.30, 0.30],
-          [0.65, 0.06, 0.30, 0.30],
+          [-0.06, 0.66, 0.32, 0.34],
+          [0.25, 0.33, 0.32, 0.34],
+          [0.56, 0.00, 0.32, 0.34],
+          [0.44, 0.66, 0.32, 0.34],
+          [0.75, 0.33, 0.32, 0.34],
+          [1.06, 0.00, 0.32, 0.34],
         ],
       },
       {
         background: '#d9d9d9',
         accent: '#583af7',
         blocks: [
-          [0.34, -0.08, 0.32, 0.32],
-          [0.06, 0.30, 0.32, 0.32],
-          [0.62, 0.30, 0.32, 0.32],
-          [0.34, 0.66, 0.32, 0.32],
+          [0.34, -0.10, 0.32, 0.34],
+          [-0.10, 0.28, 0.32, 0.34],
+          [0.40, 0.28, 0.32, 0.34],
+          [0.90, 0.28, 0.32, 0.34],
+          [0.10, 0.66, 0.32, 0.34],
+          [0.62, 0.66, 0.32, 0.34],
         ],
       },
     ];
@@ -255,9 +265,13 @@ const Hero = () => {
       const left = (cell.column * CELL_SIZE) + INSET;
       const top = (cell.row * CELL_SIZE) + INSET;
 
+      // Keep the base tint restrained so each tile reads as a mosaic,
+      // not as a flat colour square over the TEDx artwork.
+      context.globalAlpha = opacity * 0.34;
       context.fillStyle = tile.background;
       context.fillRect(left, top, TILE_SIZE, TILE_SIZE);
 
+      context.globalAlpha = opacity * 0.96;
       context.fillStyle = tile.accent;
       tile.blocks.forEach((block) => {
         context.fillRect(
@@ -267,6 +281,11 @@ const Hero = () => {
           block[3] * TILE_SIZE
         );
       });
+
+      context.globalAlpha = opacity * 0.18;
+      context.strokeStyle = '#ffffff';
+      context.lineWidth = 1;
+      context.strokeRect(left + 0.5, top + 0.5, TILE_SIZE - 1, TILE_SIZE - 1);
 
       context.restore();
       return true;
