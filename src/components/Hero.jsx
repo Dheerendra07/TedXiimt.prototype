@@ -609,45 +609,15 @@ const Hero = () => {
         backgroundPosition: '0 0',
       }}
     >
-      {/* Full-width architectural panorama: all landmarks stay in one composed frame. */}
+      {/* One original, complete architectural panorama. The transparent PNG is used only as a cursor-exclusion mask, never layered over this image. */}
       <div
+        data-mosaic-surface
         className="pointer-events-none absolute inset-0 z-0 bg-no-repeat"
         style={{
           backgroundImage: 'url(' + HERO_BACKGROUND + ')',
-          backgroundSize: '100% 100%',
+          backgroundSize: 'cover',
           backgroundPosition: 'center center',
-          filter: 'brightness(1.16) contrast(1.1) saturate(0.92)',
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Transparent landmark layer uses the exact same full-frame fit. */}
-      <div
-        data-mosaic-surface
-        className="pointer-events-none absolute inset-0 z-[1] bg-no-repeat"
-        style={{
-          backgroundImage: 'url(' + HERO_ARTWORK + ')',
-          backgroundSize: '100% 100%',
-          backgroundPosition: 'center center',
-          filter: 'brightness(1.28) contrast(1.1) saturate(0.9)',
-          opacity: 0.68,
-          mixBlendMode: 'screen',
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Left-side tonal falloff protects the message; the artwork stays visible on the right. */}
-      <div
-        className="pointer-events-none absolute inset-0 z-[2]"
-        style={{
-          background: 'linear-gradient(90deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.76) 22%, rgba(0,0,0,0.48) 42%, rgba(0,0,0,0.12) 70%, rgba(0,0,0,0.16) 100%), linear-gradient(0deg, rgba(0,0,0,0.48) 0%, transparent 38%, rgba(0,0,0,0.12) 100%)',
-        }}
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute inset-0 z-[2]"
-        style={{
-          background: 'radial-gradient(ellipse 30% 38% at 78% 43%, rgba(235,0,40,0.28), transparent 76%)',
+          filter: 'none',
         }}
         aria-hidden="true"
       />
