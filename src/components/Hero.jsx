@@ -56,9 +56,10 @@ const Hero = () => {
     const IMAGE_SAFETY_GAP = 3;
 
     const REVEAL_MS = 65;
-    const HOLD_MS = 2000;
-    const ERASE_MS = 190;
-    const ERASE_STAGGER_MS = 42;
+    // The erase pass follows the exact cell timestamps from the fill path.
+    // A short hold keeps the colour trail responsive without a long dead pause.
+    const HOLD_MS = 700;
+    const ERASE_MS = 240;
     const MAX_ACTIVE_CELLS = 110;
     const MAX_INTERPOLATED_CELLS = 28;
     // The four colour pairings come from the supplied mosaic references.
@@ -83,8 +84,6 @@ const Hero = () => {
     let pixelRatio = 1;
     let animationFrame = 0;
     let previousCell = null;
-    let lastPathActivityAt = 0;
-    let lastEraseScheduledAt = 0;
     let artworkMask = null;
     let coverTransform = null;
     let disposed = false;
@@ -419,8 +418,6 @@ const Hero = () => {
 
       cells.clear();
       previousCell = null;
-      lastPathActivityAt = 0;
-      lastEraseScheduledAt = 0;
       context.clearRect(0, 0, width, height);
       updateCoverTransform();
       rebuildGridMasks();
@@ -436,23 +433,17 @@ const Hero = () => {
         !cellIsSafe(column, row)
       ) return;
 
-      // A fresh pointer stroke gets its own erase wave after a short idle gap.
-      // Within one stroke, erase deadlines are spaced so cells clear one by one
-      // in the same order that the cursor originally filled them.
-      if (!lastPathActivityAt || enteredAt - lastPathActivityAt > 260) {
-        lastEraseScheduledAt = enteredAt + HOLD_MS - ERASE_STAGGER_MS;
-      }
-
-      const eraseAt = Math.max(
-        enteredAt + HOLD_MS,
-        lastEraseScheduledAt + ERASE_STAGGER_MS
-      );
-      lastEraseScheduledAt = eraseAt;
-      lastPathActivityAt = enteredAt;
-
+      // The erase pass is a time-delayed copy of the cursor's actual path.
+      // Each cell keeps its own timestamp, so long trails never build up
+      // an artificial queue or drift away from the fill direction.
       const key = column + ':' + row;
       cells.delete(key);
-      cells.set(key, { column, row, enteredAt, eraseAt });
+      cells.set(key, {
+        column,
+        row,
+        enteredAt,
+        eraseAt: enteredAt + HOLD_MS,
+      });
 
       while (cells.size > MAX_ACTIVE_CELLS) {
         cells.delete(cells.keys().next().value);
@@ -591,8 +582,6 @@ const Hero = () => {
 
     const handlePointerLeave = () => {
       previousCell = null;
-      lastPathActivityAt = 0;
-      lastEraseScheduledAt = 0;
     };
 
     resizeCanvas();
