@@ -259,7 +259,7 @@ const Hero = () => {
 
       // Keep the supplied alpha artwork unchanged, then tint each landmark
       // independently inside a fixed source-image region. No second image layer is added.
-      colourContext.globalCompositeOperation = 'source-in';
+      colourContext.globalCompositeOperation = 'source-atop';
       MONUMENT_REGIONS.forEach((region) => {
         const left = coverTransform.offsetX + (region.bounds.left * artworkMask.width * coverTransform.scaleX);
         const top = coverTransform.offsetY + (region.bounds.top * artworkMask.height * coverTransform.scaleY);
@@ -443,7 +443,7 @@ const Hero = () => {
       const card = {
         ...quote,
         source: region.source,
-        left: Math.min(width - 96, Math.max(96, anchorX)),
+        left: Math.min(width - 120, Math.max(120, anchorX)),
         top: Math.min(height - 90, Math.max(20, anchorY)),
       };
       setMonumentCards((current) => ({ ...current, [region.id]: card }));
