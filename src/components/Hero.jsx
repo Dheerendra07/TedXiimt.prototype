@@ -93,12 +93,10 @@ const Hero = () => {
     const MIN_CELL_SIZE = 30;
     const MAX_CELL_SIZE = 40;
     const CELL_INSET = 4;
-    const IMAGE_SAFETY_GAP = 2;
     const REVEAL_MS = 80;
     const HOLD_MS = 680;
     const ERASE_MS = 280;
-    const MAX_ACTIVE_CELLS = 86;
-    const MAX_INTERPOLATED_CELLS = 24;
+    const MAX_ACTIVE_CELLS = 180;
 
     let width = 0;
     let height = 0;
@@ -111,13 +109,15 @@ const Hero = () => {
     let previousCell = null;
     let artworkMask = null;
     let coverTransform = null;
+    let sourceArtwork = null;
+    const colourCanvas = document.createElement('canvas');
+    const colourContext = colourCanvas.getContext('2d');
     let disposed = false;
     let gridReady = false;
     let gridColumns = 0;
     let gridRows = 0;
 
     const cells = new Map();
-    const artworkBlockedCells = new Set();
     const textBlockedCells = new Set();
     const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
     const smoothStep = (value) => value * value * (3 - (2 * value));
@@ -183,28 +183,37 @@ const Hero = () => {
       };
     };
 
-    const regionContainsArtwork = (left, top, right, bottom) => {
-      if (!artworkMask || !coverTransform) return true;
+    const rebuildColourLayer = () => {
+      if (!sourceArtwork || !artworkMask || !coverTransform || !colourContext) return;
 
-      const { scaleX, scaleY, offsetX, offsetY } = coverTransform;
-      if (
-        !Number.isFinite(scaleX) || scaleX <= 0 ||
-        !Number.isFinite(scaleY) || scaleY <= 0
-      ) return true;
+      colourCanvas.width = Math.max(1, Math.round(width * pixelRatio));
+      colourCanvas.height = Math.max(1, Math.round(height * pixelRatio));
+      colourContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      colourContext.clearRect(0, 0, width, height);
+      colourContext.drawImage(
+        sourceArtwork,
+        coverTransform.offsetX,
+        coverTransform.offsetY,
+        artworkMask.width * coverTransform.scaleX,
+        artworkMask.height * coverTransform.scaleY
+      );
 
-      const x0 = Math.max(0, Math.min(artworkMask.width, Math.floor((left - offsetX) / scaleX)));
-      const y0 = Math.max(0, Math.min(artworkMask.height, Math.floor((top - offsetY) / scaleY)));
-      const x1 = Math.max(0, Math.min(artworkMask.width, Math.ceil((right - offsetX) / scaleX)));
-      const y1 = Math.max(0, Math.min(artworkMask.height, Math.ceil((bottom - offsetY) / scaleY)));
-      if (x0 >= x1 || y0 >= y1) return false;
-
-      const { integral, stride } = artworkMask;
-      return (
-        integral[(y1 * stride) + x1]
-        - integral[(y0 * stride) + x1]
-        - integral[(y1 * stride) + x0]
-        + integral[(y0 * stride) + x0]
-      ) > 0;
+      // Preserve the original artwork alpha exactly; colour is clipped to its silhouette.
+      colourContext.globalCompositeOperation = 'source-in';
+      const stone = colourContext.createLinearGradient(0, 0, width, 0);
+      stone.addColorStop(0, '#E8E0D2');
+      stone.addColorStop(0.19, '#D7C8B0');
+      stone.addColorStop(0.205, '#A94F36');
+      stone.addColorStop(0.38, '#C9784E');
+      stone.addColorStop(0.395, '#D8C19A');
+      stone.addColorStop(0.58, '#B88A5A');
+      stone.addColorStop(0.60, '#D8BD8D');
+      stone.addColorStop(0.78, '#C39A68');
+      stone.addColorStop(0.80, '#E0CBA5');
+      stone.addColorStop(1, '#B99568');
+      colourContext.fillStyle = stone;
+      colourContext.fillRect(0, 0, width, height);
+      colourContext.globalCompositeOperation = 'source-over';
     };
 
     const collectVisibleTextRects = () => {
@@ -274,7 +283,6 @@ const Hero = () => {
     };
 
     const rebuildGridMasks = () => {
-      artworkBlockedCells.clear();
       textBlockedCells.clear();
       gridReady = false;
 
@@ -293,15 +301,6 @@ const Hero = () => {
           const top = (row * cellSize) + CELL_INSET;
           const right = left + tileSize;
           const bottom = top + tileSize;
-
-          if (regionContainsArtwork(
-            left - IMAGE_SAFETY_GAP,
-            top - IMAGE_SAFETY_GAP,
-            right + IMAGE_SAFETY_GAP,
-            bottom + IMAGE_SAFETY_GAP
-          )) {
-            artworkBlockedCells.add(key);
-          }
 
           if (textRects.some((rect) => (
             left < rect.right + 2 && right > rect.left - 2 &&
@@ -325,7 +324,7 @@ const Hero = () => {
       const top = (row * cellSize) + CELL_INSET;
       if (left >= width || top >= height) return false;
       const key = column + ':' + row;
-      return !artworkBlockedCells.has(key) && !textBlockedCells.has(key);
+      return !textBlockedCells.has(key);
     };
 
     const activateCell = (column, row, enteredAt) => {
@@ -382,14 +381,26 @@ const Hero = () => {
       const scale = 1 - (0.06 * eraseProgress);
       const left = (cell.column * cellSize) + CELL_INSET;
       const top = (cell.row * cellSize) + CELL_INSET;
-      const colorIndex = Math.abs((cell.column * 7) + (cell.row * 11) + (cell.column * cell.row * 3)) % MOSAIC_PALETTE.length;
+      if (!colourCanvas.width || !colourCanvas.height) return false;
 
       context.save();
+      context.globalAlpha = opacity;
       context.translate(left + (tileSize / 2), top + (tileSize / 2));
       context.scale(scale, scale);
-      context.globalAlpha = opacity;
-      context.fillStyle = MOSAIC_PALETTE[colorIndex];
-      context.fillRect(-(tileSize / 2), -(tileSize / 2), tileSize, tileSize);
+      context.beginPath();
+      context.rect(-(tileSize / 2), -(tileSize / 2), tileSize, tileSize);
+      context.clip();
+      context.drawImage(
+        colourCanvas,
+        Math.round(left * pixelRatio),
+        Math.round(top * pixelRatio),
+        Math.round(tileSize * pixelRatio),
+        Math.round(tileSize * pixelRatio),
+        -(tileSize / 2),
+        -(tileSize / 2),
+        tileSize,
+        tileSize
+      );
       context.restore();
       return true;
     };
@@ -438,11 +449,7 @@ const Hero = () => {
           Math.abs(nextCell.column - previousCell.column),
           Math.abs(nextCell.row - previousCell.row)
         );
-        if (distance <= MAX_INTERPOLATED_CELLS) {
-          traceGridLine(previousCell, nextCell, previousCell.time, now);
-        } else {
-          activateCell(nextCell.column, nextCell.row, now);
-        }
+        traceGridLine(previousCell, nextCell, previousCell.time, now);
       }
 
       previousCell = { ...nextCell, time: now };
@@ -472,6 +479,7 @@ const Hero = () => {
       previousCell = null;
       context.clearRect(0, 0, width, height);
       updateCoverTransform();
+      rebuildColourLayer();
       rebuildGridMasks();
     };
 
@@ -480,6 +488,7 @@ const Hero = () => {
       maskRefreshFrame = window.requestAnimationFrame(() => {
         maskRefreshFrame = 0;
         updateCoverTransform();
+        rebuildColourLayer();
         rebuildGridMasks();
         if (cells.size > 0) requestDraw();
       });
@@ -490,6 +499,7 @@ const Hero = () => {
     maskImage.onload = () => {
       if (disposed) return;
       try {
+        sourceArtwork = maskImage;
         artworkMask = buildArtworkMask(maskImage);
         resizeCanvas();
       } catch (error) {
