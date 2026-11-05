@@ -56,19 +56,26 @@ const Hero = () => {
     const ERASE_MS = 540;
     const MAX_ACTIVE_CELLS = 54;
     const MAX_INTERPOLATED_CELLS = 14;
-    const MONOCHROME = '#e4e4e7';
+    // The four colour pairings come from the supplied mosaic references.
+    // A fixed cell-coordinate sequence keeps the palette deliberate and repeatable.
+    const CELL_PALETTES = [
+      { base: '#178ffb', accent: '#fafafa' },
+      { base: '#ae85ff', accent: '#583af7' },
+      { base: '#08872b', accent: '#ff7ded' },
+      { base: '#d9d9d9', accent: '#583af7' },
+    ];
 
-    // Eight restrained monochrome motifs. No coloured tile backgrounds or
-    // full-cell fills; every cell is a small, intentional pixel composition.
+    // Larger, crisp geometric fragments give each tile a visible mosaic identity
+    // without turning it into an unbroken flat colour square.
     const CELL_MOTIFS = [
-      [[5,5,8,8,.62],[18,6,15,1.5,.26],[5,19,1.5,15,.24],[19,19,8,8,.42],[32,32,9,9,.46]],
-      [[5,5,18,1.5,.26],[5,5,1.5,18,.26],[27,5,9,9,.48],[18,19,18,1.5,.25],[18,27,9,9,.38]],
-      [[5,5,8,8,.45],[18,5,8,8,.24],[31,5,8,8,.45],[5,19,1.5,18,.24],[18,19,22,1.5,.30],[31,31,8,8,.42]],
-      [[5,5,1.5,22,.28],[5,5,22,1.5,.28],[19,19,8,8,.50],[32,19,8,1.5,.26],[32,19,1.5,15,.26],[19,32,8,8,.34]],
-      [[5,5,8,8,.44],[18,5,22,1.5,.24],[18,18,8,8,.38],[31,18,9,9,.44],[5,31,22,1.5,.24],[5,31,8,8,.36]],
-      [[5,5,8,22,.30],[18,5,22,1.5,.25],[18,18,8,8,.48],[31,18,9,1.5,.25],[31,25,1.5,14,.25],[18,32,8,8,.40]],
-      [[5,5,8,8,.46],[18,5,8,1.5,.25],[31,5,8,8,.40],[5,19,22,1.5,.26],[18,26,8,8,.40],[31,31,8,8,.46]],
-      [[5,5,1.5,15,.26],[5,5,15,1.5,.26],[18,18,8,8,.48],[31,18,8,1.5,.24],[31,18,1.5,15,.24],[18,32,22,1.5,.24]],
+      [[4,4,13,11,.95],[21,4,23,5,.48],[21,13,10,13,.82],[35,13,9,13,.62],[4,21,10,23,.65],[18,30,13,14,.98],[35,31,9,13,.76]],
+      [[4,4,9,18,.78],[17,4,27,5,.50],[17,13,14,14,.96],[35,13,9,18,.75],[4,27,22,5,.44],[13,36,13,9,.90],[31,36,13,9,.70]],
+      [[4,4,22,7,.90],[31,4,9,14,.65],[4,15,9,23,.72],[17,15,23,9,.92],[17,28,9,10,.66],[30,28,10,10,.95]],
+      [[4,4,9,9,.96],[17,4,27,5,.45],[17,13,10,19,.76],[31,13,13,9,.96],[4,17,9,27,.56],[17,36,27,8,.84]],
+      [[4,4,14,14,.96],[22,4,20,5,.45],[22,13,9,18,.82],[35,13,7,22,.62],[4,22,14,22,.76],[22,35,20,9,.95]],
+      [[4,4,8,20,.80],[16,4,26,6,.68],[16,14,12,12,.96],[32,14,10,22,.78],[4,28,20,16,.58],[27,40,15,4,.98]],
+      [[4,4,12,8,.96],[20,4,22,8,.58],[4,16,8,28,.66],[16,16,14,14,.96],[34,16,8,14,.58],[16,34,26,10,.82]],
+      [[4,4,8,8,.84],[16,4,26,5,.52],[16,13,8,23,.76],[28,13,14,8,.96],[4,24,12,18,.64],[22,28,20,14,.90]],
     ];
 
     let width = 0;
@@ -469,10 +476,14 @@ const Hero = () => {
       const erase = age <= (REVEAL_MS + HOLD_MS)
         ? 1
         : 1 - smoothStep((age - REVEAL_MS - HOLD_MS) / ERASE_MS);
-      const opacity = 0.68 * reveal * erase;
-      const scale = 0.94 + (0.06 * reveal);
+      const opacity = 0.98 * reveal * erase;
+      const scale = 0.96 + (0.04 * reveal);
       const left = (cell.column * CELL_SIZE) + CELL_INSET;
       const top = (cell.row * CELL_SIZE) + CELL_INSET;
+      const palette = CELL_PALETTES[mod(
+        (cell.column * 3) + (cell.row * 5),
+        CELL_PALETTES.length
+      )];
       const motif = CELL_MOTIFS[mod(
         (cell.column * 3) + (cell.row * 5),
         CELL_MOTIFS.length
@@ -482,15 +493,24 @@ const Hero = () => {
       context.translate(left + (TILE_SIZE / 2), top + (TILE_SIZE / 2));
       context.scale(scale, scale);
       context.translate(-(left + (TILE_SIZE / 2)), -(top + (TILE_SIZE / 2)));
-      context.fillStyle = MONOCHROME;
 
+      // A clearly visible colour wash anchors the tile; the contrasting
+      // mosaic fragments carry the brighter colour rather than filling it flat.
+      context.globalAlpha = opacity * 0.58;
+      context.fillStyle = palette.base;
+      context.fillRect(left, top, TILE_SIZE, TILE_SIZE);
+
+      context.fillStyle = palette.accent;
       motif.forEach(([x, y, blockWidth, blockHeight, weight]) => {
-        context.globalAlpha = opacity * weight;
+        context.globalAlpha = opacity * (0.66 + (weight * 0.34));
         context.fillRect(left + x, top + y, blockWidth, blockHeight);
       });
 
-      context.globalAlpha = opacity * 0.16;
-      context.fillRect(left + 5, top + 43, 18, 1);
+      context.globalAlpha = opacity * 0.42;
+      context.strokeStyle = palette.accent;
+      context.lineWidth = 1;
+      context.strokeRect(left + 0.5, top + 0.5, TILE_SIZE - 1, TILE_SIZE - 1);
+
       context.restore();
       return true;
     };
