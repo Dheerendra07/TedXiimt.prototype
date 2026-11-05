@@ -1,95 +1,90 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {motion, useReducedMotion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { ArrowDown, ArrowRight, CalendarDays, MapPin } from 'lucide-react';
 import api from '../services/api';
+
+const HERO_ARTWORK = '/transparent-hero-bg.PNG';
+const MOSAIC_COLORS = ['#EB0028', '#D7D7D7'];
 
 const Hero = () => {
   const prefersReducedMotion = useReducedMotion();
   const heroRef = useRef(null);
   const trailCanvasRef = useRef(null);
-  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0 });
+  const [countdown, setCountdown] = useState(null);
   const [editionData, setEditionData] = useState({
     theme: 'Break the Flow',
     date: '2025-11-11T09:00:00',
     attendee_capacity: 350,
-    speaker_count: 10
+    speaker_count: 10,
   });
 
   useEffect(() => {
     let isMounted = true;
+
     const fetchActiveEdition = async () => {
       try {
         const data = await api.get('/api/editions/events/active/');
         if (isMounted && data) {
           setEditionData({
             theme: data.theme || 'Break the Flow',
-            date: data.date ? `${data.date}T09:00:00` : '2025-11-11T09:00:00',
+            date: data.date ? data.date + 'T09:00:00' : '2025-11-11T09:00:00',
             attendee_capacity: data.attendee_capacity || 350,
-            speaker_count: data.speaker_count || (Array.isArray(data.speakers) ? data.speakers.length : 10)
+            speaker_count: data.speaker_count || (Array.isArray(data.speakers) ? data.speakers.length : 10),
           });
         }
-      } catch (err) {
-        console.warn('Active edition fetch error:', err);
+      } catch (error) {
+        console.warn('[TEDx hero] Active edition could not be loaded:', error);
       }
     };
 
     fetchActiveEdition();
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-
-  // Monochrome pointer trail, clipped to verified transparent artwork space.
+  // A restrained, repeatable cursor mosaic. The original transparent artwork
+  // and all visible copy are protected from tile fills by pixel/text masks.
   useEffect(() => {
+    if (prefersReducedMotion) return undefined;
+
     const section = heroRef.current;
     const canvas = trailCanvasRef.current;
     const imageLayer = section?.querySelector('[data-mosaic-surface]');
-    if (!section || !canvas || !imageLayer) return;
+    if (!section || !canvas || !imageLayer) return undefined;
 
     const context = canvas.getContext('2d', { alpha: true });
-    if (!context) return;
+    if (!context) return undefined;
 
-    // Smaller, responsive cells keep the reference mosaic airy rather than oversized.
-    const MIN_CELL_SIZE = 56;
-    const MAX_CELL_SIZE = 80;
-    let CELL_SIZE = 64;
-    const CELL_INSET = 4;
-    let TILE_SIZE = CELL_SIZE - (CELL_INSET * 2);
-    const IMAGE_SAFETY_GAP = 3;
-
-    const REVEAL_MS = 65;
-    // The erase pass follows the exact cell timestamps from the fill path.
-    // A short hold keeps the colour trail responsive without a long dead pause.
-    const HOLD_MS = 700;
-    const ERASE_MS = 240;
-    const MAX_ACTIVE_CELLS = 110;
-    const MAX_INTERPOLATED_CELLS = 28;
-    // The four colour pairings come from the supplied mosaic references.
-    // A fixed cell-coordinate sequence keeps the palette deliberate and repeatable.
-    // Sampled from the provided GitHub Platform reference image.
-    // Every active cell is one opaque, flat-colour square: no pattern, outline or glow.
-    const CELL_COLORS = [
-      '#DA7211', // orange
-      '#FF7FD2', // pink
-      '#24EA57', // vivid green
-      '#C898FC', // lavender
-      '#08882B', // forest green
-      '#DC9D00', // gold
-      '#10BF3E', // emerald
-      '#4955E5', // indigo
-      '#8DD6FF', // sky blue
-      '#0377FF', // blue
-    ];
+    const MIN_CELL_SIZE = 48;
+    const MAX_CELL_SIZE = 68;
+    const CELL_INSET = 3;
+    const IMAGE_SAFETY_GAP = 2;
+    const REVEAL_MS = 85;
+    const HOLD_MS = 620;
+    const ERASE_MS = 260;
+    const MAX_ACTIVE_CELLS = 92;
+    const MAX_INTERPOLATED_CELLS = 24;
 
     let width = 0;
     let height = 0;
+    let cellSize = 58;
+    let tileSize = cellSize - (CELL_INSET * 2);
     let pixelRatio = 1;
     let animationFrame = 0;
+    let maskRefreshFrame = 0;
+    let settleTimer = 0;
     let previousCell = null;
     let artworkMask = null;
     let coverTransform = null;
     let disposed = false;
-    const cells = new Map();
+    let gridReady = false;
+    let gridColumns = 0;
+    let gridRows = 0;
 
-    const mod = (value, divisor) => ((value % divisor) + divisor) % divisor;
+    const cells = new Map();
+    const artworkBlockedCells = new Set();
+    const textBlockedCells = new Set();
     const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
     const smoothStep = (value) => value * value * (3 - (2 * value));
 
@@ -109,7 +104,6 @@ const Hero = () => {
       const stride = maskWidth + 1;
       const integral = new Uint32Array(stride * (maskHeight + 1));
 
-      // A summed-area table makes artwork checks exact and constant-time.
       for (let y = 1; y <= maskHeight; y += 1) {
         let rowCount = 0;
         const sourceRow = (y - 1) * maskWidth;
@@ -155,74 +149,31 @@ const Hero = () => {
       const { scale, offsetX, offsetY } = coverTransform;
       if (!Number.isFinite(scale) || scale <= 0) return true;
 
-      const sourceLeft = (left - offsetX) / scale;
-      const sourceTop = (top - offsetY) / scale;
-      const sourceRight = (right - offsetX) / scale;
-      const sourceBottom = (bottom - offsetY) / scale;
-
-      // Clip the safety margin at the source-image edge. The tile itself is
-      // already constrained to the hero bounds; an off-canvas margin is not
-      // evidence of heritage artwork and must not falsely block an edge cell.
-      const x0 = Math.max(0, Math.min(artworkMask.width, Math.floor(sourceLeft)));
-      const y0 = Math.max(0, Math.min(artworkMask.height, Math.floor(sourceTop)));
-      const x1 = Math.max(0, Math.min(artworkMask.width, Math.ceil(sourceRight)));
-      const y1 = Math.max(0, Math.min(artworkMask.height, Math.ceil(sourceBottom)));
+      const x0 = Math.max(0, Math.min(artworkMask.width, Math.floor((left - offsetX) / scale)));
+      const y0 = Math.max(0, Math.min(artworkMask.height, Math.floor((top - offsetY) / scale)));
+      const x1 = Math.max(0, Math.min(artworkMask.width, Math.ceil((right - offsetX) / scale)));
+      const y1 = Math.max(0, Math.min(artworkMask.height, Math.ceil((bottom - offsetY) / scale)));
       if (x0 >= x1 || y0 >= y1) return false;
 
       const { integral, stride } = artworkMask;
-      const count = (
+      return (
         integral[(y1 * stride) + x1]
         - integral[(y0 * stride) + x1]
         - integral[(y1 * stride) + x0]
         + integral[(y0 * stride) + x0]
-      );
-      return count > 0;
+      ) > 0;
     };
-
-    const artworkBlockedCells = new Set();
-    const textBlockedCells = new Set();
-    let gridMaskReady = false;
-    let gridColumns = 0;
-    let gridRows = 0;
-    let maskRefreshFrame = 0;
-    let motionSettleTimer = 0;
-    let lastAuditSignature = '';
-
-    const getGridDimensions = () => ({
-      // Include edge cells whose squares are naturally clipped by the canvas,
-      // matching the reference composition at the viewport boundaries.
-      columns: Math.max(0, Math.ceil(width / CELL_SIZE)),
-      rows: Math.max(0, Math.ceil(height / CELL_SIZE)),
-    });
-
-    const getColumnLabel = (column) => {
-      let value = column + 1;
-      let label = '';
-      while (value > 0) {
-        value -= 1;
-        label = String.fromCharCode(65 + (value % 26)) + label;
-        value = Math.floor(value / 26);
-      }
-      return label;
-    };
-
-    const getCellLabel = (column, row) => (
-      getColumnLabel(column) + String(row + 1).padStart(2, '0')
-    );
 
     const collectVisibleTextRects = () => {
       const sectionBounds = section.getBoundingClientRect();
       const roots = [
         ...section.querySelectorAll('[data-mosaic-exclusion]'),
         document.querySelector('header'),
-        ...document.querySelectorAll('[data-mosaic-overlay]'),
       ].filter(Boolean);
-      const uniqueRoots = [...new Set(roots)];
-      const textRects = [];
-      let wordCount = 0;
+      const rects = [];
       const range = document.createRange();
 
-      uniqueRoots.forEach((root) => {
+      [...new Set(roots)].forEach((root) => {
         const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
         let textNode;
 
@@ -230,9 +181,7 @@ const Hero = () => {
           const parent = textNode.parentElement;
           const value = textNode.nodeValue || '';
           if (!parent || !value.trim()) continue;
-          if (parent.closest('script, style, noscript, [hidden], [aria-hidden="true"], .sr-only')) {
-            continue;
-          }
+          if (parent.closest('script, style, noscript, [hidden], [aria-hidden="true"], .sr-only')) continue;
 
           let hidden = false;
           let ancestor = parent;
@@ -250,24 +199,20 @@ const Hero = () => {
           const tokenPattern = /\S+/gu;
           let token;
           while ((token = tokenPattern.exec(value))) {
-            wordCount += 1;
             try {
               range.setStart(textNode, token.index);
               range.setEnd(textNode, token.index + token[0].length);
-              const rects = range.getClientRects();
+              const tokenRects = range.getClientRects();
 
-              for (let index = 0; index < rects.length; index += 1) {
-                const rect = rects[index];
+              for (let index = 0; index < tokenRects.length; index += 1) {
+                const rect = tokenRects[index];
                 if (
-                  rect.width <= 0 ||
-                  rect.height <= 0 ||
-                  rect.right <= sectionBounds.left ||
-                  rect.left >= sectionBounds.right ||
-                  rect.bottom <= sectionBounds.top ||
-                  rect.top >= sectionBounds.bottom
+                  rect.width <= 0 || rect.height <= 0 ||
+                  rect.right <= sectionBounds.left || rect.left >= sectionBounds.right ||
+                  rect.bottom <= sectionBounds.top || rect.top >= sectionBounds.bottom
                 ) continue;
 
-                textRects.push({
+                rects.push({
                   left: rect.left - sectionBounds.left,
                   top: rect.top - sectionBounds.top,
                   right: rect.right - sectionBounds.left,
@@ -275,176 +220,76 @@ const Hero = () => {
                 });
               }
             } catch {
-              // Some SVG or browser-owned text nodes do not expose Range geometry.
+              // Browser-owned or SVG text nodes may not expose Range geometry.
             }
           }
         }
       });
 
       range.detach?.();
-      return { rects: textRects, wordCount };
+      return rects;
     };
 
     const rebuildGridMasks = () => {
       artworkBlockedCells.clear();
       textBlockedCells.clear();
-      gridMaskReady = false;
+      gridReady = false;
 
-      const dimensions = getGridDimensions();
-      gridColumns = dimensions.columns;
-      gridRows = dimensions.rows;
-
+      const sectionBounds = section.getBoundingClientRect();
+      width = sectionBounds.width;
+      height = sectionBounds.height;
+      gridColumns = Math.ceil(width / cellSize);
+      gridRows = Math.ceil(height / cellSize);
       if (!artworkMask || !coverTransform || !gridColumns || !gridRows) return;
 
-      const textAudit = collectVisibleTextRects();
-      const artworkLabels = [];
-      const textLabels = [];
-      const overlapLabels = [];
-      const availableLabels = [];
-
+      const textRects = collectVisibleTextRects();
       for (let row = 0; row < gridRows; row += 1) {
         for (let column = 0; column < gridColumns; column += 1) {
           const key = column + ':' + row;
-          const left = (column * CELL_SIZE) + CELL_INSET;
-          const top = (row * CELL_SIZE) + CELL_INSET;
-          const right = left + TILE_SIZE;
-          const bottom = top + TILE_SIZE;
-          const label = getCellLabel(column, row);
+          const left = (column * cellSize) + CELL_INSET;
+          const top = (row * cellSize) + CELL_INSET;
+          const right = left + tileSize;
+          const bottom = top + tileSize;
 
-          const intersectsArtwork = regionContainsArtwork(
+          if (regionContainsArtwork(
             left - IMAGE_SAFETY_GAP,
             top - IMAGE_SAFETY_GAP,
             right + IMAGE_SAFETY_GAP,
             bottom + IMAGE_SAFETY_GAP
-          );
-          if (intersectsArtwork) {
+          )) {
             artworkBlockedCells.add(key);
-            artworkLabels.push(label);
           }
 
-          const intersectsText = textAudit.rects.some((rect) => (
-            left < rect.right + 1.5 &&
-            right > rect.left - 1.5 &&
-            top < rect.bottom + 1.5 &&
-            bottom > rect.top - 1.5
-          ));
-          if (intersectsText) {
+          if (textRects.some((rect) => (
+            left < rect.right + 2 && right > rect.left - 2 &&
+            top < rect.bottom + 2 && bottom > rect.top - 2
+          ))) {
             textBlockedCells.add(key);
-            textLabels.push(label);
-          }
-
-          if (intersectsArtwork && intersectsText) {
-            overlapLabels.push(label);
-          } else if (!intersectsArtwork && !intersectsText) {
-            availableLabels.push(label);
           }
         }
       }
 
-      gridMaskReady = true;
-
-      const signature = [
-        width.toFixed(1),
-        height.toFixed(1),
-        artworkLabels.join(','),
-        textLabels.join(','),
-      ].join('|');
-
-      if (signature !== lastAuditSignature) {
-        lastAuditSignature = signature;
-        console.info('[TEDx hero grid audit]', {
-          viewport: {
-            width: Math.round(width),
-            height: Math.round(height),
-          },
-          lattice: {
-            columns: gridColumns,
-            rows: gridRows,
-            candidateCells: gridColumns * gridRows,
-          },
-          artwork: {
-            blockedCells: artworkLabels.length,
-            cells: artworkLabels,
-          },
-          visibleText: {
-            words: textAudit.wordCount,
-            rectFragments: textAudit.rects.length,
-            blockedCells: textLabels.length,
-            cells: textLabels,
-          },
-          overlap: {
-            cells: overlapLabels.length,
-            labels: overlapLabels,
-          },
-          usableCells: availableLabels.length,
-          usableCellLabels: availableLabels,
-        });
-      }
+      gridReady = true;
     };
 
     const cellIsSafe = (column, row) => {
       if (
-        !gridMaskReady ||
-        column < 0 || row < 0 ||
+        !gridReady || column < 0 || row < 0 ||
         column >= gridColumns || row >= gridRows
       ) return false;
 
-      const left = (column * CELL_SIZE) + CELL_INSET;
-      const top = (row * CELL_SIZE) + CELL_INSET;
-      const right = left + TILE_SIZE;
-      const bottom = top + TILE_SIZE;
-      if (left >= width || top >= height || right <= 0 || bottom <= 0) return false;
-
+      const left = (column * cellSize) + CELL_INSET;
+      const top = (row * cellSize) + CELL_INSET;
+      if (left >= width || top >= height) return false;
       const key = column + ':' + row;
       return !artworkBlockedCells.has(key) && !textBlockedCells.has(key);
     };
 
-    const resizeCanvas = () => {
-      const bounds = section.getBoundingClientRect();
-      width = bounds.width;
-      height = bounds.height;
-      CELL_SIZE = Math.round(Math.min(MAX_CELL_SIZE, Math.max(MIN_CELL_SIZE, width * 0.042)));
-      TILE_SIZE = CELL_SIZE - (CELL_INSET * 2);
-      // Keep the subtle background grid pitch perfectly aligned with the
-      // interactive cells at every viewport size.
-      section.style.setProperty('--hero-grid-cell', CELL_SIZE + 'px');
-      pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-
-      canvas.width = Math.max(1, Math.round(width * pixelRatio));
-      canvas.height = Math.max(1, Math.round(height * pixelRatio));
-      canvas.style.width = width + 'px';
-      canvas.style.height = height + 'px';
-      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-
-      cells.clear();
-      previousCell = null;
-      context.clearRect(0, 0, width, height);
-      updateCoverTransform();
-      rebuildGridMasks();
-    };
-
     const activateCell = (column, row, enteredAt) => {
-      if (
-        !Number.isInteger(column) ||
-        !Number.isInteger(row) ||
-        column < 0 || row < 0 ||
-        (column * CELL_SIZE) >= width ||
-        (row * CELL_SIZE) >= height ||
-        !cellIsSafe(column, row)
-      ) return;
-
-      // The erase pass is a time-delayed copy of the cursor's actual path.
-      // Each cell keeps its own timestamp, so long trails never build up
-      // an artificial queue or drift away from the fill direction.
+      if (!cellIsSafe(column, row)) return;
       const key = column + ':' + row;
       cells.delete(key);
-      cells.set(key, {
-        column,
-        row,
-        enteredAt,
-        eraseAt: enteredAt + HOLD_MS,
-      });
-
+      cells.set(key, { column, row, enteredAt, eraseAt: enteredAt + HOLD_MS });
       while (cells.size > MAX_ACTIVE_CELLS) {
         cells.delete(cells.keys().next().value);
       }
@@ -453,19 +298,15 @@ const Hero = () => {
     const traceGridLine = (from, to, startedAt, finishedAt) => {
       let x = from.column;
       let y = from.row;
-      const targetX = to.column;
-      const targetY = to.row;
-      const deltaX = Math.abs(targetX - x);
-      const deltaY = Math.abs(targetY - y);
-      const stepX = x < targetX ? 1 : -1;
-      const stepY = y < targetY ? 1 : -1;
+      const deltaX = Math.abs(to.column - x);
+      const deltaY = Math.abs(to.row - y);
+      const stepX = x < to.column ? 1 : -1;
+      const stepY = y < to.row ? 1 : -1;
       const longest = Math.max(deltaX, deltaY, 1);
       let error = deltaX - deltaY;
       let step = 0;
 
-      // The starting cell was activated when the cursor first entered it.
-      // Only newly crossed cells are enqueued, so their erase order stays stable.
-      while (x !== targetX || y !== targetY) {
+      while (x !== to.column || y !== to.row) {
         const doubledError = error * 2;
         if (doubledError > -deltaY) {
           error -= deltaY;
@@ -475,7 +316,6 @@ const Hero = () => {
           error += deltaX;
           y += stepY;
         }
-
         step += 1;
         activateCell(
           x,
@@ -486,37 +326,24 @@ const Hero = () => {
     };
 
     const drawCell = (cell, now) => {
-      // Re-check the live mask because text and layout can move after scrolling.
       if (!cellIsSafe(cell.column, cell.row)) return false;
-
-      const fillAge = Math.max(0, now - cell.enteredAt);
       const eraseAge = now - cell.eraseAt;
       if (eraseAge >= ERASE_MS) return false;
 
-      const reveal = easeOutCubic(Math.min(1, fillAge / REVEAL_MS));
-      const eraseProgress = eraseAge <= 0
-        ? 0
-        : smoothStep(Math.min(1, eraseAge / ERASE_MS));
+      const reveal = easeOutCubic(Math.min(1, Math.max(0, now - cell.enteredAt) / REVEAL_MS));
+      const eraseProgress = eraseAge <= 0 ? 0 : smoothStep(Math.min(1, eraseAge / ERASE_MS));
       const opacity = reveal * (1 - eraseProgress);
-      const scale = 1 - (0.08 * eraseProgress);
-      const left = (cell.column * CELL_SIZE) + CELL_INSET;
-      const top = (cell.row * CELL_SIZE) + CELL_INSET;
-      const colorIndex = mod(
-        (cell.column * 7) + (cell.row * 11) + (cell.column * cell.row * 3),
-        CELL_COLORS.length
-      );
+      const scale = 1 - (0.07 * eraseProgress);
+      const left = (cell.column * cellSize) + CELL_INSET;
+      const top = (cell.row * cellSize) + CELL_INSET;
+      const colorIndex = ((cell.column * 7) + (cell.row * 11)) % 6 === 0 ? 0 : 1;
 
       context.save();
-      context.translate(left + (TILE_SIZE / 2), top + (TILE_SIZE / 2));
+      context.translate(left + (tileSize / 2), top + (tileSize / 2));
       context.scale(scale, scale);
       context.globalAlpha = opacity;
-      context.fillStyle = CELL_COLORS[colorIndex];
-      context.fillRect(
-        -(TILE_SIZE / 2),
-        -(TILE_SIZE / 2),
-        TILE_SIZE,
-        TILE_SIZE
-      );
+      context.fillStyle = MOSAIC_COLORS[colorIndex];
+      context.fillRect(-(tileSize / 2), -(tileSize / 2), tileSize, tileSize);
       context.restore();
       return true;
     };
@@ -537,7 +364,7 @@ const Hero = () => {
     };
 
     const handlePointerMove = (event) => {
-      if (prefersReducedMotion || event.pointerType === 'touch' || !artworkMask || !gridMaskReady) {
+      if (event.pointerType === 'touch' || !artworkMask || !gridReady) {
         previousCell = null;
         return;
       }
@@ -551,24 +378,20 @@ const Hero = () => {
       }
 
       const nextCell = {
-        column: Math.floor(localX / CELL_SIZE),
-        row: Math.floor(localY / CELL_SIZE),
+        column: Math.floor(localX / cellSize),
+        row: Math.floor(localY / cellSize),
       };
       const now = performance.now();
 
-      // Keep the pointer's real path continuous across protected cells.
-      // The precomputed text/artwork masks decide which individual cells draw.
       if (!previousCell) {
         activateCell(nextCell.column, nextCell.row, now);
       } else if (
-        nextCell.column !== previousCell.column ||
-        nextCell.row !== previousCell.row
+        nextCell.column !== previousCell.column || nextCell.row !== previousCell.row
       ) {
         const distance = Math.max(
           Math.abs(nextCell.column - previousCell.column),
           Math.abs(nextCell.row - previousCell.row)
         );
-
         if (distance <= MAX_INTERPOLATED_CELLS) {
           traceGridLine(previousCell, nextCell, previousCell.time, now);
         } else {
@@ -584,7 +407,35 @@ const Hero = () => {
       previousCell = null;
     };
 
-    resizeCanvas();
+    const resizeCanvas = () => {
+      const bounds = section.getBoundingClientRect();
+      width = bounds.width;
+      height = bounds.height;
+      cellSize = Math.round(Math.min(MAX_CELL_SIZE, Math.max(MIN_CELL_SIZE, width * 0.036)));
+      tileSize = cellSize - (CELL_INSET * 2);
+      section.style.setProperty('--hero-grid-cell', cellSize + 'px');
+      pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(width * pixelRatio));
+      canvas.height = Math.max(1, Math.round(height * pixelRatio));
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      cells.clear();
+      previousCell = null;
+      context.clearRect(0, 0, width, height);
+      updateCoverTransform();
+      rebuildGridMasks();
+    };
+
+    const scheduleMaskRefresh = () => {
+      if (maskRefreshFrame || disposed) return;
+      maskRefreshFrame = window.requestAnimationFrame(() => {
+        maskRefreshFrame = 0;
+        updateCoverTransform();
+        rebuildGridMasks();
+        if (cells.size > 0) requestDraw();
+      });
+    };
 
     const maskImage = new Image();
     maskImage.decoding = 'async';
@@ -592,359 +443,292 @@ const Hero = () => {
       if (disposed) return;
       try {
         artworkMask = buildArtworkMask(maskImage);
-        if (artworkMask) resizeCanvas();
+        resizeCanvas();
       } catch (error) {
         artworkMask = null;
-        previousCell = null;
+        gridReady = false;
         cells.clear();
         context.clearRect(0, 0, width, height);
-        console.warn(
-          '[Hero mosaic] Artwork mask could not be verified; pointer trail disabled.',
-          error
-        );
+        console.warn('[TEDx hero] Artwork mask unavailable; cursor mosaic is safely disabled.', error);
       }
     };
     maskImage.onerror = () => {
       artworkMask = null;
-      previousCell = null;
+      gridReady = false;
       cells.clear();
       context.clearRect(0, 0, width, height);
     };
-
-    const backgroundImage = window.getComputedStyle(imageLayer).backgroundImage;
-    const backgroundUrl = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
-    if (backgroundUrl?.[1]) maskImage.src = backgroundUrl[1];
+    maskImage.src = HERO_ARTWORK;
 
     const resizeObserver = typeof ResizeObserver !== 'undefined'
       ? new ResizeObserver(resizeCanvas)
       : null;
-    const header = document.querySelector('header');
-    const textRoots = [
-      ...section.querySelectorAll('[data-mosaic-exclusion]'),
-      header,
-      ...document.querySelectorAll('[data-mosaic-overlay]'),
-    ].filter(Boolean);
-
-    const scheduleGridMaskRefresh = () => {
-      if (maskRefreshFrame || disposed) return;
-      maskRefreshFrame = window.requestAnimationFrame(() => {
-        maskRefreshFrame = 0;
-        rebuildGridMasks();
-        if (cells.size > 0) requestDraw();
-      });
-    };
-
-    const textMutationObserver = typeof MutationObserver !== 'undefined'
-      ? new MutationObserver(scheduleGridMaskRefresh)
+    const mutationObserver = typeof MutationObserver !== 'undefined'
+      ? new MutationObserver(scheduleMaskRefresh)
       : null;
-
-    textMutationObserver?.observe(section, {
-      childList: true,
-      subtree: true,
-      characterData: true,
-    });
+    const textRoots = [section, document.querySelector('header')].filter(Boolean);
 
     textRoots.forEach((root) => {
-      if (root === section) return;
       resizeObserver?.observe(root);
-      textMutationObserver?.observe(root, {
+      mutationObserver?.observe(root, {
         childList: true,
         subtree: true,
         characterData: true,
       });
     });
 
-    resizeObserver?.observe(section);
-    motionSettleTimer = window.setTimeout(scheduleGridMaskRefresh, 1200);
-    document.fonts?.ready
-      .then(scheduleGridMaskRefresh)
-      .catch(() => {});
-
     window.addEventListener('resize', resizeCanvas, { passive: true });
-    window.addEventListener('scroll', scheduleGridMaskRefresh, { passive: true });
+    window.addEventListener('scroll', scheduleMaskRefresh, { passive: true });
     section.addEventListener('pointermove', handlePointerMove, { passive: true });
     section.addEventListener('pointerleave', handlePointerLeave, { passive: true });
+    settleTimer = window.setTimeout(scheduleMaskRefresh, 900);
+    document.fonts?.ready.then(scheduleMaskRefresh).catch(() => {});
+
+    resizeCanvas();
 
     return () => {
       disposed = true;
       resizeObserver?.disconnect();
-      textMutationObserver?.disconnect();
-      window.clearTimeout(motionSettleTimer);
+      mutationObserver?.disconnect();
+      window.clearTimeout(settleTimer);
       if (maskRefreshFrame) window.cancelAnimationFrame(maskRefreshFrame);
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
       window.removeEventListener('resize', resizeCanvas);
-      window.removeEventListener('scroll', scheduleGridMaskRefresh);
+      window.removeEventListener('scroll', scheduleMaskRefresh);
       section.removeEventListener('pointermove', handlePointerMove);
       section.removeEventListener('pointerleave', handlePointerLeave);
-      if (animationFrame) window.cancelAnimationFrame(animationFrame);
       cells.clear();
       context.clearRect(0, 0, width, height);
     };
   }, [prefersReducedMotion]);
 
-  // Event date countdown timer
   useEffect(() => {
     const eventDate = new Date(editionData.date);
-    const updateCountdown = () => {
-      const now = new Date();
-      const difference = eventDate - now;
+    if (Number.isNaN(eventDate.getTime())) {
+      setCountdown(null);
+      return undefined;
+    }
 
-      if (difference > 0) {
-        setCountdown({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60)
-        });
-      } else {
-        setCountdown({ days: 0, hours: 0, minutes: 0 });
+    const updateCountdown = () => {
+      const difference = eventDate.getTime() - Date.now();
+      if (difference <= 0) {
+        setCountdown(null);
+        return;
       }
+
+      setCountdown({
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / (1000 * 60)) % 60),
+      });
     };
 
     updateCountdown();
-    const timer = setInterval(updateCountdown, 60000);
-    return () => clearInterval(timer);
+    const timer = window.setInterval(updateCountdown, 60000);
+    return () => window.clearInterval(timer);
   }, [editionData.date]);
 
-  // Animation variants optimized for performance
+  const parsedEventDate = new Date(editionData.date);
+  const formattedEventDate = Number.isNaN(parsedEventDate.getTime())
+    ? null
+    : parsedEventDate.toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.1
-      }
-    }
+      transition: { staggerChildren: 0.14, delayChildren: 0.08 },
+    },
   };
-
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 22 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: {
-        type: 'spring',
-        stiffness: 100,
-        damping: 20
-      }
-    }
+      transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
+    },
   };
 
-  // const fadeInVariants = {
-  //   hidden: { opacity: 0 },
-  //   visible: {
-  //     opacity: 1,
-  //     transition: { duration: 0.8 }
-  //   }
-  // };
+  const scrollToNextSection = () => {
+    const nextSection = heroRef.current?.nextElementSibling;
+    nextSection?.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+  };
 
   return (
     <section
       ref={heroRef}
-      className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-[#242424] text-white"
-      aria-label="Hero Section"
+      className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-[#050505] text-white"
+      aria-label="TEDxIIMT University hero"
       style={{
-        // The grid is a quiet section background, underneath the transparent
-        // heritage image and the hero copy. The JS canvas keeps colour fills
-        // separate and continues to mask text/artwork cells.
-        backgroundImage:
-          "linear-gradient(to right, rgba(255,255,255,0.055) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.055) 1px, transparent 1px)",
-        backgroundSize:
-          "var(--hero-grid-cell, 64px) var(--hero-grid-cell, 64px)",
-        backgroundPosition: "0 0",
+        backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.045) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.045) 1px, transparent 1px)',
+        backgroundSize: 'var(--hero-grid-cell, 58px) var(--hero-grid-cell, 58px)',
+        backgroundPosition: '0 0',
       }}
     >
-{/* Background Image */}
+      {/* Original TEDxIIMT heritage artwork — deliberately kept as the main visual. */}
+      <div
+        data-mosaic-surface
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url(' + HERO_ARTWORK + ')' }}
+        aria-hidden="true"
+      />
 
-<div
-  data-mosaic-surface
-  className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-  style={{
-    backgroundImage: "url('/transparent-hero-bg.PNG')",
-    opacity: 1,
-    filter: "brightness(1) contrast(1) saturate(1)",
-  }}
-  aria-hidden="true"
-/>
+      {/* Layered lighting gives the artwork depth without changing the source image. */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/65 via-black/45 to-black/90 lg:bg-gradient-to-r lg:from-black/95 lg:via-black/75 lg:to-black/15"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute inset-0 z-[1]"
+        style={{
+          background: 'radial-gradient(ellipse at 78% 46%, rgba(235,0,40,0.18), transparent 36%), linear-gradient(to top, rgba(0,0,0,0.46), transparent 34%)',
+        }}
+        aria-hidden="true"
+      />
 
-{/* Very Light Bottom Gradient — For Text Readability */}
-<div
-  className="absolute inset-0 z-10 pointer-events-none"
-  style={{
-    background:
-      "linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.05) 55%, rgba(0,0,0,0.4) 100%)",
-  }}
-  aria-hidden="true"
-/>
-{/* Subtle Red Accent */}
-<motion.div
-  className="absolute inset-0 z-10 pointer-events-none"
-  style={{
-    background:
-      "radial-gradient(circle at 50% 50%, rgba(235, 0, 40, 0.12), transparent 65%)",
-  }}
-  animate={
-    prefersReducedMotion
-      ? {}
-      : { opacity: [0.2, 0.6, 0.2] }
-  }
-  transition={{
-    duration: 8,
-    repeat: Infinity,
-    ease: "easeInOut",
-  }}
-  aria-hidden="true"
-/>
+      {/* Fixed accent cells: the composition is identical on every visit. */}
+      <div className="pointer-events-none absolute inset-0 z-[2] overflow-hidden" aria-hidden="true">
+        <span className="absolute left-[4.5%] top-[18%] h-8 w-8 bg-[#EB0028]/20" />
+        <span className="absolute left-[35%] top-[13%] h-5 w-5 bg-white/[0.12]" />
+        <span className="absolute right-[12%] top-[24%] h-9 w-9 bg-[#EB0028]/25" />
+        <span className="absolute left-[2%] top-[57%] h-7 w-7 bg-white/[0.08]" />
+        <span className="absolute right-[5%] top-[66%] h-8 w-8 bg-[#EB0028]/25" />
+        <span className="absolute left-[28%] bottom-[12%] h-6 w-6 bg-[#EB0028]/15" />
+      </div>
 
-<canvas
-  ref={trailCanvasRef}
-  className="absolute inset-0 z-10 pointer-events-none"
-  aria-hidden="true"
-/>
+      <canvas
+        ref={trailCanvasRef}
+        className="pointer-events-none absolute inset-0 z-10"
+        aria-hidden="true"
+      />
 
-      {/* Content Container */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-20 pt-20 pb-16 md:py-24">
+      <div className="relative z-20 mx-auto w-full max-w-7xl px-5 pb-24 pt-32 sm:px-8 md:pb-28 lg:px-10 lg:pt-36">
         <motion.div
           variants={containerVariants}
-          initial="hidden"
+          initial={prefersReducedMotion ? false : "hidden"}
           animate="visible"
-          className="max-w-5xl mx-auto text-center"
+          className="max-w-4xl"
         >
-          {/* Eyebrow - Event Type */}
-          <motion.div 
+          <motion.div
             variants={itemVariants}
-            className="inline-flex items-center gap-2 mb-4 md:mb-6"
+            className="mb-7 flex items-center gap-3"
             data-mosaic-exclusion
           >
-            <div className="h-px w-8 bg-[#EB0028]" aria-hidden="true"></div>
-            <span className="text-xs md:text-sm font-bold uppercase tracking-widest text-gray-400">
-              Independently Organized TED Event
+            <span className="h-px w-10 bg-[#EB0028]" aria-hidden="true" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-zinc-300 sm:text-xs">
+              Independently organized TED event
             </span>
-            <div className="h-px w-8 bg-[#EB0028]" aria-hidden="true"></div>
           </motion.div>
 
-          {/* Main Title - Enhanced Typography */}
-          <motion.h1
-            variants={itemVariants}
-            className="mb-6 md:mb-8"
-            data-mosaic-exclusion
-          >
-            <span className="block text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-none">
-              <span className="text-[#EB0028]">TED</span>
-              <span className="text-[#EB0028] relative">
-                x
-                <span className="absolute -bottom-2 left-0 right-0 h-1 bg-[#EB0028]" aria-hidden="true"></span>
+          <motion.div variants={itemVariants} data-mosaic-exclusion>
+            <h1 className="leading-[0.88] tracking-[-0.065em]">
+              <span className="block text-[clamp(2.9rem,8vw,8.4rem)] font-black">
+                <span className="text-[#EB0028]">TED</span>
+                <span className="text-white">x</span>
+                <span className="ml-3 text-white">IIMT</span>
               </span>
-            </span>
-            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mt-2 md:mt-4 tracking-wide">
-              IIMT UNIVERSITY
-            </span>
-          </motion.h1>
+              <span className="mt-4 block text-[clamp(0.9rem,2vw,1.45rem)] font-medium tracking-[0.38em] text-zinc-300 sm:tracking-[0.48em]">
+                IIMT UNIVERSITY
+              </span>
+            </h1>
+          </motion.div>
 
-          {/* Value Proposition - Enhanced Clarity */}
-          <motion.p
+          <motion.div variants={itemVariants} className="mt-9" data-mosaic-exclusion>
+            <h2 className="text-[clamp(2.4rem,5.2vw,4.8rem)] font-semibold leading-[1.02] tracking-[-0.045em]">
+              Break the <span className="font-bold italic text-[#EB0028]">Flow.</span>
+            </h2>
+            <p className="mt-3 text-lg font-medium tracking-[0.04em] text-zinc-200 sm:text-2xl">
+              Ideas. Inspiration. Impact.
+            </p>
+            <p className="mt-5 max-w-xl text-sm leading-7 text-zinc-300 sm:text-base sm:leading-8">
+              {editionData.theme === 'Break the Flow'
+                ? 'A platform for ideas that challenge convention, spark meaningful conversations, and inspire new perspectives.'
+                : 'A platform for ideas that challenge convention and inspire new perspectives. Explore this edition’s theme: ' + editionData.theme + '.'}
+            </p>
+          </motion.div>
+
+          <motion.div
             variants={itemVariants}
-            className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto mb-8 md:mb-10 leading-relaxed font-light"
+            className="mt-7 flex flex-col gap-3 text-sm text-zinc-200 sm:flex-row sm:flex-wrap sm:items-center sm:gap-7"
             data-mosaic-exclusion
           >
-            <span className="text-white font-semibold">Theme: {editionData.theme}.</span>
-            <br className="hidden sm:block" />
-            <span className="block mt-2">
-              Experience transformative talks, connect with innovators, and discover perspectives that challenge convention.
+            {formattedEventDate && (
+              <span className="inline-flex items-center gap-2.5">
+                <CalendarDays className="h-4 w-4 text-[#EB0028]" aria-hidden="true" />
+                {formattedEventDate}
+              </span>
+            )}
+            <span className="inline-flex items-center gap-2.5">
+              <MapPin className="h-4 w-4 text-[#EB0028]" aria-hidden="true" />
+              IIMT University, Meerut
             </span>
-          </motion.p>
+          </motion.div>
 
-          {/* Countdown Timer - Urgency Element */}
-          {countdown.days > 0 && (
+          {countdown && (
             <motion.div
               variants={itemVariants}
-              className="mb-8 md:mb-12"
+              className="mt-8 flex max-w-md items-center gap-0 border-y border-white/15 py-3.5"
+              aria-label="Event countdown"
               data-mosaic-exclusion
             >
-              <p className="text-xs md:text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">
-                Event Starts In
-              </p>
-              <div className="flex justify-center gap-3 md:gap-6">
-                {[
-                  { value: countdown.days, label: 'Days' },
-                  { value: countdown.hours, label: 'Hours' },
-                  { value: countdown.minutes, label: 'Minutes' }
-                ].map((item) => (
-                  <div 
-                    key={item.label}
-                    className="bg-[#0a0a0a] border-2 border-[#1a1a1a] px-4 py-3 md:px-6 md:py-4 min-w-[70px] md:min-w-[90px]"
-                  >
-                    <div className="text-2xl md:text-4xl font-bold text-[#EB0028] tabular-nums">
-                      {String(item.value).padStart(2, '0')}
-                    </div>
-                    <div className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-gray-500 mt-1">
-                      {item.label}
-                    </div>
+              {[
+                { value: countdown.days, label: 'Days' },
+                { value: countdown.hours, label: 'Hours' },
+                { value: countdown.minutes, label: 'Minutes' },
+              ].map((item, index) => (
+                <div
+                  key={item.label}
+                  className={'min-w-0 flex-1 px-4 first:pl-0 ' + (index > 0 ? 'border-l border-white/20' : '')}
+                >
+                  <div className="text-2xl font-semibold tabular-nums text-white sm:text-3xl">
+                    {String(item.value).padStart(2, '0')}
                   </div>
-                ))}
-              </div>
+                  <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-400">
+                    {item.label}
+                  </div>
+                </div>
+              ))}
             </motion.div>
           )}
 
-          {/* Call-to-Action Buttons
           <motion.div
             variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 md:mb-12"
+            className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
+            data-mosaic-exclusion
           >
             <a
               href="/register"
-              className="group relative w-full sm:w-auto bg-[#EB0028] hover:bg-[#ff1a3d] text-white font-bold px-8 md:px-12 py-4 md:py-5 text-base md:text-lg transition-all duration-300 overflow-hidden cursor-pointer"
-              aria-label="Register for TEDxIIMT UNIVERSITY event"
+              className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#EB0028] px-7 py-3 text-sm font-bold text-white shadow-[0_12px_35px_rgba(235,0,40,0.22)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#d90025] hover:shadow-[0_16px_42px_rgba(235,0,40,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              aria-label="Register for TEDxIIMT University"
             >
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                Get Your Tickets
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
-              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" aria-hidden="true"></div>
+              Get Tickets
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
             </a>
-
             <a
               href="/speakers"
-              className="group w-full sm:w-auto bg-transparent border-2 border-white hover:border-[#EB0028] hover:bg-[#EB0028]/10 text-white font-bold px-8 md:px-12 py-4 md:py-5 text-base md:text-lg transition-all duration-300 cursor-pointer"
-              aria-label="View TEDxIIMT UNIVERSITY speakers"
+              className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/30 bg-black/20 px-7 py-3 text-sm font-semibold text-white backdrop-blur-sm transition duration-300 hover:border-white/70 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
             >
-              <span className="flex items-center justify-center gap-2">
-                Meet Our Speakers
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </span>
+              Meet the Speakers
             </a>
-          </motion.div> */}
-
-          {/* Social Proof - Trust Signals
-          <motion.div
-            variants={fadeInVariants}
-            className="flex flex-wrap justify-center items-center gap-4 md:gap-8 text-sm text-gray-400"
-          >
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-[#EB0028]" aria-hidden="true"></div>
-              <span className="font-semibold text-white">{editionData.attendee_capacity}+</span>
-              <span>Delegates</span>
-            </div>
-            <div className="hidden sm:block w-px h-4 bg-gray-700" aria-hidden="true"></div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-[#EB0028]" aria-hidden="true"></div>
-              <span className="font-semibold text-white">{editionData.speaker_count}+</span>
-              <span>Visionary Speakers</span>
-            </div>
-            <div className="hidden sm:block w-px h-4 bg-gray-700" aria-hidden="true"></div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-[#EB0028]" aria-hidden="true"></div>
-              <span className="font-semibold text-white">6 Hours</span>
-              <span>of Inspiration</span>
-            </div>
-          </motion.div> */}
+          </motion.div>
         </motion.div>
-
-      
       </div>
+
+      <button
+        type="button"
+        onClick={scrollToNextSection}
+        className="group absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-2 rounded-full px-4 py-2 text-[9px] font-semibold uppercase tracking-[0.22em] text-zinc-400 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:bottom-7"
+        aria-label="Scroll to explore featured speakers"
+      >
+        <span>Scroll to explore</span>
+        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/25 transition-all duration-300 group-hover:border-[#EB0028] group-hover:bg-[#EB0028]/15">
+          <ArrowDown className="h-4 w-4" aria-hidden="true" />
+        </span>
+      </button>
     </section>
   );
 };
