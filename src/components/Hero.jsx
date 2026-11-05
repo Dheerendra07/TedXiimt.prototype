@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowDown, ArrowRight, CalendarDays, MapPin } from 'lucide-react';
+import { ArrowRight, CalendarDays, MapPin } from 'lucide-react';
 import api from '../services/api';
 
 const HERO_ARTWORK = '/transparent-hero-bg.PNG';
@@ -164,13 +164,22 @@ const Hero = () => {
       const sectionRect = section.getBoundingClientRect();
       const imageRect = imageLayer.getBoundingClientRect();
 
-      // Both landmark layers now use the complete hero frame (100% x 100%).
-      // Keep the cursor exclusion mask on that exact, non-cropped transform.
+      // Match the visible background's cover crop exactly, including its
+      // slightly raised vertical position, so cursor tiles never cross art.
+      const coverScale = Math.max(
+        imageRect.width / artworkMask.width,
+        imageRect.height / artworkMask.height
+      );
+      const renderedWidth = artworkMask.width * coverScale;
+      const renderedHeight = artworkMask.height * coverScale;
+      const horizontalCrop = (imageRect.width - renderedWidth) * 0.5;
+      const verticalCrop = (imageRect.height - renderedHeight) * 0.58;
+
       coverTransform = {
-        scaleX: imageRect.width / artworkMask.width,
-        scaleY: imageRect.height / artworkMask.height,
-        offsetX: imageRect.left - sectionRect.left,
-        offsetY: imageRect.top - sectionRect.top,
+        scaleX: coverScale,
+        scaleY: coverScale,
+        offsetX: imageRect.left - sectionRect.left + horizontalCrop,
+        offsetY: imageRect.top - sectionRect.top + verticalCrop,
       };
     };
 
@@ -577,11 +586,6 @@ const Hero = () => {
       year: 'numeric',
     });
 
-  const scrollToNextSection = () => {
-    const nextSection = heroRef.current?.nextElementSibling;
-    nextSection?.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
-  };
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -609,15 +613,16 @@ const Hero = () => {
         backgroundPosition: '0 0',
       }}
     >
-      {/* One original, complete architectural panorama. The transparent PNG is used only as a cursor-exclusion mask, never layered over this image. */}
+      {/* One original panorama only. Cover preserves the artwork proportions;
+          a small upward bias keeps the full landmark row visually balanced. */}
       <div
         data-mosaic-surface
         className="pointer-events-none absolute inset-0 z-0 bg-no-repeat"
         style={{
           backgroundImage: 'url(' + HERO_BACKGROUND + ')',
           backgroundSize: 'cover',
-          backgroundPosition: 'center center',
-          filter: 'none',
+          backgroundPosition: 'center 58%',
+          filter: 'brightness(1.34) contrast(1.08) saturate(0.9)',
         }}
         aria-hidden="true"
       />
@@ -745,17 +750,7 @@ const Hero = () => {
         </motion.div>
       </div>
 
-      <button
-        type="button"
-        onClick={scrollToNextSection}
-        className="group absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-1.5 rounded-full px-4 py-2 text-[9px] font-semibold uppercase tracking-[0.2em] text-zinc-400 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:bottom-4"
-        aria-label="Scroll to explore featured speakers"
-      >
-        <span>Scroll to explore</span>
-        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/30 transition-all duration-300 group-hover:border-[#EB0028] group-hover:bg-[#EB0028]/15">
-          <ArrowDown className="h-4 w-4" aria-hidden="true" />
-        </span>
-      </button>
+
     </section>
   );
 };
