@@ -42,24 +42,25 @@ const Hero = () => {
     const section = heroRef.current;
     const canvas = trailCanvasRef.current;
     const imageLayer = section?.querySelector('[data-mosaic-surface]');
-    if (!section || !canvas || !imageLayer || prefersReducedMotion) return;
+    if (!section || !canvas || !imageLayer) return;
 
     const context = canvas.getContext('2d', { alpha: true });
     if (!context) return;
 
-    // Match the large, clean square scale in the supplied reference.
-    // The lattice scales with viewport width, with a 64px minimum for compact screens.
+    // Smaller, responsive cells keep the reference mosaic airy rather than oversized.
     const MIN_CELL_SIZE = 64;
-    const MAX_CELL_SIZE = 124;
+    const MAX_CELL_SIZE = 92;
     let CELL_SIZE = 64;
-    const CELL_INSET = 0;
-    let TILE_SIZE = CELL_SIZE;
+    const CELL_INSET = 4;
+    let TILE_SIZE = CELL_SIZE - (CELL_INSET * 2);
     const IMAGE_SAFETY_GAP = 3;
-    const REVEAL_MS = 70;
-    const HOLD_MS = 230;
-    const ERASE_MS = 520;
-    const MAX_ACTIVE_CELLS = 54;
-    const MAX_INTERPOLATED_CELLS = 24;
+
+    const REVEAL_MS = 65;
+    const HOLD_MS = 2000;
+    const ERASE_MS = 190;
+    const ERASE_STAGGER_MS = 42;
+    const MAX_ACTIVE_CELLS = 110;
+    const MAX_INTERPOLATED_CELLS = 28;
     // The four colour pairings come from the supplied mosaic references.
     // A fixed cell-coordinate sequence keeps the palette deliberate and repeatable.
     // Sampled from the provided GitHub Platform reference image.
@@ -82,6 +83,8 @@ const Hero = () => {
     let pixelRatio = 1;
     let animationFrame = 0;
     let previousCell = null;
+    let lastPathActivityAt = 0;
+    let lastEraseScheduledAt = 0;
     let artworkMask = null;
     let coverTransform = null;
     let disposed = false;
@@ -391,19 +394,45 @@ const Hero = () => {
       const top = (row * CELL_SIZE) + CELL_INSET;
       const right = left + TILE_SIZE;
       const bottom = top + TILE_SIZE;
-      // Only the visible portion of edge cells is evaluated and drawn.
       if (left >= width || top >= height || right <= 0 || bottom <= 0) return false;
 
       const key = column + ':' + row;
       return !artworkBlockedCells.has(key) && !textBlockedCells.has(key);
     };
 
+    // Permanent, low-contrast cell outlines remain visible before any pointer
+    // movement. The exact same artwork/text mask protects this static grid.
+    const drawBaseGrid = () => {
+      if (!gridMaskReady) return;
+
+      context.save();
+      context.strokeStyle = 'rgba(235, 238, 242, 0.22)';
+      context.lineWidth = 1;
+
+      for (let row = 0; row < gridRows; row += 1) {
+        for (let column = 0; column < gridColumns; column += 1) {
+          if (!cellIsSafe(column, row)) continue;
+
+          const left = (column * CELL_SIZE) + CELL_INSET;
+          const top = (row * CELL_SIZE) + CELL_INSET;
+          context.strokeRect(
+            left + 0.5,
+            top + 0.5,
+            TILE_SIZE - 1,
+            TILE_SIZE - 1
+          );
+        }
+      }
+
+      context.restore();
+    };
+
     const resizeCanvas = () => {
       const bounds = section.getBoundingClientRect();
       width = bounds.width;
       height = bounds.height;
-      CELL_SIZE = Math.round(Math.min(MAX_CELL_SIZE, Math.max(MIN_CELL_SIZE, width * 0.0605)));
-      TILE_SIZE = CELL_SIZE;
+      CELL_SIZE = Math.round(Math.min(MAX_CELL_SIZE, Math.max(MIN_CELL_SIZE, width * 0.048)));
+      TILE_SIZE = CELL_SIZE - (CELL_INSET * 2);
       pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
 
       canvas.width = Math.max(1, Math.round(width * pixelRatio));
@@ -414,9 +443,9 @@ const Hero = () => {
 
       cells.clear();
       previousCell = null;
+      context.clearRect(0, 0, width, height);
       updateCoverTransform();
       rebuildGridMasks();
-      context.clearRect(0, 0, width, height);
     };
 
     const activateCell = (column, row, enteredAt) => {
@@ -429,9 +458,23 @@ const Hero = () => {
         !cellIsSafe(column, row)
       ) return;
 
+      // A fresh pointer stroke gets its own erase wave after a short idle gap.
+      // Within one stroke, erase deadlines are spaced so cells clear one by one
+      // in the same order that the cursor originally filled them.
+      if (!lastPathActivityAt || enteredAt - lastPathActivityAt > 260) {
+        lastEraseScheduledAt = enteredAt + HOLD_MS - ERASE_STAGGER_MS;
+      }
+
+      const eraseAt = Math.max(
+        enteredAt + HOLD_MS,
+        lastEraseScheduledAt + ERASE_STAGGER_MS
+      );
+      lastEraseScheduledAt = eraseAt;
+      lastPathActivityAt = enteredAt;
+
       const key = column + ':' + row;
       cells.delete(key);
-      cells.set(key, { column, row, enteredAt });
+      cells.set(key, { column, row, enteredAt, eraseAt });
 
       while (cells.size > MAX_ACTIVE_CELLS) {
         cells.delete(cells.keys().next().value);
@@ -473,14 +516,16 @@ const Hero = () => {
     };
 
     const drawCell = (cell, now) => {
-      const age = now - cell.enteredAt;
-      if (age >= REVEAL_MS + HOLD_MS + ERASE_MS) return false;
+      const fillAge = Math.max(0, now - cell.enteredAt);
+      const eraseAge = now - cell.eraseAt;
+      if (eraseAge >= ERASE_MS) return false;
 
-      const reveal = easeOutCubic(Math.min(1, age / REVEAL_MS));
-      const erase = age <= (REVEAL_MS + HOLD_MS)
-        ? 1
-        : 1 - smoothStep((age - REVEAL_MS - HOLD_MS) / ERASE_MS);
-      const opacity = reveal * erase;
+      const reveal = easeOutCubic(Math.min(1, fillAge / REVEAL_MS));
+      const eraseProgress = eraseAge <= 0
+        ? 0
+        : smoothStep(Math.min(1, eraseAge / ERASE_MS));
+      const opacity = reveal * (1 - eraseProgress);
+      const scale = 1 - (0.08 * eraseProgress);
       const left = (cell.column * CELL_SIZE) + CELL_INSET;
       const top = (cell.row * CELL_SIZE) + CELL_INSET;
       const colorIndex = mod(
@@ -489,9 +534,16 @@ const Hero = () => {
       );
 
       context.save();
+      context.translate(left + (TILE_SIZE / 2), top + (TILE_SIZE / 2));
+      context.scale(scale, scale);
       context.globalAlpha = opacity;
       context.fillStyle = CELL_COLORS[colorIndex];
-      context.fillRect(left, top, TILE_SIZE, TILE_SIZE);
+      context.fillRect(
+        -(TILE_SIZE / 2),
+        -(TILE_SIZE / 2),
+        TILE_SIZE,
+        TILE_SIZE
+      );
       context.restore();
       return true;
     };
@@ -499,6 +551,7 @@ const Hero = () => {
     const draw = (now) => {
       animationFrame = 0;
       context.clearRect(0, 0, width, height);
+      drawBaseGrid();
       for (const [key, cell] of cells) {
         if (!drawCell(cell, now)) cells.delete(key);
       }
@@ -512,7 +565,7 @@ const Hero = () => {
     };
 
     const handlePointerMove = (event) => {
-      if (event.pointerType === 'touch' || !artworkMask || !gridMaskReady) {
+      if (prefersReducedMotion || event.pointerType === 'touch' || !artworkMask || !gridMaskReady) {
         previousCell = null;
         return;
       }
@@ -557,6 +610,8 @@ const Hero = () => {
 
     const handlePointerLeave = () => {
       previousCell = null;
+      lastPathActivityAt = 0;
+      lastEraseScheduledAt = 0;
     };
 
     resizeCanvas();
@@ -605,6 +660,8 @@ const Hero = () => {
       maskRefreshFrame = window.requestAnimationFrame(() => {
         maskRefreshFrame = 0;
         rebuildGridMasks();
+        drawBaseGrid();
+        if (cells.size > 0) requestDraw();
       });
     };
 
