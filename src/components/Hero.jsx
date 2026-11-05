@@ -90,8 +90,8 @@ const Hero = () => {
     const context = canvas.getContext('2d', { alpha: true });
     if (!context) return undefined;
 
-    const MIN_CELL_SIZE = 28;
-    const MAX_CELL_SIZE = 38;
+    const MIN_CELL_SIZE = 30;
+    const MAX_CELL_SIZE = 40;
     const CELL_INSET = 4;
     const IMAGE_SAFETY_GAP = 2;
     const REVEAL_MS = 80;
@@ -102,7 +102,7 @@ const Hero = () => {
 
     let width = 0;
     let height = 0;
-    let cellSize = 38;
+    let cellSize = 40;
     let tileSize = cellSize - (CELL_INSET * 2);
     let pixelRatio = 1;
     let animationFrame = 0;
@@ -163,17 +163,17 @@ const Hero = () => {
 
       const sectionRect = section.getBoundingClientRect();
       const imageRect = imageLayer.getBoundingClientRect();
-      const scale = Math.max(
-        imageRect.width / artworkMask.width,
-        imageRect.height / artworkMask.height
-      );
+      const renderWidth = imageRect.width * 1.22;
+      const renderHeight = renderWidth * (artworkMask.height / artworkMask.width);
+      const scale = renderWidth / artworkMask.width;
+      const backgroundPositionY = 0.66;
 
       coverTransform = {
         scale,
         offsetX: (imageRect.left - sectionRect.left)
-          + ((imageRect.width - (artworkMask.width * scale)) / 2),
+          + ((imageRect.width - renderWidth) / 2),
         offsetY: (imageRect.top - sectionRect.top)
-          + ((imageRect.height - (artworkMask.height * scale)) / 2),
+          + ((imageRect.height - renderHeight) * backgroundPositionY),
       };
     };
 
@@ -601,11 +601,11 @@ const Hero = () => {
   return (
     <section
       ref={heroRef}
-      className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-[#050505] text-white lg:h-[100svh] lg:min-h-[760px]"
+      className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-[#050505] text-white lg:h-[100svh] lg:min-h-[720px]"
       aria-label="TEDxIIMT University hero"
       style={{
         backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.052) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.052) 1px, transparent 1px)',
-        backgroundSize: 'var(--hero-grid-cell, 38px) var(--hero-grid-cell, 38px)',
+        backgroundSize: 'var(--hero-grid-cell, 40px) var(--hero-grid-cell, 40px)',
         backgroundPosition: '0 0',
       }}
     >
@@ -613,14 +613,14 @@ const Hero = () => {
       <div
         className="pointer-events-none absolute z-0 bg-cover bg-center bg-no-repeat"
         style={{
-          top: '-8%',
-          right: '-5%',
-          bottom: '-8%',
-          left: '-5%',
+          top: '-14%',
+          right: '-7%',
+          bottom: '-14%',
+          left: '-7%',
           backgroundImage: 'url(' + HERO_BACKGROUND + ')',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center center',
-          filter: 'brightness(1.14) contrast(1.08) saturate(0.92)',
+          backgroundSize: '122% auto',
+          backgroundPosition: 'center 66%',
+          filter: 'brightness(1.16) contrast(1.1) saturate(0.96)',
         }}
         aria-hidden="true"
       />
@@ -630,15 +630,15 @@ const Hero = () => {
         data-mosaic-surface
         className="pointer-events-none absolute z-[1] bg-cover bg-center bg-no-repeat"
         style={{
-          top: '-8%',
-          right: '-5%',
-          bottom: '-8%',
-          left: '-5%',
+          top: '-14%',
+          right: '-7%',
+          bottom: '-14%',
+          left: '-7%',
           backgroundImage: 'url(' + HERO_ARTWORK + ')',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center center',
-          filter: 'brightness(1.42) contrast(1.1) saturate(0.86)',
-          opacity: 0.78,
+          backgroundSize: '122% auto',
+          backgroundPosition: 'center 66%',
+          filter: 'brightness(1.5) contrast(1.16) saturate(0.9)',
+          opacity: 0.62,
           mixBlendMode: 'screen',
         }}
         aria-hidden="true"
@@ -684,12 +684,12 @@ const Hero = () => {
         aria-hidden="true"
       />
 
-      <div className="relative z-20 mx-auto flex w-[92%] max-w-[1780px] items-center px-0 py-24 sm:py-28 lg:py-0">
+      <div className="relative z-20 mx-auto flex w-[88%] max-w-[1660px] items-center px-0 py-24 sm:py-28 lg:py-0">
         <motion.div
           variants={containerVariants}
           initial={prefersReducedMotion ? false : 'hidden'}
           animate="visible"
-          className="flex min-h-[540px] w-full max-w-[760px] flex-col justify-center lg:min-h-[560px] lg:pl-7 xl:pl-10"
+          className="flex min-h-[540px] w-full max-w-[740px] flex-col justify-center lg:min-h-[560px] lg:pl-8 xl:pl-12"
         >
           <motion.div variants={itemVariants} data-mosaic-exclusion>
             <h1 className="leading-[0.9] tracking-[-0.065em]">
