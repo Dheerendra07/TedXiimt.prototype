@@ -4,7 +4,21 @@ import { ArrowDown, ArrowRight, CalendarDays, MapPin } from 'lucide-react';
 import api from '../services/api';
 
 const HERO_ARTWORK = '/transparent-hero-bg.PNG';
-const MOSAIC_COLORS = ['#EB0028', '#D7D7D7'];
+const MOSAIC_COLORS = ['#EB0028', '#D5D5D5'];
+const MOSAIC_ACCENTS = [
+  { column: 1, row: 4, span: 1, tone: 'red', opacity: 0.24 },
+  { column: 15, row: 4, span: 1, tone: 'red', opacity: 0.15 },
+  { column: 16, row: 0, span: 2, tone: 'red', opacity: 0.12 },
+  { column: 24, row: 8, span: 1, tone: 'red', opacity: 0.19 },
+  { column: 26, row: 8, span: 1, tone: 'grey', opacity: 0.12 },
+  { column: 38, row: 6, span: 1, tone: 'red', opacity: 0.22 },
+  { column: 42, row: 12, span: 1, tone: 'red', opacity: 0.17 },
+  { column: 39, row: 18, span: 1, tone: 'red', opacity: 0.21 },
+  { column: 27, row: 20, span: 1, tone: 'grey', opacity: 0.12 },
+  { column: 15, row: 21, span: 1, tone: 'red', opacity: 0.14 },
+  { column: 4, row: 22, span: 1, tone: 'red', opacity: 0.12 },
+  { column: 29, row: 23, span: 1, tone: 'red', opacity: 0.16 },
+];
 
 const Hero = () => {
   const prefersReducedMotion = useReducedMotion();
@@ -43,8 +57,8 @@ const Hero = () => {
     };
   }, []);
 
-  // A restrained, repeatable cursor mosaic. The original transparent artwork
-  // and all visible copy are protected from tile fills by pixel/text masks.
+  // The tile lattice is intentionally fixed to the supplied reference.
+  // Cursor tiles are deterministic and are kept clear of both copy and artwork.
   useEffect(() => {
     if (prefersReducedMotion) return undefined;
 
@@ -56,19 +70,19 @@ const Hero = () => {
     const context = canvas.getContext('2d', { alpha: true });
     if (!context) return undefined;
 
-    const MIN_CELL_SIZE = 48;
-    const MAX_CELL_SIZE = 68;
-    const CELL_INSET = 3;
+    const MIN_CELL_SIZE = 28;
+    const MAX_CELL_SIZE = 38;
+    const CELL_INSET = 4;
     const IMAGE_SAFETY_GAP = 2;
-    const REVEAL_MS = 85;
-    const HOLD_MS = 620;
-    const ERASE_MS = 260;
-    const MAX_ACTIVE_CELLS = 92;
+    const REVEAL_MS = 80;
+    const HOLD_MS = 680;
+    const ERASE_MS = 280;
+    const MAX_ACTIVE_CELLS = 86;
     const MAX_INTERPOLATED_CELLS = 24;
 
     let width = 0;
     let height = 0;
-    let cellSize = 58;
+    let cellSize = 38;
     let tileSize = cellSize - (CELL_INSET * 2);
     let pixelRatio = 1;
     let animationFrame = 0;
@@ -220,7 +234,7 @@ const Hero = () => {
                 });
               }
             } catch {
-              // Browser-owned or SVG text nodes may not expose Range geometry.
+              // Some browser-owned or SVG text nodes do not expose Range geometry.
             }
           }
         }
@@ -235,9 +249,9 @@ const Hero = () => {
       textBlockedCells.clear();
       gridReady = false;
 
-      const sectionBounds = section.getBoundingClientRect();
-      width = sectionBounds.width;
-      height = sectionBounds.height;
+      const bounds = section.getBoundingClientRect();
+      width = bounds.width;
+      height = bounds.height;
       gridColumns = Math.ceil(width / cellSize);
       gridRows = Math.ceil(height / cellSize);
       if (!artworkMask || !coverTransform || !gridColumns || !gridRows) return;
@@ -287,9 +301,11 @@ const Hero = () => {
 
     const activateCell = (column, row, enteredAt) => {
       if (!cellIsSafe(column, row)) return;
+
       const key = column + ':' + row;
       cells.delete(key);
       cells.set(key, { column, row, enteredAt, eraseAt: enteredAt + HOLD_MS });
+
       while (cells.size > MAX_ACTIVE_CELLS) {
         cells.delete(cells.keys().next().value);
       }
@@ -327,16 +343,17 @@ const Hero = () => {
 
     const drawCell = (cell, now) => {
       if (!cellIsSafe(cell.column, cell.row)) return false;
+
       const eraseAge = now - cell.eraseAt;
       if (eraseAge >= ERASE_MS) return false;
 
       const reveal = easeOutCubic(Math.min(1, Math.max(0, now - cell.enteredAt) / REVEAL_MS));
       const eraseProgress = eraseAge <= 0 ? 0 : smoothStep(Math.min(1, eraseAge / ERASE_MS));
       const opacity = reveal * (1 - eraseProgress);
-      const scale = 1 - (0.07 * eraseProgress);
+      const scale = 1 - (0.06 * eraseProgress);
       const left = (cell.column * cellSize) + CELL_INSET;
       const top = (cell.row * cellSize) + CELL_INSET;
-      const colorIndex = ((cell.column * 7) + (cell.row * 11)) % 6 === 0 ? 0 : 1;
+      const colorIndex = ((cell.column * 3) + (cell.row * 5)) % 7 === 0 ? 0 : 1;
 
       context.save();
       context.translate(left + (tileSize / 2), top + (tileSize / 2));
@@ -411,15 +428,17 @@ const Hero = () => {
       const bounds = section.getBoundingClientRect();
       width = bounds.width;
       height = bounds.height;
-      cellSize = Math.round(Math.min(MAX_CELL_SIZE, Math.max(MIN_CELL_SIZE, width * 0.036)));
+      cellSize = Math.round(Math.min(MAX_CELL_SIZE, Math.max(MIN_CELL_SIZE, width * 0.023)));
       tileSize = cellSize - (CELL_INSET * 2);
       section.style.setProperty('--hero-grid-cell', cellSize + 'px');
+
       pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.max(1, Math.round(width * pixelRatio));
       canvas.height = Math.max(1, Math.round(height * pixelRatio));
       canvas.style.width = width + 'px';
       canvas.style.height = height + 'px';
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
       cells.clear();
       previousCell = null;
       context.clearRect(0, 0, width, height);
@@ -449,7 +468,7 @@ const Hero = () => {
         gridReady = false;
         cells.clear();
         context.clearRect(0, 0, width, height);
-        console.warn('[TEDx hero] Artwork mask unavailable; cursor mosaic is safely disabled.', error);
+        console.warn('[TEDx hero] Artwork mask unavailable; cursor tiles safely disabled.', error);
       }
     };
     maskImage.onerror = () => {
@@ -466,9 +485,9 @@ const Hero = () => {
     const mutationObserver = typeof MutationObserver !== 'undefined'
       ? new MutationObserver(scheduleMaskRefresh)
       : null;
-    const textRoots = [section, document.querySelector('header')].filter(Boolean);
+    const observedRoots = [section, document.querySelector('header')].filter(Boolean);
 
-    textRoots.forEach((root) => {
+    observedRoots.forEach((root) => {
       resizeObserver?.observe(root);
       mutationObserver?.observe(root, {
         childList: true,
@@ -481,7 +500,7 @@ const Hero = () => {
     window.addEventListener('scroll', scheduleMaskRefresh, { passive: true });
     section.addEventListener('pointermove', handlePointerMove, { passive: true });
     section.addEventListener('pointerleave', handlePointerLeave, { passive: true });
-    settleTimer = window.setTimeout(scheduleMaskRefresh, 900);
+    settleTimer = window.setTimeout(scheduleMaskRefresh, 1000);
     document.fonts?.ready.then(scheduleMaskRefresh).catch(() => {});
 
     resizeCanvas();
@@ -504,7 +523,7 @@ const Hero = () => {
 
   useEffect(() => {
     const eventDate = new Date(editionData.date);
-    if (Number.isNaN(eventDate.getTime())) {
+    if (Number.isNaN(eventDate.getTime()) || eventDate.getTime() <= Date.now()) {
       setCountdown(null);
       return undefined;
     }
@@ -520,11 +539,12 @@ const Hero = () => {
         days: Math.floor(difference / (1000 * 60 * 60 * 24)),
         hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
         minutes: Math.floor((difference / (1000 * 60)) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
       });
     };
 
     updateCountdown();
-    const timer = window.setInterval(updateCountdown, 60000);
+    const timer = window.setInterval(updateCountdown, 1000);
     return () => window.clearInterval(timer);
   }, [editionData.date]);
 
@@ -537,67 +557,86 @@ const Hero = () => {
       year: 'numeric',
     });
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.14, delayChildren: 0.08 },
-    },
-  };
-  const itemVariants = {
-    hidden: { opacity: 0, y: 22 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
-    },
-  };
-
   const scrollToNextSection = () => {
     const nextSection = heroRef.current?.nextElementSibling;
     nextSection?.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.12, delayChildren: 0.08 },
+    },
+  };
+  const itemVariants = {
+    hidden: { opacity: 0, y: 18 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.58, ease: [0.22, 1, 0.36, 1] },
+    },
+  };
+
   return (
     <section
       ref={heroRef}
-      className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-[#050505] text-white"
+      className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-[#050505] text-white lg:h-[100svh] lg:min-h-[760px]"
       aria-label="TEDxIIMT University hero"
       style={{
-        backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.045) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.045) 1px, transparent 1px)',
-        backgroundSize: 'var(--hero-grid-cell, 58px) var(--hero-grid-cell, 58px)',
+        backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.055) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.055) 1px, transparent 1px)',
+        backgroundSize: 'var(--hero-grid-cell, 38px) var(--hero-grid-cell, 38px)',
         backgroundPosition: '0 0',
       }}
     >
-      {/* Original TEDxIIMT heritage artwork — deliberately kept as the main visual. */}
+      {/* The original transparent artwork remains the hero image, not a substitute. */}
       <div
         data-mosaic-surface
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url(' + HERO_ARTWORK + ')' }}
+        style={{
+          backgroundImage: 'url(' + HERO_ARTWORK + ')',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center',
+          filter: 'brightness(1.03) contrast(1.07) saturate(0.88)',
+        }}
         aria-hidden="true"
       />
 
-      {/* Layered lighting gives the artwork depth without changing the source image. */}
+      {/* Keep the left reading area calm while leaving the original image legible on the right. */}
       <div
-        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/65 via-black/45 to-black/90 lg:bg-gradient-to-r lg:from-black/95 lg:via-black/75 lg:to-black/15"
+        className="pointer-events-none absolute inset-0 z-[1]"
+        style={{
+          background: 'linear-gradient(90deg, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.88) 27%, rgba(0,0,0,0.68) 45%, rgba(0,0,0,0.16) 76%, rgba(0,0,0,0.28) 100%), linear-gradient(0deg, rgba(0,0,0,0.56) 0%, transparent 32%, rgba(0,0,0,0.16) 100%)',
+        }}
         aria-hidden="true"
       />
       <div
         className="pointer-events-none absolute inset-0 z-[1]"
         style={{
-          background: 'radial-gradient(ellipse at 78% 46%, rgba(235,0,40,0.18), transparent 36%), linear-gradient(to top, rgba(0,0,0,0.46), transparent 34%)',
+          background: 'radial-gradient(ellipse at 77% 43%, rgba(235,0,40,0.22), transparent 34%)',
         }}
         aria-hidden="true"
       />
 
-      {/* Fixed accent cells: the composition is identical on every visit. */}
+      {/* Fixed accents sit on the same 38px lattice as the reference image. */}
       <div className="pointer-events-none absolute inset-0 z-[2] overflow-hidden" aria-hidden="true">
-        <span className="absolute left-[4.5%] top-[18%] h-8 w-8 bg-[#EB0028]/20" />
-        <span className="absolute left-[35%] top-[13%] h-5 w-5 bg-white/[0.12]" />
-        <span className="absolute right-[12%] top-[24%] h-9 w-9 bg-[#EB0028]/25" />
-        <span className="absolute left-[2%] top-[57%] h-7 w-7 bg-white/[0.08]" />
-        <span className="absolute right-[5%] top-[66%] h-8 w-8 bg-[#EB0028]/25" />
-        <span className="absolute left-[28%] bottom-[12%] h-6 w-6 bg-[#EB0028]/15" />
+        {MOSAIC_ACCENTS.map((cell, index) => {
+          const tone = cell.tone === 'red' ? '#EB0028' : '#D5D5D5';
+          return (
+            <span
+              key={index}
+              className="absolute"
+              style={{
+                left: 'calc(var(--hero-grid-cell, 38px) * ' + cell.column + ' + 4px)',
+                top: 'calc(var(--hero-grid-cell, 38px) * ' + cell.row + ' + 4px)',
+                width: 'calc(var(--hero-grid-cell, 38px) * ' + cell.span + ' - 8px)',
+                height: 'calc(var(--hero-grid-cell, 38px) * ' + cell.span + ' - 8px)',
+                backgroundColor: tone,
+                opacity: cell.opacity,
+              }}
+            />
+          );
+        })}
       </div>
 
       <canvas
@@ -606,64 +645,61 @@ const Hero = () => {
         aria-hidden="true"
       />
 
-      <div className="relative z-20 mx-auto w-full max-w-7xl px-5 pb-24 pt-32 sm:px-8 md:pb-28 lg:px-10 lg:pt-36">
+      <div className="relative z-20 mx-auto flex w-full max-w-[1528px] items-center px-6 pb-24 pt-28 sm:px-8 lg:px-0 lg:pb-24 lg:pt-36">
         <motion.div
           variants={containerVariants}
-          initial={prefersReducedMotion ? false : "hidden"}
+          initial={prefersReducedMotion ? false : 'hidden'}
           animate="visible"
-          className="max-w-4xl"
+          className="w-full max-w-[700px]"
         >
           <motion.div
             variants={itemVariants}
-            className="mb-7 flex items-center gap-3"
+            className="mb-5 flex items-center gap-3 sm:mb-6"
             data-mosaic-exclusion
           >
-            <span className="h-px w-10 bg-[#EB0028]" aria-hidden="true" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-zinc-300 sm:text-xs">
+            <span className="h-px w-9 bg-[#EB0028]" aria-hidden="true" />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-300 sm:text-xs">
               Independently organized TED event
             </span>
           </motion.div>
 
           <motion.div variants={itemVariants} data-mosaic-exclusion>
-            <h1 className="leading-[0.88] tracking-[-0.065em]">
-              <span className="block text-[clamp(2.9rem,8vw,8.4rem)] font-black">
-                <span className="text-[#EB0028]">TED</span>
-                <span className="text-white">x</span>
-                <span className="ml-3 text-white">IIMT</span>
+            <h1 className="leading-[0.9] tracking-[-0.065em]">
+              <span className="block whitespace-nowrap text-[clamp(3.35rem,6.1vw,6.15rem)] font-black">
+                <span className="text-[#EB0028]">TED</span><span className="text-white">x</span><span className="ml-2 text-white sm:ml-3">IIMT</span>
               </span>
-              <span className="mt-4 block text-[clamp(0.9rem,2vw,1.45rem)] font-medium tracking-[0.38em] text-zinc-300 sm:tracking-[0.48em]">
+              <span className="mt-3 block pl-1 text-[clamp(0.82rem,1.55vw,1.35rem)] font-medium tracking-[0.34em] text-zinc-200 sm:tracking-[0.43em]">
                 IIMT UNIVERSITY
               </span>
             </h1>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="mt-9" data-mosaic-exclusion>
-            <h2 className="text-[clamp(2.4rem,5.2vw,4.8rem)] font-semibold leading-[1.02] tracking-[-0.045em]">
+          <motion.div variants={itemVariants} className="mt-7 sm:mt-8" data-mosaic-exclusion>
+            <h2 className="whitespace-nowrap text-[clamp(2.75rem,5.1vw,5rem)] font-semibold leading-[0.98] tracking-[-0.05em]">
               Break the <span className="font-bold italic text-[#EB0028]">Flow.</span>
             </h2>
-            <p className="mt-3 text-lg font-medium tracking-[0.04em] text-zinc-200 sm:text-2xl">
+            <p className="mt-2 text-lg font-medium tracking-[0.025em] text-zinc-200 sm:text-[1.65rem]">
               Ideas. Inspiration. Impact.
             </p>
-            <p className="mt-5 max-w-xl text-sm leading-7 text-zinc-300 sm:text-base sm:leading-8">
-              {editionData.theme === 'Break the Flow'
-                ? 'A platform for ideas that challenge convention, spark meaningful conversations, and inspire new perspectives.'
-                : 'A platform for ideas that challenge convention and inspire new perspectives. Explore this edition’s theme: ' + editionData.theme + '.'}
+            <div className="mt-5 h-[3px] w-24 bg-[#EB0028]" aria-hidden="true" />
+            <p className="mt-4 max-w-[470px] text-sm leading-6 text-zinc-300 sm:text-base sm:leading-7">
+              A platform to share ideas that challenge, inspire and create change.
             </p>
           </motion.div>
 
           <motion.div
             variants={itemVariants}
-            className="mt-7 flex flex-col gap-3 text-sm text-zinc-200 sm:flex-row sm:flex-wrap sm:items-center sm:gap-7"
+            className="mt-6 flex flex-col gap-2.5 text-sm text-zinc-100 sm:mt-7 sm:flex-row sm:items-center sm:gap-8"
             data-mosaic-exclusion
           >
             {formattedEventDate && (
               <span className="inline-flex items-center gap-2.5">
-                <CalendarDays className="h-4 w-4 text-[#EB0028]" aria-hidden="true" />
+                <CalendarDays className="h-[18px] w-[18px] text-[#EB0028]" aria-hidden="true" />
                 {formattedEventDate}
               </span>
             )}
             <span className="inline-flex items-center gap-2.5">
-              <MapPin className="h-4 w-4 text-[#EB0028]" aria-hidden="true" />
+              <MapPin className="h-[18px] w-[18px] text-[#EB0028]" aria-hidden="true" />
               IIMT University, Meerut
             </span>
           </motion.div>
@@ -671,7 +707,7 @@ const Hero = () => {
           {countdown && (
             <motion.div
               variants={itemVariants}
-              className="mt-8 flex max-w-md items-center gap-0 border-y border-white/15 py-3.5"
+              className="mt-6 flex max-w-[550px] items-center border-y border-white/20 py-3 sm:mt-7 sm:py-3.5"
               aria-label="Event countdown"
               data-mosaic-exclusion
             >
@@ -679,15 +715,16 @@ const Hero = () => {
                 { value: countdown.days, label: 'Days' },
                 { value: countdown.hours, label: 'Hours' },
                 { value: countdown.minutes, label: 'Minutes' },
+                { value: countdown.seconds, label: 'Seconds' },
               ].map((item, index) => (
                 <div
                   key={item.label}
-                  className={'min-w-0 flex-1 px-4 first:pl-0 ' + (index > 0 ? 'border-l border-white/20' : '')}
+                  className={'min-w-0 flex-1 px-3 sm:px-5 ' + (index === 0 ? 'pl-1' : 'border-l border-white/25')}
                 >
-                  <div className="text-2xl font-semibold tabular-nums text-white sm:text-3xl">
+                  <div className="text-2xl font-semibold tabular-nums text-white sm:text-[2rem]">
                     {String(item.value).padStart(2, '0')}
                   </div>
-                  <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-400">
+                  <div className="mt-1 text-[10px] font-medium text-zinc-300 sm:text-xs">
                     {item.label}
                   </div>
                 </div>
@@ -697,22 +734,22 @@ const Hero = () => {
 
           <motion.div
             variants={itemVariants}
-            className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
+            className="mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row sm:items-center"
             data-mosaic-exclusion
           >
             <a
               href="/register"
-              className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#EB0028] px-7 py-3 text-sm font-bold text-white shadow-[0_12px_35px_rgba(235,0,40,0.22)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#d90025] hover:shadow-[0_16px_42px_rgba(235,0,40,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#EB0028] px-8 py-3 text-sm font-bold text-white shadow-[0_12px_35px_rgba(235,0,40,0.22)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#d90025] hover:shadow-[0_16px_42px_rgba(235,0,40,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
               aria-label="Register for TEDxIIMT University"
             >
-              Get Tickets
+              Register Now
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
             </a>
             <a
               href="/speakers"
-              className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/30 bg-black/20 px-7 py-3 text-sm font-semibold text-white backdrop-blur-sm transition duration-300 hover:border-white/70 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/35 bg-black/25 px-7 py-3 text-sm font-semibold text-white backdrop-blur-sm transition duration-300 hover:border-white/70 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
             >
-              Meet the Speakers
+              Meet Our Speakers
             </a>
           </motion.div>
         </motion.div>
@@ -721,11 +758,11 @@ const Hero = () => {
       <button
         type="button"
         onClick={scrollToNextSection}
-        className="group absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-2 rounded-full px-4 py-2 text-[9px] font-semibold uppercase tracking-[0.22em] text-zinc-400 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:bottom-7"
+        className="group absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-1.5 rounded-full px-4 py-2 text-[9px] font-semibold uppercase tracking-[0.2em] text-zinc-400 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:bottom-4"
         aria-label="Scroll to explore featured speakers"
       >
         <span>Scroll to explore</span>
-        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/25 transition-all duration-300 group-hover:border-[#EB0028] group-hover:bg-[#EB0028]/15">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/30 transition-all duration-300 group-hover:border-[#EB0028] group-hover:bg-[#EB0028]/15">
           <ArrowDown className="h-4 w-4" aria-hidden="true" />
         </span>
       </button>
