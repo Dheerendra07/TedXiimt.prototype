@@ -47,35 +47,34 @@ const Hero = () => {
     const context = canvas.getContext('2d', { alpha: true });
     if (!context) return;
 
-    const CELL_SIZE = 64;
-    const CELL_INSET = 8;
-    const TILE_SIZE = CELL_SIZE - (CELL_INSET * 2);
+    // Match the large, clean square scale in the supplied reference.
+    // The lattice scales with viewport width, with a 64px minimum for compact screens.
+    const MIN_CELL_SIZE = 64;
+    const MAX_CELL_SIZE = 124;
+    let CELL_SIZE = 64;
+    const CELL_INSET = 0;
+    let TILE_SIZE = CELL_SIZE;
     const IMAGE_SAFETY_GAP = 3;
-    const REVEAL_MS = 90;
-    const HOLD_MS = 140;
-    const ERASE_MS = 540;
+    const REVEAL_MS = 70;
+    const HOLD_MS = 230;
+    const ERASE_MS = 520;
     const MAX_ACTIVE_CELLS = 54;
-    const MAX_INTERPOLATED_CELLS = 14;
+    const MAX_INTERPOLATED_CELLS = 24;
     // The four colour pairings come from the supplied mosaic references.
     // A fixed cell-coordinate sequence keeps the palette deliberate and repeatable.
-    const CELL_PALETTES = [
-      { base: '#178ffb', accent: '#fafafa' },
-      { base: '#ae85ff', accent: '#583af7' },
-      { base: '#08872b', accent: '#ff7ded' },
-      { base: '#d9d9d9', accent: '#583af7' },
-    ];
-
-    // Larger, crisp geometric fragments give each tile a visible mosaic identity
-    // without turning it into an unbroken flat colour square.
-    const CELL_MOTIFS = [
-      [[4,4,13,11,.95],[21,4,23,5,.48],[21,13,10,13,.82],[35,13,9,13,.62],[4,21,10,23,.65],[18,30,13,14,.98],[35,31,9,13,.76]],
-      [[4,4,9,18,.78],[17,4,27,5,.50],[17,13,14,14,.96],[35,13,9,18,.75],[4,27,22,5,.44],[13,36,13,9,.90],[31,36,13,9,.70]],
-      [[4,4,22,7,.90],[31,4,9,14,.65],[4,15,9,23,.72],[17,15,23,9,.92],[17,28,9,10,.66],[30,28,10,10,.95]],
-      [[4,4,9,9,.96],[17,4,27,5,.45],[17,13,10,19,.76],[31,13,13,9,.96],[4,17,9,27,.56],[17,36,27,8,.84]],
-      [[4,4,14,14,.96],[22,4,20,5,.45],[22,13,9,18,.82],[35,13,7,22,.62],[4,22,14,22,.76],[22,35,20,9,.95]],
-      [[4,4,8,20,.80],[16,4,26,6,.68],[16,14,12,12,.96],[32,14,10,22,.78],[4,28,20,16,.58],[27,40,15,4,.98]],
-      [[4,4,12,8,.96],[20,4,22,8,.58],[4,16,8,28,.66],[16,16,14,14,.96],[34,16,8,14,.58],[16,34,26,10,.82]],
-      [[4,4,8,8,.84],[16,4,26,5,.52],[16,13,8,23,.76],[28,13,14,8,.96],[4,24,12,18,.64],[22,28,20,14,.90]],
+    // Sampled from the provided GitHub Platform reference image.
+    // Every active cell is one opaque, flat-colour square: no pattern, outline or glow.
+    const CELL_COLORS = [
+      '#DA7211', // orange
+      '#FF7FD2', // pink
+      '#24EA57', // vivid green
+      '#C898FC', // lavender
+      '#08882B', // forest green
+      '#DC9D00', // gold
+      '#10BF3E', // emerald
+      '#4955E5', // indigo
+      '#8DD6FF', // sky blue
+      '#0377FF', // blue
     ];
 
     let width = 0;
@@ -188,8 +187,10 @@ const Hero = () => {
     let lastAuditSignature = '';
 
     const getGridDimensions = () => ({
-      columns: Math.max(0, Math.floor((width - CELL_INSET - TILE_SIZE) / CELL_SIZE) + 1),
-      rows: Math.max(0, Math.floor((height - CELL_INSET - TILE_SIZE) / CELL_SIZE) + 1),
+      // Include edge cells whose squares are naturally clipped by the canvas,
+      // matching the reference composition at the viewport boundaries.
+      columns: Math.max(0, Math.ceil(width / CELL_SIZE)),
+      rows: Math.max(0, Math.ceil(height / CELL_SIZE)),
     });
 
     const getColumnLabel = (column) => {
@@ -390,7 +391,8 @@ const Hero = () => {
       const top = (row * CELL_SIZE) + CELL_INSET;
       const right = left + TILE_SIZE;
       const bottom = top + TILE_SIZE;
-      if (left < 0 || top < 0 || right > width || bottom > height) return false;
+      // Only the visible portion of edge cells is evaluated and drawn.
+      if (left >= width || top >= height || right <= 0 || bottom <= 0) return false;
 
       const key = column + ':' + row;
       return !artworkBlockedCells.has(key) && !textBlockedCells.has(key);
@@ -400,6 +402,8 @@ const Hero = () => {
       const bounds = section.getBoundingClientRect();
       width = bounds.width;
       height = bounds.height;
+      CELL_SIZE = Math.round(Math.min(MAX_CELL_SIZE, Math.max(MIN_CELL_SIZE, width * 0.0605)));
+      TILE_SIZE = CELL_SIZE;
       pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
 
       canvas.width = Math.max(1, Math.round(width * pixelRatio));
@@ -476,41 +480,18 @@ const Hero = () => {
       const erase = age <= (REVEAL_MS + HOLD_MS)
         ? 1
         : 1 - smoothStep((age - REVEAL_MS - HOLD_MS) / ERASE_MS);
-      const opacity = 0.98 * reveal * erase;
-      const scale = 0.96 + (0.04 * reveal);
+      const opacity = reveal * erase;
       const left = (cell.column * CELL_SIZE) + CELL_INSET;
       const top = (cell.row * CELL_SIZE) + CELL_INSET;
-      const palette = CELL_PALETTES[mod(
-        (cell.column * 3) + (cell.row * 5),
-        CELL_PALETTES.length
-      )];
-      const motif = CELL_MOTIFS[mod(
-        (cell.column * 3) + (cell.row * 5),
-        CELL_MOTIFS.length
-      )];
+      const colorIndex = mod(
+        (cell.column * 7) + (cell.row * 11) + (cell.column * cell.row * 3),
+        CELL_COLORS.length
+      );
 
       context.save();
-      context.translate(left + (TILE_SIZE / 2), top + (TILE_SIZE / 2));
-      context.scale(scale, scale);
-      context.translate(-(left + (TILE_SIZE / 2)), -(top + (TILE_SIZE / 2)));
-
-      // A clearly visible colour wash anchors the tile; the contrasting
-      // mosaic fragments carry the brighter colour rather than filling it flat.
-      context.globalAlpha = opacity * 0.58;
-      context.fillStyle = palette.base;
+      context.globalAlpha = opacity;
+      context.fillStyle = CELL_COLORS[colorIndex];
       context.fillRect(left, top, TILE_SIZE, TILE_SIZE);
-
-      context.fillStyle = palette.accent;
-      motif.forEach(([x, y, blockWidth, blockHeight, weight]) => {
-        context.globalAlpha = opacity * (0.66 + (weight * 0.34));
-        context.fillRect(left + x, top + y, blockWidth, blockHeight);
-      });
-
-      context.globalAlpha = opacity * 0.42;
-      context.strokeStyle = palette.accent;
-      context.lineWidth = 1;
-      context.strokeRect(left + 0.5, top + 0.5, TILE_SIZE - 1, TILE_SIZE - 1);
-
       context.restore();
       return true;
     };
