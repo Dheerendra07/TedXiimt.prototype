@@ -443,9 +443,12 @@ const Hero = () => {
 
       cells.clear();
       previousCell = null;
+      lastPathActivityAt = 0;
+      lastEraseScheduledAt = 0;
       context.clearRect(0, 0, width, height);
       updateCoverTransform();
       rebuildGridMasks();
+      drawBaseGrid();
     };
 
     const activateCell = (column, row, enteredAt) => {
