@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {motion, useReducedMotion } from 'framer-motion';
 import api from '../services/api';
 
 const Hero = () => {
   const prefersReducedMotion = useReducedMotion();
+  const heroRef = useRef(null);
+  const trailCanvasRef = useRef(null);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0 });
   const [editionData, setEditionData] = useState({
     theme: 'Break the Flow',
@@ -33,6 +35,192 @@ const Hero = () => {
     fetchActiveEdition();
     return () => { isMounted = false; };
   }, []);
+
+
+  // Pointer-driven mosaic wake: cells activate along the exact pointer path,
+  // then expire in the same order as the pointer travelled.
+  useEffect(() => {
+    const section = heroRef.current;
+    const canvas = trailCanvasRef.current;
+    if (!section || !canvas || prefersReducedMotion) return;
+
+    const context = canvas.getContext('2d', { alpha: true });
+    if (!context) return;
+
+    const CELL_SIZE = 64;
+    const BRUSH_RADIUS = CELL_SIZE * 1.12;
+    const HOLD_MS = 280;
+    const FADE_MS = 520;
+    const FADE_IN_MS = 42;
+
+    // Fixed repeating mosaic derived from the supplied reference tiles.
+    // No random colours or per-frame colour changes.
+    const MOSAIC_PATTERN = [
+      ['#178ffb', '#fafafa', '#178ffb', '#fafafa', '#ae85ff', '#583af7', '#ae85ff', '#583af7'],
+      ['#fafafa', '#178ffb', '#fafafa', '#178ffb', '#583af7', '#ae85ff', '#583af7', '#ae85ff'],
+      ['#08872b', '#ff7ded', '#08872b', '#ff7ded', '#d9d9d9', '#583af7', '#d9d9d9', '#583af7'],
+      ['#ff7ded', '#08872b', '#ff7ded', '#08872b', '#583af7', '#d9d9d9', '#583af7', '#d9d9d9'],
+    ];
+
+    const cells = new Map();
+    let width = 0;
+    let height = 0;
+    let pixelRatio = 1;
+    let animationFrame = 0;
+    let previousPointer = null;
+
+    const positiveMod = (value, divisor) => ((value % divisor) + divisor) % divisor;
+
+    const resizeCanvas = () => {
+      const bounds = section.getBoundingClientRect();
+      width = bounds.width;
+      height = bounds.height;
+      pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = Math.max(1, Math.round(width * pixelRatio));
+      canvas.height = Math.max(1, Math.round(height * pixelRatio));
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      cells.clear();
+      previousPointer = null;
+      context.clearRect(0, 0, width, height);
+    };
+
+    const stampAt = (x, y, passedAt) => {
+      const centerColumn = Math.floor(x / CELL_SIZE);
+      const centerRow = Math.floor(y / CELL_SIZE);
+      const range = Math.ceil(BRUSH_RADIUS / CELL_SIZE);
+
+      for (let row = centerRow - range; row <= centerRow + range; row += 1) {
+        for (let column = centerColumn - range; column <= centerColumn + range; column += 1) {
+          const tileCenterX = (column + 0.5) * CELL_SIZE;
+          const tileCenterY = (row + 0.5) * CELL_SIZE;
+          const distance = Math.hypot(tileCenterX - x, tileCenterY - y);
+          if (distance > BRUSH_RADIUS) continue;
+
+          const key = column + ':' + row;
+          cells.set(key, { column, row, passedAt });
+        }
+      }
+    };
+
+    const draw = (now) => {
+      context.clearRect(0, 0, width, height);
+
+      for (const [key, cell] of cells) {
+        const age = now - cell.passedAt;
+        const totalLife = HOLD_MS + FADE_MS;
+
+        if (age >= totalLife) {
+          cells.delete(key);
+          continue;
+        }
+
+        const fadeIn = Math.min(1, age / FADE_IN_MS);
+        const fadeOut = age <= HOLD_MS ? 1 : 1 - ((age - HOLD_MS) / FADE_MS);
+        const opacity = 0.82 * fadeIn * fadeOut;
+        const color = MOSAIC_PATTERN[
+          positiveMod(cell.row, MOSAIC_PATTERN.length)
+        ][positiveMod(cell.column, MOSAIC_PATTERN[0].length)];
+
+        context.globalAlpha = opacity;
+        context.fillStyle = color;
+        context.fillRect(
+          cell.column * CELL_SIZE + 1,
+          cell.row * CELL_SIZE + 1,
+          CELL_SIZE - 2,
+          CELL_SIZE - 2
+        );
+
+        // A brief pale front gives each newly reached tile a crisp mosaic turn-on.
+        if (age < 90) {
+          context.globalAlpha = (1 - age / 90) * 0.24;
+          context.fillStyle = '#fafafa';
+          context.fillRect(
+            cell.column * CELL_SIZE + 2,
+            cell.row * CELL_SIZE + 2,
+            CELL_SIZE - 4,
+            CELL_SIZE - 4
+          );
+        }
+      }
+
+      context.globalAlpha = 1;
+      if (cells.size > 0) {
+        animationFrame = window.requestAnimationFrame(draw);
+      } else {
+        animationFrame = 0;
+      }
+    };
+
+    const requestDraw = () => {
+      if (!animationFrame) {
+        animationFrame = window.requestAnimationFrame(draw);
+      }
+    };
+
+    const handlePointerMove = (event) => {
+      // This is a cursor effect; touch scrolling remains completely untouched.
+      if (event.pointerType === 'touch') return;
+
+      const bounds = section.getBoundingClientRect();
+      const x = event.clientX - bounds.left;
+      const y = event.clientY - bounds.top;
+      if (x < 0 || y < 0 || x > width || y > height) {
+        previousPointer = null;
+        return;
+      }
+
+      const now = performance.now();
+      if (!previousPointer) {
+        stampAt(x, y, now);
+      } else {
+        const dx = x - previousPointer.x;
+        const dy = y - previousPointer.y;
+        const distance = Math.hypot(dx, dy);
+        const steps = Math.max(1, Math.min(250, Math.ceil(distance / (CELL_SIZE * 0.2))));
+        const elapsed = Math.max(0, now - previousPointer.time);
+
+        // Interpolate the real pointer segment so fast movements cannot skip cells.
+        for (let step = 1; step <= steps; step += 1) {
+          const progress = step / steps;
+          stampAt(
+            previousPointer.x + dx * progress,
+            previousPointer.y + dy * progress,
+            previousPointer.time + elapsed * progress
+          );
+        }
+      }
+
+      previousPointer = { x, y, time: now };
+      requestDraw();
+    };
+
+    const handlePointerLeave = () => {
+      previousPointer = null;
+    };
+
+    resizeCanvas();
+    const resizeObserver = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(resizeCanvas)
+      : null;
+
+    resizeObserver?.observe(section);
+    window.addEventListener('resize', resizeCanvas, { passive: true });
+    section.addEventListener('pointermove', handlePointerMove, { passive: true });
+    section.addEventListener('pointerleave', handlePointerLeave, { passive: true });
+
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener('resize', resizeCanvas);
+      section.removeEventListener('pointermove', handlePointerMove);
+      section.removeEventListener('pointerleave', handlePointerLeave);
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+      cells.clear();
+      context.clearRect(0, 0, width, height);
+    };
+  }, [prefersReducedMotion]);
 
   // Event date countdown timer
   useEffect(() => {
@@ -91,7 +279,8 @@ const Hero = () => {
   // };
 
   return (
-    <section 
+    <section
+      ref={heroRef}
       className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-[#242424] text-white"
       aria-label="Hero Section"
     >
@@ -139,6 +328,11 @@ const Hero = () => {
 {/* Subtle Grid Pattern */}
 <div
   className="absolute inset-0 z-10 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none"
+  aria-hidden="true"
+/>
+<canvas
+  ref={trailCanvasRef}
+  className="absolute inset-0 z-10 pointer-events-none"
   aria-hidden="true"
 />
 
