@@ -163,30 +163,30 @@ const Hero = () => {
 
       const sectionRect = section.getBoundingClientRect();
       const imageRect = imageLayer.getBoundingClientRect();
-      const renderWidth = imageRect.width * 1.36;
-      const renderHeight = renderWidth * (artworkMask.height / artworkMask.width);
-      const scale = renderWidth / artworkMask.width;
-      const backgroundPositionY = 0.78;
 
+      // Both landmark layers now use the complete hero frame (100% x 100%).
+      // Keep the cursor exclusion mask on that exact, non-cropped transform.
       coverTransform = {
-        scale,
-        offsetX: (imageRect.left - sectionRect.left)
-          + ((imageRect.width - renderWidth) / 2),
-        offsetY: (imageRect.top - sectionRect.top)
-          + ((imageRect.height - renderHeight) * backgroundPositionY),
+        scaleX: imageRect.width / artworkMask.width,
+        scaleY: imageRect.height / artworkMask.height,
+        offsetX: imageRect.left - sectionRect.left,
+        offsetY: imageRect.top - sectionRect.top,
       };
     };
 
     const regionContainsArtwork = (left, top, right, bottom) => {
       if (!artworkMask || !coverTransform) return true;
 
-      const { scale, offsetX, offsetY } = coverTransform;
-      if (!Number.isFinite(scale) || scale <= 0) return true;
+      const { scaleX, scaleY, offsetX, offsetY } = coverTransform;
+      if (
+        !Number.isFinite(scaleX) || scaleX <= 0 ||
+        !Number.isFinite(scaleY) || scaleY <= 0
+      ) return true;
 
-      const x0 = Math.max(0, Math.min(artworkMask.width, Math.floor((left - offsetX) / scale)));
-      const y0 = Math.max(0, Math.min(artworkMask.height, Math.floor((top - offsetY) / scale)));
-      const x1 = Math.max(0, Math.min(artworkMask.width, Math.ceil((right - offsetX) / scale)));
-      const y1 = Math.max(0, Math.min(artworkMask.height, Math.ceil((bottom - offsetY) / scale)));
+      const x0 = Math.max(0, Math.min(artworkMask.width, Math.floor((left - offsetX) / scaleX)));
+      const y0 = Math.max(0, Math.min(artworkMask.height, Math.floor((top - offsetY) / scaleY)));
+      const x1 = Math.max(0, Math.min(artworkMask.width, Math.ceil((right - offsetX) / scaleX)));
+      const y1 = Math.max(0, Math.min(artworkMask.height, Math.ceil((bottom - offsetY) / scaleY)));
       if (x0 >= x1 || y0 >= y1) return false;
 
       const { integral, stride } = artworkMask;
@@ -609,36 +609,28 @@ const Hero = () => {
         backgroundPosition: '0 0',
       }}
     >
-      {/* Existing architectural base artwork, enlarged and lifted within the frame. */}
+      {/* Full-width architectural panorama: all landmarks stay in one composed frame. */}
       <div
-        className="pointer-events-none absolute z-0 bg-cover bg-center bg-no-repeat"
+        className="pointer-events-none absolute inset-0 z-0 bg-no-repeat"
         style={{
-          top: '-18%',
-          right: '-7%',
-          bottom: '-10%',
-          left: '-7%',
           backgroundImage: 'url(' + HERO_BACKGROUND + ')',
-          backgroundSize: '136% auto',
-          backgroundPosition: 'center 78%',
-          filter: 'brightness(1.2) contrast(1.12) saturate(0.9)',
+          backgroundSize: '100% 100%',
+          backgroundPosition: 'center center',
+          filter: 'brightness(1.16) contrast(1.1) saturate(0.92)',
         }}
         aria-hidden="true"
       />
 
-      {/* Transparent landmark artwork shares the exact base-image transform. */}
+      {/* Transparent landmark layer uses the exact same full-frame fit. */}
       <div
         data-mosaic-surface
-        className="pointer-events-none absolute z-[1] bg-cover bg-center bg-no-repeat"
+        className="pointer-events-none absolute inset-0 z-[1] bg-no-repeat"
         style={{
-          top: '-18%',
-          right: '-7%',
-          bottom: '-10%',
-          left: '-7%',
           backgroundImage: 'url(' + HERO_ARTWORK + ')',
-          backgroundSize: '136% auto',
-          backgroundPosition: 'center 78%',
-          filter: 'brightness(1.34) contrast(1.14) saturate(0.84)',
-          opacity: 0.74,
+          backgroundSize: '100% 100%',
+          backgroundPosition: 'center center',
+          filter: 'brightness(1.28) contrast(1.1) saturate(0.9)',
+          opacity: 0.68,
           mixBlendMode: 'screen',
         }}
         aria-hidden="true"
@@ -648,7 +640,7 @@ const Hero = () => {
       <div
         className="pointer-events-none absolute inset-0 z-[2]"
         style={{
-          background: 'linear-gradient(90deg, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 25%, rgba(0,0,0,0.64) 44%, rgba(0,0,0,0.18) 73%, rgba(0,0,0,0.22) 100%), linear-gradient(0deg, rgba(0,0,0,0.56) 0%, transparent 34%, rgba(0,0,0,0.16) 100%)',
+          background: 'linear-gradient(90deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.76) 22%, rgba(0,0,0,0.48) 42%, rgba(0,0,0,0.12) 70%, rgba(0,0,0,0.16) 100%), linear-gradient(0deg, rgba(0,0,0,0.48) 0%, transparent 38%, rgba(0,0,0,0.12) 100%)',
         }}
         aria-hidden="true"
       />
