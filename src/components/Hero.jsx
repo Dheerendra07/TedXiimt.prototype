@@ -163,10 +163,10 @@ const Hero = () => {
 
       const sectionRect = section.getBoundingClientRect();
       const imageRect = imageLayer.getBoundingClientRect();
-      const renderWidth = imageRect.width * 1.22;
+      const renderWidth = imageRect.width * 1.36;
       const renderHeight = renderWidth * (artworkMask.height / artworkMask.width);
       const scale = renderWidth / artworkMask.width;
-      const backgroundPositionY = 0.66;
+      const backgroundPositionY = 0.78;
 
       coverTransform = {
         scale,
@@ -613,14 +613,14 @@ const Hero = () => {
       <div
         className="pointer-events-none absolute z-0 bg-cover bg-center bg-no-repeat"
         style={{
-          top: '-14%',
+          top: '-18%',
           right: '-7%',
-          bottom: '-14%',
+          bottom: '-10%',
           left: '-7%',
           backgroundImage: 'url(' + HERO_BACKGROUND + ')',
-          backgroundSize: '122% auto',
-          backgroundPosition: 'center 66%',
-          filter: 'brightness(1.16) contrast(1.1) saturate(0.96)',
+          backgroundSize: '136% auto',
+          backgroundPosition: 'center 78%',
+          filter: 'brightness(1.2) contrast(1.12) saturate(0.9)',
         }}
         aria-hidden="true"
       />
@@ -637,8 +637,8 @@ const Hero = () => {
           backgroundImage: 'url(' + HERO_ARTWORK + ')',
           backgroundSize: '122% auto',
           backgroundPosition: 'center 66%',
-          filter: 'brightness(1.5) contrast(1.16) saturate(0.9)',
-          opacity: 0.62,
+          filter: 'brightness(1.34) contrast(1.14) saturate(0.84)',
+          opacity: 0.74,
           mixBlendMode: 'screen',
         }}
         aria-hidden="true"
