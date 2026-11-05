@@ -85,12 +85,12 @@ const Header = () => {
     <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
       isScrolled ? 'bg-black/90 backdrop-blur-xl border-b border-zinc-800 shadow-2xl py-3' : 'bg-transparent py-5'
     }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+      <div className="mx-auto flex w-[calc(100%-2rem)] max-w-[1528px] items-center justify-between gap-4">
         
         {/* Logo Lockup */}
-        <a href="/" className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-[#EB0028] rounded-lg p-1">
-          <img src={logo} alt="TEDxIIMT University Logo" className="h-8 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105" />
-          <span className="sr-only">TEDxIIMT University - Home</span>
+        <a href="/" aria-label="TEDxIIMT University home" className="group flex shrink-0 flex-col items-start gap-1 rounded-lg p-1 focus:outline-none focus:ring-2 focus:ring-[#EB0028]">
+          <img src={logo} alt="TEDxIIMT University Logo" className="h-9 w-auto max-w-[220px] object-contain object-left transition-transform group-hover:scale-[1.02] sm:h-10" />
+          <span className="pl-0.5 text-[8px] font-semibold leading-none tracking-[0.015em] text-zinc-300 sm:text-[9px]">x = independently organized TED event</span>
         </a>
 
         {/* Desktop Nav Items */}
