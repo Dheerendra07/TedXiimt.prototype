@@ -4,20 +4,40 @@ import { ArrowDown, ArrowRight, CalendarDays, MapPin } from 'lucide-react';
 import api from '../services/api';
 
 const HERO_ARTWORK = '/transparent-hero-bg.PNG';
-const MOSAIC_COLORS = ['#EB0028', '#D5D5D5'];
+const HERO_BACKGROUND = '/hero-bg.png';
+const MOSAIC_PALETTE = [
+  '#EB0028', // TED red
+  '#B10E2E', // deep crimson
+  '#650F27', // oxblood
+  '#A64C60', // muted rose
+  '#C1BEC3', // soft silver
+  '#6B6570', // graphite plum
+  '#3A303A', // charcoal plum
+];
+
+// Fixed, deliberately arranged cells: a broken diagonal path with a few
+// clustered squares, matching the supplied reference without random placement.
 const MOSAIC_ACCENTS = [
-  { column: 1, row: 4, span: 1, tone: 'red', opacity: 0.24 },
-  { column: 15, row: 4, span: 1, tone: 'red', opacity: 0.15 },
-  { column: 16, row: 0, span: 2, tone: 'red', opacity: 0.12 },
-  { column: 24, row: 8, span: 1, tone: 'red', opacity: 0.19 },
-  { column: 26, row: 8, span: 1, tone: 'grey', opacity: 0.12 },
-  { column: 38, row: 6, span: 1, tone: 'red', opacity: 0.22 },
-  { column: 42, row: 12, span: 1, tone: 'red', opacity: 0.17 },
-  { column: 39, row: 18, span: 1, tone: 'red', opacity: 0.21 },
-  { column: 27, row: 20, span: 1, tone: 'grey', opacity: 0.12 },
-  { column: 15, row: 21, span: 1, tone: 'red', opacity: 0.14 },
-  { column: 4, row: 22, span: 1, tone: 'red', opacity: 0.12 },
-  { column: 29, row: 23, span: 1, tone: 'red', opacity: 0.16 },
+  { column: 1, row: 4, width: 1, height: 1, color: 2, opacity: 0.34 },
+  { column: 15, row: 0, width: 2, height: 2, color: 2, opacity: 0.28 },
+  { column: 18, row: 2, width: 1, height: 1, color: 1, opacity: 0.22 },
+  { column: 27, row: 3, width: 1, height: 1, color: 0, opacity: 0.62 },
+  { column: 31, row: 5, width: 1, height: 1, color: 5, opacity: 0.28 },
+  { column: 35, row: 7, width: 1, height: 1, color: 0, opacity: 0.72 },
+  { column: 38, row: 9, width: 2, height: 1, color: 1, opacity: 0.5 },
+  { column: 42, row: 10, width: 1, height: 1, color: 0, opacity: 0.76 },
+  { column: 45, row: 12, width: 2, height: 2, color: 1, opacity: 0.58 },
+  { column: 41, row: 13, width: 1, height: 1, color: 4, opacity: 0.32 },
+  { column: 38, row: 14, width: 2, height: 2, color: 0, opacity: 0.58 },
+  { column: 35, row: 16, width: 1, height: 1, color: 3, opacity: 0.42 },
+  { column: 39, row: 17, width: 1, height: 2, color: 0, opacity: 0.76 },
+  { column: 43, row: 18, width: 2, height: 2, color: 2, opacity: 0.64 },
+  { column: 31, row: 19, width: 1, height: 1, color: 4, opacity: 0.26 },
+  { column: 26, row: 20, width: 2, height: 1, color: 3, opacity: 0.32 },
+  { column: 22, row: 22, width: 1, height: 1, color: 2, opacity: 0.3 },
+  { column: 16, row: 23, width: 1, height: 1, color: 0, opacity: 0.26 },
+  { column: 5, row: 20, width: 1, height: 1, color: 5, opacity: 0.2 },
+  { column: 2, row: 10, width: 1, height: 1, color: 0, opacity: 0.38 },
 ];
 
 const Hero = () => {
@@ -353,13 +373,13 @@ const Hero = () => {
       const scale = 1 - (0.06 * eraseProgress);
       const left = (cell.column * cellSize) + CELL_INSET;
       const top = (cell.row * cellSize) + CELL_INSET;
-      const colorIndex = ((cell.column * 3) + (cell.row * 5)) % 7 === 0 ? 0 : 1;
+      const colorIndex = Math.abs((cell.column * 7) + (cell.row * 11) + (cell.column * cell.row * 3)) % MOSAIC_PALETTE.length;
 
       context.save();
       context.translate(left + (tileSize / 2), top + (tileSize / 2));
       context.scale(scale, scale);
       context.globalAlpha = opacity;
-      context.fillStyle = MOSAIC_COLORS[colorIndex];
+      context.fillStyle = MOSAIC_PALETTE[colorIndex];
       context.fillRect(-(tileSize / 2), -(tileSize / 2), tileSize, tileSize);
       context.restore();
       return true;
@@ -584,59 +604,78 @@ const Hero = () => {
       className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-[#050505] text-white lg:h-[100svh] lg:min-h-[760px]"
       aria-label="TEDxIIMT University hero"
       style={{
-        backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.055) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.055) 1px, transparent 1px)',
+        backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.052) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.052) 1px, transparent 1px)',
         backgroundSize: 'var(--hero-grid-cell, 38px) var(--hero-grid-cell, 38px)',
         backgroundPosition: '0 0',
       }}
     >
-      {/* The original transparent artwork remains the hero image, not a substitute. */}
+      {/* Existing architectural base artwork, enlarged and lifted within the frame. */}
+      <div
+        className="pointer-events-none absolute z-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          top: '-8%',
+          right: '-5%',
+          bottom: '-8%',
+          left: '-5%',
+          backgroundImage: 'url(' + HERO_BACKGROUND + ')',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center',
+          filter: 'brightness(1.14) contrast(1.08) saturate(0.92)',
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Transparent landmark artwork is preserved and aligned over its original base. */}
       <div
         data-mosaic-surface
-        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        className="pointer-events-none absolute z-[1] bg-cover bg-center bg-no-repeat"
         style={{
+          top: '-8%',
+          right: '-5%',
+          bottom: '-8%',
+          left: '-5%',
           backgroundImage: 'url(' + HERO_ARTWORK + ')',
           backgroundSize: 'cover',
           backgroundPosition: 'center center',
-          filter: 'brightness(1.03) contrast(1.07) saturate(0.88)',
+          filter: 'brightness(1.42) contrast(1.1) saturate(0.86)',
+          opacity: 0.78,
+          mixBlendMode: 'screen',
         }}
         aria-hidden="true"
       />
 
-      {/* Keep the left reading area calm while leaving the original image legible on the right. */}
+      {/* Left-side tonal falloff protects the message; the artwork stays visible on the right. */}
       <div
-        className="pointer-events-none absolute inset-0 z-[1]"
+        className="pointer-events-none absolute inset-0 z-[2]"
         style={{
-          background: 'linear-gradient(90deg, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.88) 27%, rgba(0,0,0,0.68) 45%, rgba(0,0,0,0.16) 76%, rgba(0,0,0,0.28) 100%), linear-gradient(0deg, rgba(0,0,0,0.56) 0%, transparent 32%, rgba(0,0,0,0.16) 100%)',
+          background: 'linear-gradient(90deg, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 25%, rgba(0,0,0,0.64) 44%, rgba(0,0,0,0.18) 73%, rgba(0,0,0,0.22) 100%), linear-gradient(0deg, rgba(0,0,0,0.56) 0%, transparent 34%, rgba(0,0,0,0.16) 100%)',
         }}
         aria-hidden="true"
       />
       <div
-        className="pointer-events-none absolute inset-0 z-[1]"
+        className="pointer-events-none absolute inset-0 z-[2]"
         style={{
-          background: 'radial-gradient(ellipse at 77% 43%, rgba(235,0,40,0.22), transparent 34%)',
+          background: 'radial-gradient(ellipse 30% 38% at 78% 43%, rgba(235,0,40,0.28), transparent 76%)',
         }}
         aria-hidden="true"
       />
 
-      {/* Fixed accents sit on the same 38px lattice as the reference image. */}
-      <div className="pointer-events-none absolute inset-0 z-[2] overflow-hidden" aria-hidden="true">
-        {MOSAIC_ACCENTS.map((cell, index) => {
-          const tone = cell.tone === 'red' ? '#EB0028' : '#D5D5D5';
-          return (
-            <span
-              key={index}
-              className="absolute"
-              style={{
-                left: 'calc(var(--hero-grid-cell, 38px) * ' + cell.column + ' + 4px)',
-                top: 'calc(var(--hero-grid-cell, 38px) * ' + cell.row + ' + 4px)',
-                width: 'calc(var(--hero-grid-cell, 38px) * ' + cell.span + ' - 8px)',
-                height: 'calc(var(--hero-grid-cell, 38px) * ' + cell.span + ' - 8px)',
-                backgroundColor: tone,
-                opacity: cell.opacity,
-              }}
-            />
-          );
-        })}
+      {/* Fixed cells form a repeatable zig-zag scatter on the same square lattice. */}
+      <div className="pointer-events-none absolute inset-0 z-[3] overflow-hidden" aria-hidden="true">
+        {MOSAIC_ACCENTS.map((cell, index) => (
+          <span
+            key={index}
+            className="absolute"
+            style={{
+              left: 'calc(var(--hero-grid-cell, 38px) * ' + cell.column + ' + 4px)',
+              top: 'calc(var(--hero-grid-cell, 38px) * ' + cell.row + ' + 4px)',
+              width: 'calc(var(--hero-grid-cell, 38px) * ' + cell.width + ' - 8px)',
+              height: 'calc(var(--hero-grid-cell, 38px) * ' + cell.height + ' - 8px)',
+              backgroundColor: MOSAIC_PALETTE[cell.color],
+              opacity: cell.opacity,
+            }}
+          />
+        ))}
       </div>
 
       <canvas
@@ -645,44 +684,33 @@ const Hero = () => {
         aria-hidden="true"
       />
 
-      <div className="relative z-20 mx-auto flex w-full max-w-[1528px] items-center px-6 pb-24 pt-28 sm:px-8 lg:px-0 lg:pb-24 lg:pt-36">
+      <div className="relative z-20 mx-auto flex w-[92%] max-w-[1780px] items-center px-0 py-24 sm:py-28 lg:py-0">
         <motion.div
           variants={containerVariants}
           initial={prefersReducedMotion ? false : 'hidden'}
           animate="visible"
-          className="w-full max-w-[700px]"
+          className="flex min-h-[540px] w-full max-w-[760px] flex-col justify-center lg:min-h-[560px] lg:pl-7 xl:pl-10"
         >
-          <motion.div
-            variants={itemVariants}
-            className="mb-5 flex items-center gap-3 sm:mb-6"
-            data-mosaic-exclusion
-          >
-            <span className="h-px w-9 bg-[#EB0028]" aria-hidden="true" />
-            <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-300 sm:text-xs">
-              Independently organized TED event
-            </span>
-          </motion.div>
-
           <motion.div variants={itemVariants} data-mosaic-exclusion>
             <h1 className="leading-[0.9] tracking-[-0.065em]">
-              <span className="block whitespace-nowrap text-[clamp(3.35rem,6.1vw,6.15rem)] font-black">
+              <span className="block whitespace-nowrap text-[clamp(3.1rem,5.35vw,5.8rem)] font-black">
                 <span className="text-[#EB0028]">TED</span><span className="text-white">x</span><span className="ml-2 text-white sm:ml-3">IIMT</span>
               </span>
-              <span className="mt-3 block pl-1 text-[clamp(0.82rem,1.55vw,1.35rem)] font-medium tracking-[0.34em] text-zinc-200 sm:tracking-[0.43em]">
+              <span className="mt-3 block pl-1 text-[clamp(0.8rem,1.45vw,1.25rem)] font-medium tracking-[0.34em] text-zinc-200 sm:tracking-[0.43em]">
                 IIMT UNIVERSITY
               </span>
             </h1>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="mt-7 sm:mt-8" data-mosaic-exclusion>
-            <h2 className="whitespace-nowrap text-[clamp(2.75rem,5.1vw,5rem)] font-semibold leading-[0.98] tracking-[-0.05em]">
+          <motion.div variants={itemVariants} className="mt-8 sm:mt-9" data-mosaic-exclusion>
+            <h2 className="whitespace-nowrap text-[clamp(2.5rem,4.35vw,4.55rem)] font-semibold leading-[0.98] tracking-[-0.05em]">
               Break the <span className="font-bold italic text-[#EB0028]">Flow.</span>
             </h2>
-            <p className="mt-2 text-lg font-medium tracking-[0.025em] text-zinc-200 sm:text-[1.65rem]">
+            <p className="mt-2 text-lg font-medium tracking-[0.025em] text-zinc-200 sm:text-[1.55rem]">
               Ideas. Inspiration. Impact.
             </p>
             <div className="mt-5 h-[3px] w-24 bg-[#EB0028]" aria-hidden="true" />
-            <p className="mt-4 max-w-[470px] text-sm leading-6 text-zinc-300 sm:text-base sm:leading-7">
+            <p className="mt-4 max-w-[490px] text-sm leading-6 text-zinc-300 sm:text-base sm:leading-7">
               A platform to share ideas that challenge, inspire and create change.
             </p>
           </motion.div>
@@ -707,7 +735,7 @@ const Hero = () => {
           {countdown && (
             <motion.div
               variants={itemVariants}
-              className="mt-6 flex max-w-[550px] items-center border-y border-white/20 py-3 sm:mt-7 sm:py-3.5"
+              className="mt-6 flex max-w-[560px] items-center border-y border-white/20 py-3 sm:mt-7 sm:py-3.5"
               aria-label="Event countdown"
               data-mosaic-exclusion
             >
