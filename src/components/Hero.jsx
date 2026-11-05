@@ -400,39 +400,15 @@ const Hero = () => {
       return !artworkBlockedCells.has(key) && !textBlockedCells.has(key);
     };
 
-    // Permanent, low-contrast cell outlines remain visible before any pointer
-    // movement. The exact same artwork/text mask protects this static grid.
-    const drawBaseGrid = () => {
-      if (!gridMaskReady) return;
-
-      context.save();
-      context.strokeStyle = 'rgba(235, 238, 242, 0.22)';
-      context.lineWidth = 1;
-
-      for (let row = 0; row < gridRows; row += 1) {
-        for (let column = 0; column < gridColumns; column += 1) {
-          if (!cellIsSafe(column, row)) continue;
-
-          const left = (column * CELL_SIZE) + CELL_INSET;
-          const top = (row * CELL_SIZE) + CELL_INSET;
-          context.strokeRect(
-            left + 0.5,
-            top + 0.5,
-            TILE_SIZE - 1,
-            TILE_SIZE - 1
-          );
-        }
-      }
-
-      context.restore();
-    };
-
     const resizeCanvas = () => {
       const bounds = section.getBoundingClientRect();
       width = bounds.width;
       height = bounds.height;
       CELL_SIZE = Math.round(Math.min(MAX_CELL_SIZE, Math.max(MIN_CELL_SIZE, width * 0.048)));
       TILE_SIZE = CELL_SIZE - (CELL_INSET * 2);
+      // Keep the subtle background grid pitch perfectly aligned with the
+      // interactive cells at every viewport size.
+      section.style.setProperty('--hero-grid-cell', CELL_SIZE + 'px');
       pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
 
       canvas.width = Math.max(1, Math.round(width * pixelRatio));
@@ -448,7 +424,6 @@ const Hero = () => {
       context.clearRect(0, 0, width, height);
       updateCoverTransform();
       rebuildGridMasks();
-      drawBaseGrid();
     };
 
     const activateCell = (column, row, enteredAt) => {
@@ -558,7 +533,6 @@ const Hero = () => {
     const draw = (now) => {
       animationFrame = 0;
       context.clearRect(0, 0, width, height);
-      drawBaseGrid();
       for (const [key, cell] of cells) {
         if (!drawCell(cell, now)) cells.delete(key);
       }
@@ -667,7 +641,6 @@ const Hero = () => {
       maskRefreshFrame = window.requestAnimationFrame(() => {
         maskRefreshFrame = 0;
         rebuildGridMasks();
-        drawBaseGrid();
         if (cells.size > 0) requestDraw();
       });
     };
@@ -780,6 +753,16 @@ const Hero = () => {
       ref={heroRef}
       className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-[#242424] text-white"
       aria-label="Hero Section"
+      style={{
+        // The grid is a quiet section background, underneath the transparent
+        // heritage image and the hero copy. The JS canvas keeps colour fills
+        // separate and continues to mask text/artwork cells.
+        backgroundImage:
+          "linear-gradient(to right, rgba(255,255,255,0.055) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.055) 1px, transparent 1px)",
+        backgroundSize:
+          "var(--hero-grid-cell, 64px) var(--hero-grid-cell, 64px)",
+        backgroundPosition: "0 0",
+      }}
     >
 {/* Background Image */}
 
