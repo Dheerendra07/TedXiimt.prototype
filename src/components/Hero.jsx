@@ -497,7 +497,8 @@ const Hero = () => {
       let error = deltaX - deltaY;
       let step = 0;
 
-      activateCell(x, y, startedAt);
+      // The starting cell was activated when the cursor first entered it.
+      // Only newly crossed cells are enqueued, so their erase order stays stable.
       while (x !== targetX || y !== targetY) {
         const doubledError = error * 2;
         if (doubledError > -deltaY) {
@@ -519,6 +520,9 @@ const Hero = () => {
     };
 
     const drawCell = (cell, now) => {
+      // Re-check the live mask because text and layout can move after scrolling.
+      if (!cellIsSafe(cell.column, cell.row)) return false;
+
       const fillAge = Math.max(0, now - cell.enteredAt);
       const eraseAge = now - cell.eraseAt;
       if (eraseAge >= ERASE_MS) return false;
