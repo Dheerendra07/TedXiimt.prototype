@@ -37,8 +37,7 @@ const Hero = () => {
   }, []);
 
 
-  // Pointer-driven mosaic wake: cells activate along the exact pointer path,
-  // then expire in the same order as the pointer travelled.
+  // Pointer-led mosaic: a one-cell-wide path, patterned tiles, and protected copy.
   useEffect(() => {
     const section = heroRef.current;
     const canvas = trailCanvasRef.current;
@@ -47,19 +46,67 @@ const Hero = () => {
     const context = canvas.getContext('2d', { alpha: true });
     if (!context) return;
 
+    // Match the existing 4rem CSS grid exactly. Every crossed grid cell is
+    // activated once; there is no radial brush or multi-cell stamp.
     const CELL_SIZE = 64;
-    const BRUSH_RADIUS = CELL_SIZE * 1.12;
-    const HOLD_MS = 280;
-    const FADE_MS = 520;
-    const FADE_IN_MS = 42;
+    const INSET = 2;
+    const TILE_SIZE = CELL_SIZE - (INSET * 2);
+    const REVEAL_MS = 105;
+    const HOLD_MS = 210;
+    const ERASE_MS = 430;
+    const MAX_ACTIVE_CELLS = 900;
 
-    // Fixed repeating mosaic derived from the supplied reference tiles.
-    // No random colours or per-frame colour changes.
-    const MOSAIC_PATTERN = [
-      ['#178ffb', '#fafafa', '#178ffb', '#fafafa', '#ae85ff', '#583af7', '#ae85ff', '#583af7'],
-      ['#fafafa', '#178ffb', '#fafafa', '#178ffb', '#583af7', '#ae85ff', '#583af7', '#ae85ff'],
-      ['#08872b', '#ff7ded', '#08872b', '#ff7ded', '#d9d9d9', '#583af7', '#d9d9d9', '#583af7'],
-      ['#ff7ded', '#08872b', '#ff7ded', '#08872b', '#583af7', '#d9d9d9', '#583af7', '#d9d9d9'],
+    // Four fixed mosaic motifs taken from the supplied SVG reference:
+    // blue/white, lavender/violet, green/pink, and grey/violet.
+    // Coordinates are normalized to the inside of one grid cell.
+    const MOSAIC_TILES = [
+      {
+        background: '#178ffb',
+        accent: '#fafafa',
+        blocks: [
+          [0.08, 0.08, 0.28, 0.28],
+          [0.62, 0.08, 0.28, 0.28],
+          [0.34, 0.62, 0.28, 0.28],
+        ],
+      },
+      {
+        background: '#ae85ff',
+        accent: '#583af7',
+        blocks: [
+          [0.08, -0.08, 0.34, 0.34],
+          [0.42, 0.28, 0.34, 0.34],
+          [0.08, 0.64, 0.34, 0.34],
+          [0.64, -0.08, 0.34, 0.34],
+        ],
+      },
+      {
+        background: '#08872b',
+        accent: '#ff7ded',
+        blocks: [
+          [0.08, 0.64, 0.30, 0.30],
+          [0.35, 0.35, 0.30, 0.30],
+          [0.65, 0.06, 0.30, 0.30],
+        ],
+      },
+      {
+        background: '#d9d9d9',
+        accent: '#583af7',
+        blocks: [
+          [0.34, -0.08, 0.32, 0.32],
+          [0.06, 0.30, 0.32, 0.32],
+          [0.62, 0.30, 0.32, 0.32],
+          [0.34, 0.66, 0.32, 0.32],
+        ],
+      },
+    ];
+
+    // A fixed staggered layout creates a deliberate mosaic, not random
+    // colour assignment. The same coordinates always produce the same tile.
+    const MOSAIC_LAYOUT = [
+      [0, 1, 2, 3, 0, 1, 2, 3],
+      [1, 2, 3, 0, 1, 2, 3, 0],
+      [2, 3, 0, 1, 2, 3, 0, 1],
+      [3, 0, 1, 2, 3, 0, 1, 2],
     ];
 
     const cells = new Map();
@@ -67,9 +114,41 @@ const Hero = () => {
     let height = 0;
     let pixelRatio = 1;
     let animationFrame = 0;
-    let previousPointer = null;
+    let previousCell = null;
+    let protectedRects = [];
 
     const positiveMod = (value, divisor) => ((value % divisor) + divisor) % divisor;
+    const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
+    const smoothStep = (value) => value * value * (3 - (2 * value));
+
+    const refreshProtectedRects = () => {
+      const bounds = section.getBoundingClientRect();
+      protectedRects = Array.from(section.querySelectorAll('[data-mosaic-exclusion]'))
+        .map((element) => {
+          const rect = element.getBoundingClientRect();
+          const padding = 12;
+          return {
+            left: rect.left - bounds.left - padding,
+            top: rect.top - bounds.top - padding,
+            right: rect.right - bounds.left + padding,
+            bottom: rect.bottom - bounds.top + padding,
+          };
+        });
+    };
+
+    const cellIsProtected = (column, row) => {
+      const left = (column * CELL_SIZE) + INSET;
+      const top = (row * CELL_SIZE) + INSET;
+      const right = left + TILE_SIZE;
+      const bottom = top + TILE_SIZE;
+
+      return protectedRects.some((rect) => (
+        left < rect.right &&
+        right > rect.left &&
+        top < rect.bottom &&
+        bottom > rect.top
+      ));
+    };
 
     const resizeCanvas = () => {
       const bounds = section.getBoundingClientRect();
@@ -82,71 +161,126 @@ const Hero = () => {
       canvas.style.width = width + 'px';
       canvas.style.height = height + 'px';
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
       cells.clear();
-      previousPointer = null;
+      previousCell = null;
+      refreshProtectedRects();
       context.clearRect(0, 0, width, height);
     };
 
-    const stampAt = (x, y, passedAt) => {
-      const centerColumn = Math.floor(x / CELL_SIZE);
-      const centerRow = Math.floor(y / CELL_SIZE);
-      const range = Math.ceil(BRUSH_RADIUS / CELL_SIZE);
-
-      for (let row = centerRow - range; row <= centerRow + range; row += 1) {
-        for (let column = centerColumn - range; column <= centerColumn + range; column += 1) {
-          const tileCenterX = (column + 0.5) * CELL_SIZE;
-          const tileCenterY = (row + 0.5) * CELL_SIZE;
-          const distance = Math.hypot(tileCenterX - x, tileCenterY - y);
-          if (distance > BRUSH_RADIUS) continue;
-
-          const key = column + ':' + row;
-          cells.set(key, { column, row, passedAt });
-        }
+    const activateCell = (column, row, enteredAt) => {
+      if (
+        column < 0 ||
+        row < 0 ||
+        (column * CELL_SIZE) >= width ||
+        (row * CELL_SIZE) >= height ||
+        cellIsProtected(column, row)
+      ) {
+        return;
       }
+
+      const key = column + ':' + row;
+      cells.delete(key);
+      cells.set(key, { column, row, enteredAt });
+
+      while (cells.size > MAX_ACTIVE_CELLS) {
+        const oldestKey = cells.keys().next().value;
+        cells.delete(oldestKey);
+      }
+    };
+
+    // Integer grid traversal. It advances one cell at a time along the
+    // pointer's actual segment and never paints a circular cluster.
+    const traceGridLine = (from, to, startedAt, finishedAt) => {
+      let x = from.column;
+      let y = from.row;
+      const targetX = to.column;
+      const targetY = to.row;
+
+      const deltaX = Math.abs(targetX - x);
+      const deltaY = Math.abs(targetY - y);
+      const stepX = x < targetX ? 1 : -1;
+      const stepY = y < targetY ? 1 : -1;
+      const longest = Math.max(deltaX, deltaY, 1);
+      let error = deltaX - deltaY;
+      let step = 0;
+
+      activateCell(x, y, startedAt);
+
+      while (x !== targetX || y !== targetY) {
+        const doubledError = error * 2;
+
+        if (doubledError > -deltaY) {
+          error -= deltaY;
+          x += stepX;
+        }
+
+        if (doubledError < deltaX) {
+          error += deltaX;
+          y += stepY;
+        }
+
+        step += 1;
+        const progress = Math.min(1, step / longest);
+        const enteredAt = startedAt + ((finishedAt - startedAt) * progress);
+        activateCell(x, y, enteredAt);
+      }
+    };
+
+    const drawMosaicTile = (cell, now) => {
+      const age = now - cell.enteredAt;
+      const totalLife = REVEAL_MS + HOLD_MS + ERASE_MS;
+      if (age >= totalLife) return false;
+
+      const revealProgress = easeOutCubic(Math.min(1, age / REVEAL_MS));
+      const eraseProgress = age <= (REVEAL_MS + HOLD_MS)
+        ? 1
+        : 1 - smoothStep((age - REVEAL_MS - HOLD_MS) / ERASE_MS);
+
+      const opacity = 0.94 * revealProgress * eraseProgress;
+      const scale = 0.76 + (0.24 * revealProgress);
+      const centerX = (cell.column * CELL_SIZE) + (CELL_SIZE / 2);
+      const centerY = (cell.row * CELL_SIZE) + (CELL_SIZE / 2);
+      const tileIndex = MOSAIC_LAYOUT[
+        positiveMod(cell.row, MOSAIC_LAYOUT.length)
+      ][positiveMod(cell.column, MOSAIC_LAYOUT[0].length)];
+      const tile = MOSAIC_TILES[tileIndex];
+
+      context.save();
+      context.globalAlpha = opacity;
+      context.translate(centerX, centerY);
+      context.scale(scale, scale);
+      context.translate(-centerX, -centerY);
+
+      const left = (cell.column * CELL_SIZE) + INSET;
+      const top = (cell.row * CELL_SIZE) + INSET;
+
+      context.fillStyle = tile.background;
+      context.fillRect(left, top, TILE_SIZE, TILE_SIZE);
+
+      context.fillStyle = tile.accent;
+      tile.blocks.forEach((block) => {
+        context.fillRect(
+          left + (block[0] * TILE_SIZE),
+          top + (block[1] * TILE_SIZE),
+          block[2] * TILE_SIZE,
+          block[3] * TILE_SIZE
+        );
+      });
+
+      context.restore();
+      return true;
     };
 
     const draw = (now) => {
       context.clearRect(0, 0, width, height);
 
       for (const [key, cell] of cells) {
-        const age = now - cell.passedAt;
-        const totalLife = HOLD_MS + FADE_MS;
-
-        if (age >= totalLife) {
+        if (!drawMosaicTile(cell, now)) {
           cells.delete(key);
-          continue;
-        }
-
-        const fadeIn = Math.min(1, age / FADE_IN_MS);
-        const fadeOut = age <= HOLD_MS ? 1 : 1 - ((age - HOLD_MS) / FADE_MS);
-        const opacity = 0.82 * fadeIn * fadeOut;
-        const color = MOSAIC_PATTERN[
-          positiveMod(cell.row, MOSAIC_PATTERN.length)
-        ][positiveMod(cell.column, MOSAIC_PATTERN[0].length)];
-
-        context.globalAlpha = opacity;
-        context.fillStyle = color;
-        context.fillRect(
-          cell.column * CELL_SIZE + 1,
-          cell.row * CELL_SIZE + 1,
-          CELL_SIZE - 2,
-          CELL_SIZE - 2
-        );
-
-        // A brief pale front gives each newly reached tile a crisp mosaic turn-on.
-        if (age < 90) {
-          context.globalAlpha = (1 - age / 90) * 0.24;
-          context.fillStyle = '#fafafa';
-          context.fillRect(
-            cell.column * CELL_SIZE + 2,
-            cell.row * CELL_SIZE + 2,
-            CELL_SIZE - 4,
-            CELL_SIZE - 4
-          );
         }
       }
 
-      context.globalAlpha = 1;
       if (cells.size > 0) {
         animationFrame = window.requestAnimationFrame(draw);
       } else {
@@ -161,49 +295,53 @@ const Hero = () => {
     };
 
     const handlePointerMove = (event) => {
-      // This is a cursor effect; touch scrolling remains completely untouched.
       if (event.pointerType === 'touch') return;
 
       const bounds = section.getBoundingClientRect();
-      const x = event.clientX - bounds.left;
-      const y = event.clientY - bounds.top;
-      if (x < 0 || y < 0 || x > width || y > height) {
-        previousPointer = null;
+      const localX = event.clientX - bounds.left;
+      const localY = event.clientY - bounds.top;
+
+      if (localX < 0 || localY < 0 || localX >= width || localY >= height) {
+        previousCell = null;
         return;
       }
 
-      const now = performance.now();
-      if (!previousPointer) {
-        stampAt(x, y, now);
-      } else {
-        const dx = x - previousPointer.x;
-        const dy = y - previousPointer.y;
-        const distance = Math.hypot(dx, dy);
-        const steps = Math.max(1, Math.min(250, Math.ceil(distance / (CELL_SIZE * 0.2))));
-        const elapsed = Math.max(0, now - previousPointer.time);
+      refreshProtectedRects();
 
-        // Interpolate the real pointer segment so fast movements cannot skip cells.
-        for (let step = 1; step <= steps; step += 1) {
-          const progress = step / steps;
-          stampAt(
-            previousPointer.x + dx * progress,
-            previousPointer.y + dy * progress,
-            previousPointer.time + elapsed * progress
-          );
-        }
+      const nextCell = {
+        column: Math.floor(localX / CELL_SIZE),
+        row: Math.floor(localY / CELL_SIZE),
+      };
+      const now = performance.now();
+
+      if (!previousCell) {
+        activateCell(nextCell.column, nextCell.row, now);
+      } else if (
+        nextCell.column !== previousCell.column ||
+        nextCell.row !== previousCell.row
+      ) {
+        traceGridLine(previousCell, nextCell, previousCell.time, now);
       }
 
-      previousPointer = { x, y, time: now };
+      previousCell = {
+        column: nextCell.column,
+        row: nextCell.row,
+        time: now,
+      };
+
       requestDraw();
     };
 
     const handlePointerLeave = () => {
-      previousPointer = null;
+      previousCell = null;
     };
 
     resizeCanvas();
+
     const resizeObserver = typeof ResizeObserver !== 'undefined'
-      ? new ResizeObserver(resizeCanvas)
+      ? new ResizeObserver(() => {
+          resizeCanvas();
+        })
       : null;
 
     resizeObserver?.observe(section);
@@ -348,6 +486,7 @@ const Hero = () => {
           <motion.div 
             variants={itemVariants}
             className="inline-flex items-center gap-2 mb-4 md:mb-6"
+            data-mosaic-exclusion
           >
             <div className="h-px w-8 bg-[#EB0028]" aria-hidden="true"></div>
             <span className="text-xs md:text-sm font-bold uppercase tracking-widest text-gray-400">
@@ -360,6 +499,7 @@ const Hero = () => {
           <motion.h1
             variants={itemVariants}
             className="mb-6 md:mb-8"
+            data-mosaic-exclusion
           >
             <span className="block text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-none">
               <span className="text-[#EB0028]">TED</span>
@@ -377,6 +517,7 @@ const Hero = () => {
           <motion.p
             variants={itemVariants}
             className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto mb-8 md:mb-10 leading-relaxed font-light"
+            data-mosaic-exclusion
           >
             <span className="text-white font-semibold">Theme: {editionData.theme}.</span>
             <br className="hidden sm:block" />
@@ -390,6 +531,7 @@ const Hero = () => {
             <motion.div
               variants={itemVariants}
               className="mb-8 md:mb-12"
+              data-mosaic-exclusion
             >
               <p className="text-xs md:text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">
                 Event Starts In
