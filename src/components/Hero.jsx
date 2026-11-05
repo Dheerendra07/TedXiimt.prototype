@@ -126,33 +126,7 @@ const Hero = () => {
       const maskWidth = image.naturalWidth;
       const maskHeight = image.naturalHeight;
       if (!maskWidth || !maskHeight) return null;
-
-      const maskCanvas = document.createElement('canvas');
-      maskCanvas.width = maskWidth;
-      maskCanvas.height = maskHeight;
-      const maskContext = maskCanvas.getContext('2d', { willReadFrequently: true });
-      if (!maskContext) return null;
-
-      maskContext.drawImage(image, 0, 0);
-      const pixels = maskContext.getImageData(0, 0, maskWidth, maskHeight).data;
-      const stride = maskWidth + 1;
-      const integral = new Uint32Array(stride * (maskHeight + 1));
-
-      for (let y = 1; y <= maskHeight; y += 1) {
-        let rowCount = 0;
-        const sourceRow = (y - 1) * maskWidth;
-        const currentRow = y * stride;
-        const previousRow = (y - 1) * stride;
-
-        for (let x = 1; x <= maskWidth; x += 1) {
-          if (pixels[((sourceRow + x - 1) * 4) + 3] > 0) rowCount += 1;
-          integral[currentRow + x] = integral[previousRow + x] + rowCount;
-        }
-      }
-
-      maskCanvas.width = 1;
-      maskCanvas.height = 1;
-      return { width: maskWidth, height: maskHeight, stride, integral };
+      return { width: maskWidth, height: maskHeight };
     };
 
     const updateCoverTransform = () => {
