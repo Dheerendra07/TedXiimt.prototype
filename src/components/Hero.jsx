@@ -175,6 +175,7 @@ const Hero = () => {
     let artworkMask = null;
     let coverTransform = null;
     let sourceArtwork = null;
+    let maskPixels = null;
     const colourCanvas = document.createElement('canvas');
     const colourContext = colourCanvas.getContext('2d');
     let disposed = false;
@@ -274,6 +275,13 @@ const Hero = () => {
         colourContext.restore();
       });
       colourContext.globalCompositeOperation = 'source-over';
+      try {
+        // Cache alpha once per artwork/size rebuild; scroll refreshes only text exclusions.
+        maskPixels = colourContext.getImageData(0, 0, colourCanvas.width, colourCanvas.height).data;
+      } catch (error) {
+        maskPixels = null;
+        console.warn('[TEDx hero] Landmark progress sampling is unavailable.', error);
+      }
     };
 
     const collectVisibleTextRects = () => {
@@ -355,13 +363,6 @@ const Hero = () => {
 
       const textRects = collectVisibleTextRects();
       regionCells.forEach((regionSet) => regionSet.clear());
-      let maskPixels = null;
-      try {
-        maskPixels = colourContext.getImageData(0, 0, colourCanvas.width, colourCanvas.height).data;
-      } catch (error) {
-        console.warn('[TEDx hero] Landmark progress sampling is unavailable.', error);
-      }
-
       for (let row = 0; row < gridRows; row += 1) {
         for (let column = 0; column < gridColumns; column += 1) {
           const key = column + ':' + row;
@@ -631,8 +632,7 @@ const Hero = () => {
       if (maskRefreshFrame || disposed) return;
       maskRefreshFrame = window.requestAnimationFrame(() => {
         maskRefreshFrame = 0;
-        updateCoverTransform();
-        rebuildColourLayer();
+        // Scrolling changes text/header exclusions, not the artwork-to-section transform.
         rebuildGridMasks();
         if (cells.size > 0) requestDraw();
       });
