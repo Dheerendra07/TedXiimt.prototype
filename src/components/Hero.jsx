@@ -58,7 +58,7 @@ const MONUMENT_REGIONS = [
     id: 'qutub',
     name: 'QUTUB MINAR',
     bounds: { left: 0.275, top: 0.29, right: 0.35, bottom: 0.86 },
-    anchor: [0.315, 0.69],
+    anchor: [0.28, 0.69],
     colour: '#C99A5B',
     source: 'https://ignca.gov.in/Asi_data/41873.pdf',
     quotes: [
@@ -70,7 +70,7 @@ const MONUMENT_REGIONS = [
     id: 'humayun',
     name: "HUMAYUN’S TOMB",
     bounds: { left: 0.35, top: 0.64, right: 0.48, bottom: 0.86 },
-    anchor: [0.415, 0.77],
+    anchor: [0.47, 0.77],
     colour: '#B86B54',
     source: 'https://whc.unesco.org/en/list/232/',
     quotes: [
@@ -816,7 +816,7 @@ const Hero = () => {
               key={monumentId}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="absolute w-[min(220px,68vw)] -translate-x-1/2 border-l-2 border-[#EB0028] bg-[#080808]/90 px-3 py-2.5 shadow-[0_8px_28px_rgba(0,0,0,0.28)] backdrop-blur-sm"
+              className="absolute w-[min(180px,64vw)] -translate-x-1/2 border-l-2 border-[#EB0028] bg-[#080808]/90 px-3 py-2.5 shadow-[0_8px_28px_rgba(0,0,0,0.28)] backdrop-blur-sm"
               style={{ left: card.left, top: card.top }}
               data-mosaic-exclusion
             >
