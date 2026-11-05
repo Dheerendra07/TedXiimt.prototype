@@ -48,8 +48,8 @@ const Hero = () => {
     if (!context) return;
 
     // Smaller, responsive cells keep the reference mosaic airy rather than oversized.
-    const MIN_CELL_SIZE = 64;
-    const MAX_CELL_SIZE = 92;
+    const MIN_CELL_SIZE = 56;
+    const MAX_CELL_SIZE = 80;
     let CELL_SIZE = 64;
     const CELL_INSET = 4;
     let TILE_SIZE = CELL_SIZE - (CELL_INSET * 2);
@@ -404,7 +404,7 @@ const Hero = () => {
       const bounds = section.getBoundingClientRect();
       width = bounds.width;
       height = bounds.height;
-      CELL_SIZE = Math.round(Math.min(MAX_CELL_SIZE, Math.max(MIN_CELL_SIZE, width * 0.048)));
+      CELL_SIZE = Math.round(Math.min(MAX_CELL_SIZE, Math.max(MIN_CELL_SIZE, width * 0.042)));
       TILE_SIZE = CELL_SIZE - (CELL_INSET * 2);
       // Keep the subtle background grid pitch perfectly aligned with the
       // interactive cells at every viewport size.
