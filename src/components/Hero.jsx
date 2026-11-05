@@ -175,20 +175,208 @@ const Hero = () => {
       return count > 0;
     };
 
+    const artworkBlockedCells = new Set();
+    const textBlockedCells = new Set();
+    let gridMaskReady = false;
+    let gridColumns = 0;
+    let gridRows = 0;
+    let maskRefreshFrame = 0;
+    let motionSettleTimer = 0;
+    let lastAuditSignature = '';
+
+    const getGridDimensions = () => ({
+      columns: Math.max(0, Math.floor((width - CELL_INSET - TILE_SIZE) / CELL_SIZE) + 1),
+      rows: Math.max(0, Math.floor((height - CELL_INSET - TILE_SIZE) / CELL_SIZE) + 1),
+    });
+
+    const getColumnLabel = (column) => {
+      let value = column + 1;
+      let label = '';
+      while (value > 0) {
+        value -= 1;
+        label = String.fromCharCode(65 + (value % 26)) + label;
+        value = Math.floor(value / 26);
+      }
+      return label;
+    };
+
+    const getCellLabel = (column, row) => (
+      getColumnLabel(column) + String(row + 1).padStart(2, '0')
+    );
+
+    const collectVisibleTextRects = () => {
+      const sectionBounds = section.getBoundingClientRect();
+      const roots = [
+        ...section.querySelectorAll('[data-mosaic-exclusion]'),
+        document.querySelector('header'),
+        ...document.querySelectorAll('[data-mosaic-overlay]'),
+      ].filter(Boolean);
+      const uniqueRoots = [...new Set(roots)];
+      const textRects = [];
+      const range = document.createRange();
+
+      uniqueRoots.forEach((root) => {
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+        let textNode;
+
+        while ((textNode = walker.nextNode())) {
+          const parent = textNode.parentElement;
+          const value = textNode.nodeValue || '';
+          if (!parent || !value.trim()) continue;
+          if (parent.closest('script, style, noscript, [hidden], [aria-hidden="true"], .sr-only')) {
+            continue;
+          }
+
+          let hidden = false;
+          let ancestor = parent;
+          while (ancestor && root.contains(ancestor)) {
+            const style = window.getComputedStyle(ancestor);
+            if (style.display === 'none' || style.visibility === 'hidden') {
+              hidden = true;
+              break;
+            }
+            if (ancestor === root) break;
+            ancestor = ancestor.parentElement;
+          }
+          if (hidden) continue;
+
+          const tokenPattern = /\S+/gu;
+          let token;
+          while ((token = tokenPattern.exec(value))) {
+            try {
+              range.setStart(textNode, token.index);
+              range.setEnd(textNode, token.index + token[0].length);
+              const rects = range.getClientRects();
+
+              for (let index = 0; index < rects.length; index += 1) {
+                const rect = rects[index];
+                if (
+                  rect.width <= 0 ||
+                  rect.height <= 0 ||
+                  rect.right <= sectionBounds.left ||
+                  rect.left >= sectionBounds.right ||
+                  rect.bottom <= sectionBounds.top ||
+                  rect.top >= sectionBounds.bottom
+                ) continue;
+
+                textRects.push({
+                  left: rect.left - sectionBounds.left,
+                  top: rect.top - sectionBounds.top,
+                  right: rect.right - sectionBounds.left,
+                  bottom: rect.bottom - sectionBounds.top,
+                });
+              }
+            } catch {
+              // Some SVG or browser-owned text nodes do not expose Range geometry.
+            }
+          }
+        }
+      });
+
+      range.detach?.();
+      return textRects;
+    };
+
+    const rebuildGridMasks = () => {
+      artworkBlockedCells.clear();
+      textBlockedCells.clear();
+      gridMaskReady = false;
+
+      const dimensions = getGridDimensions();
+      gridColumns = dimensions.columns;
+      gridRows = dimensions.rows;
+
+      if (!artworkMask || !coverTransform || !gridColumns || !gridRows) return;
+
+      const textRects = collectVisibleTextRects();
+      const artworkLabels = [];
+      const textLabels = [];
+      const overlapLabels = [];
+      const availableLabels = [];
+
+      for (let row = 0; row < gridRows; row += 1) {
+        for (let column = 0; column < gridColumns; column += 1) {
+          const key = column + ':' + row;
+          const left = (column * CELL_SIZE) + CELL_INSET;
+          const top = (row * CELL_SIZE) + CELL_INSET;
+          const right = left + TILE_SIZE;
+          const bottom = top + TILE_SIZE;
+          const label = getCellLabel(column, row);
+
+          const intersectsArtwork = regionContainsArtwork(
+            left - IMAGE_SAFETY_GAP,
+            top - IMAGE_SAFETY_GAP,
+            right + IMAGE_SAFETY_GAP,
+            bottom + IMAGE_SAFETY_GAP
+          );
+          if (intersectsArtwork) {
+            artworkBlockedCells.add(key);
+            artworkLabels.push(label);
+          }
+
+          const intersectsText = textRects.some((rect) => (
+            left < rect.right + 1.5 &&
+            right > rect.left - 1.5 &&
+            top < rect.bottom + 1.5 &&
+            bottom > rect.top - 1.5
+          ));
+          if (intersectsText) {
+            textBlockedCells.add(key);
+            textLabels.push(label);
+          }
+
+          if (intersectsArtwork && intersectsText) {
+            overlapLabels.push(label);
+          } else if (!intersectsArtwork && !intersectsText) {
+            availableLabels.push(label);
+          }
+        }
+      }
+
+      gridMaskReady = true;
+
+      const signature = [
+        width.toFixed(1),
+        height.toFixed(1),
+        artworkLabels.join(','),
+        textLabels.join(','),
+      ].join('|');
+
+      if (signature !== lastAuditSignature) {
+        lastAuditSignature = signature;
+        console.info('[TEDx hero grid audit]', {
+          viewport: {
+            width: Math.round(width),
+            height: Math.round(height),
+          },
+          lattice: {
+            columns: gridColumns,
+            rows: gridRows,
+            candidateCells: gridColumns * gridRows,
+          },
+          artwork: {
+            blockedCells: artworkLabels.length,
+            cells: artworkLabels,
+          },
+          visibleText: {
+            wordRects: textRects.length,
+            blockedCells: textLabels.length,
+            cells: textLabels,
+          },
+          overlap: {
+            cells: overlapLabels.length,
+            labels: overlapLabels,
+          },
+          usableCells: availableLabels.length,
+          usableCellLabels: availableLabels,
+        });
+      }
+    };
+
     const cellIsSafe = (column, row) => {
-      const left = (column * CELL_SIZE) + CELL_INSET;
-      const top = (row * CELL_SIZE) + CELL_INSET;
-      const right = left + TILE_SIZE;
-      const bottom = top + TILE_SIZE;
-
-      if (left < 0 || top < 0 || right > width || bottom > height) return false;
-
-      return !regionContainsArtwork(
-        left - IMAGE_SAFETY_GAP,
-        top - IMAGE_SAFETY_GAP,
-        right + IMAGE_SAFETY_GAP,
-        bottom + IMAGE_SAFETY_GAP
-      );
+      if (!gridMaskReady) return false;
+      const key = column + ':' + row;
+      return !artworkBlockedCells.has(key) && !textBlockedCells.has(key);
     };
 
     const resizeCanvas = () => {
@@ -206,6 +394,7 @@ const Hero = () => {
       cells.clear();
       previousCell = null;
       updateCoverTransform();
+      rebuildGridMasks();
       context.clearRect(0, 0, width, height);
     };
 
@@ -312,9 +501,7 @@ const Hero = () => {
     };
 
     const handlePointerMove = (event) => {
-      // Only a direct hit on the background image layer is eligible.
-      // Text, navigation, controls, and other content naturally stop the trail.
-      if (event.target !== imageLayer || !artworkMask || event.pointerType === 'touch') {
+      if (event.pointerType === 'touch' || !artworkMask || !gridMaskReady) {
         previousCell = null;
         return;
       }
@@ -331,14 +518,10 @@ const Hero = () => {
         column: Math.floor(localX / CELL_SIZE),
         row: Math.floor(localY / CELL_SIZE),
       };
-
-      // The complete cell footprint and its safety margin must be transparent.
-      if (!cellIsSafe(nextCell.column, nextCell.row)) {
-        previousCell = null;
-        return;
-      }
-
       const now = performance.now();
+
+      // Keep the pointer's real path continuous across protected cells.
+      // The precomputed text/artwork masks decide which individual cells draw.
       if (!previousCell) {
         activateCell(nextCell.column, nextCell.row, now);
       } else if (
@@ -353,7 +536,6 @@ const Hero = () => {
         if (distance <= MAX_INTERPOLATED_CELLS) {
           traceGridLine(previousCell, nextCell, previousCell.time, now);
         } else {
-          // Avoid a long synthetic streak after a cursor jump or stalled frame.
           activateCell(nextCell.column, nextCell.row, now);
         }
       }
@@ -400,16 +582,60 @@ const Hero = () => {
     const resizeObserver = typeof ResizeObserver !== 'undefined'
       ? new ResizeObserver(resizeCanvas)
       : null;
+    const header = document.querySelector('header');
+    const textRoots = [
+      ...section.querySelectorAll('[data-mosaic-exclusion]'),
+      header,
+      ...document.querySelectorAll('[data-mosaic-overlay]'),
+    ].filter(Boolean);
+
+    const scheduleGridMaskRefresh = () => {
+      if (maskRefreshFrame || disposed) return;
+      maskRefreshFrame = window.requestAnimationFrame(() => {
+        maskRefreshFrame = 0;
+        rebuildGridMasks();
+      });
+    };
+
+    const textMutationObserver = typeof MutationObserver !== 'undefined'
+      ? new MutationObserver(scheduleGridMaskRefresh)
+      : null;
+
+    textMutationObserver?.observe(section, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+
+    textRoots.forEach((root) => {
+      if (root === section) return;
+      resizeObserver?.observe(root);
+      textMutationObserver?.observe(root, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
+    });
 
     resizeObserver?.observe(section);
+    motionSettleTimer = window.setTimeout(scheduleGridMaskRefresh, 1200);
+    document.fonts?.ready
+      .then(scheduleGridMaskRefresh)
+      .catch(() => {});
+
     window.addEventListener('resize', resizeCanvas, { passive: true });
+    window.addEventListener('scroll', scheduleGridMaskRefresh, { passive: true });
     section.addEventListener('pointermove', handlePointerMove, { passive: true });
     section.addEventListener('pointerleave', handlePointerLeave, { passive: true });
 
     return () => {
       disposed = true;
       resizeObserver?.disconnect();
+      textMutationObserver?.disconnect();
+      window.clearTimeout(motionSettleTimer);
+      if (maskRefreshFrame) window.cancelAnimationFrame(maskRefreshFrame);
       window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener('scroll', scheduleGridMaskRefresh);
       section.removeEventListener('pointermove', handlePointerMove);
       section.removeEventListener('pointerleave', handlePointerLeave);
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
