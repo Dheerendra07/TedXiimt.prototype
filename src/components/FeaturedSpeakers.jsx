@@ -58,10 +58,11 @@ const FeaturedSpeakers = () => {
   const active = speakers[currentSpeaker] || speakers[0];
 
   return (
-    <section className="py-16 md:py-24 lg:py-32 bg-black relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#EB0028]/5 to-transparent pointer-events-none"></div>
+    <section className="relative overflow-hidden bg-black pb-16 pt-0 md:pb-24 lg:pb-32">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#EB0028]/5 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-px bg-gradient-to-r from-transparent via-[#EB0028]/80 to-transparent" />
       
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="container relative z-10 mx-auto px-4 pt-16 sm:px-6 sm:pt-20 lg:px-8 lg:pt-24">
         <motion.div
           className="text-center mb-12 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
@@ -82,7 +83,6 @@ const FeaturedSpeakers = () => {
 
         <div className="max-w-7xl mx-auto">
           <div className="bg-[#0a0a0a] border-2 border-[#1a1a1a]">
-            <div className="absolute top-0 left-0 w-full h-0.5 bg-[#EB0028]"></div>
             
             <AnimatePresence mode="wait">
               <motion.div
@@ -94,7 +94,6 @@ const FeaturedSpeakers = () => {
                 className="grid lg:grid-cols-2 gap-0"
               >
                 <div className="relative aspect-square lg:aspect-auto">
-                  <div className="absolute top-0 left-0 w-full h-0.5 bg-[#EB0028]"></div>
                   <img
                     src={active.image}
                     alt={active.name}
