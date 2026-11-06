@@ -1,4 +1,4 @@
-/* TEDxIIMT hero — one continuous composition, one square-cell system. */
+/* TEDxIIMT hero — typographic X and visible square-cell system. */
 .tedx-hero {
   --hero-cell: clamp(34px, 2.45vw, 46px);
   position: relative;
@@ -20,99 +20,58 @@
 }
 
 .tedx-hero__grid {
-  z-index: 0;
-  opacity: 0.55;
+  z-index: 2;
+  opacity: 0.76;
   background-image:
-    linear-gradient(to right, rgba(115, 30, 42, 0.23) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(115, 30, 42, 0.23) 1px, transparent 1px);
+    linear-gradient(to right, rgba(143, 38, 54, 0.42) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(143, 38, 54, 0.42) 1px, transparent 1px);
   background-size: var(--hero-cell) var(--hero-cell);
   background-position: 0 0;
 }
 
+.tedx-hero__x {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  right: 1.5%;
+  display: flex;
+  width: 55%;
+  height: 88%;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  color: transparent;
+  background: linear-gradient(145deg, #ff2745 5%, #ec002c 43%, #9b0929 78%, #650d25 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  font-family: 'Arial Black', Arial, Helvetica, sans-serif;
+  font-size: clamp(28rem, 66vw, 70rem);
+  font-weight: 900;
+  letter-spacing: -0.13em;
+  line-height: 0.76;
+  opacity: 0.94;
+  transform: translateY(-49%) scaleX(1.02);
+  user-select: none;
+}
+
 .tedx-hero__accents {
+  z-index: 3;
   overflow: hidden;
 }
 
-.tedx-hero__accents--under { z-index: 2; }
-.tedx-hero__accents--over { z-index: 4; }
-
 .tedx-hero__cell {
   position: absolute;
-  left: calc(var(--hero-cell) * var(--cell-x) + 4px);
-  top: calc(var(--hero-cell) * var(--cell-y) + 4px);
-  width: calc(var(--hero-cell) - 8px);
-  height: calc(var(--hero-cell) - 8px);
+  left: calc(var(--hero-cell) * var(--cell-x) + 3px);
+  top: calc(var(--hero-cell) * var(--cell-y) + 3px);
+  width: calc(var(--hero-cell) - 6px);
+  height: calc(var(--hero-cell) - 6px);
   opacity: var(--cell-opacity);
 }
 
 .tedx-hero__cell--red { background: #eb0028; }
-.tedx-hero__cell--crimson { background: #a90d2a; }
-.tedx-hero__cell--burgundy { background: #651125; }
-.tedx-hero__cell--charcoal { background: #231719; }
-
-.tedx-hero__x {
-  position: absolute;
-  z-index: 1;
-  top: 8%;
-  right: -3.8%;
-  color: transparent;
-  background: linear-gradient(145deg, #f01836 4%, #d10b2d 48%, #741026 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: clamp(34rem, 70vw, 82rem);
-  font-weight: 900;
-  letter-spacing: -0.145em;
-  line-height: 0.72;
-  opacity: 0.88;
-  transform: scaleX(1.08);
-  user-select: none;
-}
-
-.tedx-hero__media {
-  position: absolute;
-  z-index: 3;
-  top: calc(var(--hero-cell) * 4);
-  right: calc(var(--hero-cell) * -1);
-  width: min(68vw, calc(var(--hero-cell) * 32));
-  height: auto;
-  aspect-ratio: 597 / 213;
-  overflow: hidden;
-  background: #12080b;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 25%, #000 100%);
-  mask-image: linear-gradient(to right, transparent 0%, #000 25%, #000 100%);
-}
-
-.tedx-hero__campus-image {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 50%;
-  filter: brightness(0.88) contrast(1.06) saturate(0.86);
-  transform-origin: 54% 50%;
-  user-select: none;
-}
-
-.tedx-hero__media-tone,
-.tedx-hero__media-edge {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.tedx-hero__media-tone {
-  background: linear-gradient(115deg, rgba(105, 5, 24, 0.12), transparent 42%, rgba(8, 3, 5, 0.08));
-  mix-blend-mode: multiply;
-}
-
-.tedx-hero__media-edge {
-  background:
-    linear-gradient(to right, #050405 0%, rgba(5, 4, 5, 0.7) 8%, transparent 37%),
-    linear-gradient(to bottom, #050405 0%, rgba(5, 4, 5, 0.28) 10%, transparent 24%, transparent 72%, #050405 100%);
-}
+.tedx-hero__cell--crimson { background: #b50d2d; }
+.tedx-hero__cell--burgundy { background: #711329; }
+.tedx-hero__cell--charcoal { background: #302024; }
 
 .tedx-hero__content {
   position: relative;
@@ -289,9 +248,7 @@
   line-height: 1.4;
 }
 
-.tedx-hero__meta-item--venue svg {
-  margin-top: 1px;
-}
+.tedx-hero__meta-item--venue svg { margin-top: 1px; }
 
 .tedx-hero__meta-item svg {
   flex: 0 0 auto;
@@ -348,7 +305,7 @@
 
 @media (min-width: 1500px) {
   .tedx-hero__content { padding-left: max(7vw, calc((100vw - 1660px) / 2)); }
-  .tedx-hero__media { right: calc(var(--hero-cell) * -1); }
+  .tedx-hero__x { right: 2.5%; }
 }
 
 @media (max-width: 1100px) {
@@ -356,14 +313,11 @@
   .tedx-hero__copy { width: 54%; }
   .tedx-hero__wordmark-line { font-size: clamp(3.6rem, 7.4vw, 5.8rem); }
   .tedx-hero__university { font-size: clamp(3.1rem, 6.8vw, 5.3rem); }
-  .tedx-hero__media {
-    top: calc(var(--hero-cell) * 4);
-    right: calc(var(--hero-cell) * -1);
-    width: min(70vw, calc(var(--hero-cell) * 24));
-    height: auto;
-    aspect-ratio: 597 / 213;
+  .tedx-hero__x {
+    right: -2%;
+    width: 56%;
+    font-size: clamp(27rem, 66vw, 58rem);
   }
-  .tedx-hero__x { right: -12%; }
 }
 
 @media (max-width: 760px) {
@@ -373,29 +327,21 @@
     max-height: 980px;
   }
 
-  .tedx-hero__grid { opacity: 0.43; }
+  .tedx-hero__grid {
+    opacity: 0.68;
+    background-image:
+      linear-gradient(to right, rgba(143, 38, 54, 0.35) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(143, 38, 54, 0.35) 1px, transparent 1px);
+  }
+
   .tedx-hero__x {
-    top: 13%;
-    right: -24%;
-    font-size: clamp(29rem, 118vw, 43rem);
-    opacity: 0.46;
-  }
-
-  .tedx-hero__media {
-    top: 13%;
-    right: -7%;
+    top: 8%;
+    right: -2%;
     width: 100%;
-    height: auto;
-    aspect-ratio: 597 / 213;
-    opacity: 0.84;
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 63%, transparent 100%);
-    mask-image: linear-gradient(to bottom, #000 0%, #000 63%, transparent 100%);
-  }
-
-  .tedx-hero__media-edge {
-    background:
-      linear-gradient(to right, #050405 0%, rgba(5, 4, 5, 0.25) 20%, transparent 60%),
-      linear-gradient(to bottom, #050405 0%, rgba(5, 4, 5, 0.18) 10%, transparent 34%, #050405 100%);
+    height: 42%;
+    font-size: min(98vw, 390px);
+    opacity: 0.58;
+    transform: none;
   }
 
   .tedx-hero__content {
@@ -423,7 +369,7 @@
   .tedx-hero__meta-item { gap: 7px; }
   .tedx-hero__meta-divider { height: 19px; }
   .tedx-hero__scroll { display: none; }
-  .tedx-hero__cell:nth-child(3n) { display: none; }
+  .tedx-hero__cell:nth-child(5n) { display: none; }
 }
 
 @media (max-width: 390px) {

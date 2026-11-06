@@ -1,37 +1,39 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { AnimatePresence, motion as Motion, useReducedMotion } from 'framer-motion';
+import React, { useMemo } from 'react';
+import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, CalendarDays, MapPin, MoveDown } from 'lucide-react';
 import { useEdition } from '../context/EditionContext';
 import './Hero.css';
 
-const CAMPUS_IMAGES = [
-  {
-    src: '/campus-iimt-hero.webp',
-    alt: 'IIMT University campus in Meerut, with its academic building and palm-lined entrance',
-  },
-];
-
-// Keep this data-driven. With one supplied campus photograph, no artificial
-// duplicate-slide transition is shown. Extra supplied images will crossfade.
 const MOSAIC_CELLS = [
-  { x: 0, y: 4, tone: 'burgundy', opacity: 0.46 },
-  { x: 1, y: 5, tone: 'red', opacity: 0.78 },
-  { x: 5, y: 1, tone: 'charcoal', opacity: 0.72 },
-  { x: 12, y: 0, tone: 'burgundy', opacity: 0.44 },
-  { x: 18, y: 2, tone: 'red', opacity: 0.88 },
-  { x: 21, y: 4, tone: 'crimson', opacity: 0.55 },
-  { x: 25, y: 0, tone: 'charcoal', opacity: 0.62 },
-  { x: 29, y: 3, tone: 'red', opacity: 0.7 },
-  { x: 34, y: 6, tone: 'burgundy', opacity: 0.48 },
-  { x: 39, y: 8, tone: 'crimson', opacity: 0.42 },
-  { x: 43, y: 10, tone: 'red', opacity: 0.76 },
-  { x: 40, y: 15, tone: 'burgundy', opacity: 0.5 },
-  { x: 35, y: 17, tone: 'red', opacity: 0.7 },
-  { x: 28, y: 19, tone: 'charcoal', opacity: 0.74 },
-  { x: 22, y: 18, tone: 'burgundy', opacity: 0.5 },
-  { x: 13, y: 20, tone: 'crimson', opacity: 0.38 },
-  { x: 6, y: 17, tone: 'red', opacity: 0.54 },
-  { x: 1, y: 14, tone: 'charcoal', opacity: 0.62 },
+  { x: 0, y: 4, tone: 'burgundy', opacity: 0.64 },
+  { x: 1, y: 5, tone: 'red', opacity: 0.86 },
+  { x: 4, y: 14, tone: 'charcoal', opacity: 0.78 },
+  { x: 7, y: 1, tone: 'burgundy', opacity: 0.56 },
+  { x: 9, y: 18, tone: 'red', opacity: 0.72 },
+  { x: 12, y: 3, tone: 'charcoal', opacity: 0.7 },
+  { x: 15, y: 7, tone: 'red', opacity: 0.9 },
+  { x: 17, y: 17, tone: 'burgundy', opacity: 0.68 },
+  { x: 19, y: 2, tone: 'crimson', opacity: 0.72 },
+  { x: 21, y: 12, tone: 'red', opacity: 0.82 },
+  { x: 23, y: 5, tone: 'burgundy', opacity: 0.62 },
+  { x: 25, y: 18, tone: 'charcoal', opacity: 0.76 },
+  { x: 27, y: 1, tone: 'red', opacity: 0.9 },
+  { x: 29, y: 9, tone: 'crimson', opacity: 0.7 },
+  { x: 31, y: 4, tone: 'burgundy', opacity: 0.7 },
+  { x: 33, y: 15, tone: 'red', opacity: 0.82 },
+  { x: 35, y: 2, tone: 'charcoal', opacity: 0.78 },
+  { x: 37, y: 11, tone: 'crimson', opacity: 0.76 },
+  { x: 39, y: 5, tone: 'red', opacity: 0.9 },
+  { x: 41, y: 17, tone: 'burgundy', opacity: 0.72 },
+  { x: 43, y: 8, tone: 'red', opacity: 0.82 },
+  { x: 2, y: 18, tone: 'crimson', opacity: 0.58 },
+  { x: 6, y: 9, tone: 'red', opacity: 0.74 },
+  { x: 11, y: 12, tone: 'burgundy', opacity: 0.68 },
+  { x: 16, y: 20, tone: 'charcoal', opacity: 0.8 },
+  { x: 22, y: 16, tone: 'red', opacity: 0.78 },
+  { x: 28, y: 13, tone: 'burgundy', opacity: 0.7 },
+  { x: 34, y: 19, tone: 'crimson', opacity: 0.68 },
+  { x: 40, y: 1, tone: 'red', opacity: 0.76 },
 ];
 
 const formatEventDate = (edition) => {
@@ -50,24 +52,11 @@ const formatEventDate = (edition) => {
 const Hero = () => {
   const reduceMotion = useReducedMotion();
   const { activeEdition, loading } = useEdition();
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [campusImageUnavailable, setCampusImageUnavailable] = useState(false);
-
-  useEffect(() => {
-    if (reduceMotion || CAMPUS_IMAGES.length < 2) return undefined;
-
-    const interval = window.setInterval(() => {
-      setActiveImageIndex((current) => (current + 1) % CAMPUS_IMAGES.length);
-    }, 7200);
-
-    return () => window.clearInterval(interval);
-  }, [reduceMotion]);
 
   const eventDate = useMemo(
     () => (!loading ? formatEventDate(activeEdition) : null),
     [activeEdition, loading],
   );
-  const campusImage = CAMPUS_IMAGES[activeImageIndex] || CAMPUS_IMAGES[0];
   const venueLabel = activeEdition?.is_active === true && activeEdition.venue
     ? activeEdition.venue
     : 'IIMT University, Meerut';
@@ -75,57 +64,21 @@ const Hero = () => {
   return (
     <section className="tedx-hero" aria-labelledby="tedx-hero-title">
       <div className="tedx-hero__grid" aria-hidden="true" />
-      <div className="tedx-hero__accents tedx-hero__accents--under" aria-hidden="true">
-        {MOSAIC_CELLS.filter((cell) => cell.x >= 18 || (cell.x >= 6 && cell.y > 15)).map((cell) => (
-          <span
-            key={cell.x + ':' + cell.y}
-            className={'tedx-hero__cell tedx-hero__cell--' + cell.tone}
-            style={{
-              '--cell-x': cell.x,
-              '--cell-y': cell.y,
-              '--cell-opacity': cell.opacity,
-            }}
-          />
-        ))}
-      </div>
-      <div className="tedx-hero__accents tedx-hero__accents--over" aria-hidden="true">
-        {MOSAIC_CELLS.filter((cell) => cell.x < 18 && !(cell.x >= 6 && cell.y > 15)).map((cell) => (
-          <span
-            key={cell.x + ':' + cell.y}
-            className={'tedx-hero__cell tedx-hero__cell--' + cell.tone}
-            style={{
-              '--cell-x': cell.x,
-              '--cell-y': cell.y,
-              '--cell-opacity': cell.opacity,
-            }}
-          />
-        ))}
-      </div>
 
       <div className="tedx-hero__x" aria-hidden="true">X</div>
 
-      <div className="tedx-hero__media" aria-hidden="true">
-        {!campusImageUnavailable && (
-          <AnimatePresence initial={false} mode="sync">
-            <Motion.img
-              key={campusImage.src}
-              className="tedx-hero__campus-image"
-              src={campusImage.src}
-              alt=""
-              draggable="false"
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-              onError={() => setCampusImageUnavailable(true)}
-              initial={reduceMotion ? false : { opacity: 0, scale: 1.015 }}
-              animate={{ opacity: 1, scale: reduceMotion ? 1 : 1.045 }}
-              exit={reduceMotion ? undefined : { opacity: 0 }}
-              transition={{ duration: 1.25, ease: [0.22, 1, 0.36, 1] }}
-            />
-          </AnimatePresence>
-        )}
-        <div className="tedx-hero__media-tone" />
-        <div className="tedx-hero__media-edge" />
+      <div className="tedx-hero__accents" aria-hidden="true">
+        {MOSAIC_CELLS.map((cell, index) => (
+          <span
+            key={index}
+            className={'tedx-hero__cell tedx-hero__cell--' + cell.tone}
+            style={{
+              '--cell-x': cell.x,
+              '--cell-y': cell.y,
+              '--cell-opacity': cell.opacity,
+            }}
+          />
+        ))}
       </div>
 
       <div className="tedx-hero__content">
