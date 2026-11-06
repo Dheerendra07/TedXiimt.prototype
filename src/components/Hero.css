@@ -1,6 +1,6 @@
-/* TEDxIIMT hero — typographic X and visible square-cell system. */
+/* TEDxIIMT hero — interactive mosaic, dimensional X and restrained 3D response. */
 .tedx-hero {
-  --hero-cell: clamp(34px, 2.45vw, 46px);
+  --ted-red: #eb0028;
   position: relative;
   isolation: isolate;
   display: flex;
@@ -12,66 +12,153 @@
   color: #f7f5f5;
 }
 
-.tedx-hero__grid,
-.tedx-hero__accents {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
 .tedx-hero__grid {
-  z-index: 2;
-  opacity: 0.76;
-  background-image:
-    linear-gradient(to right, rgba(143, 38, 54, 0.42) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(143, 38, 54, 0.42) 1px, transparent 1px);
-  background-size: var(--hero-cell) var(--hero-cell);
-  background-position: 0 0;
-}
-
-.tedx-hero__x {
   position: absolute;
-  z-index: 1;
-  top: 50%;
-  right: 1.5%;
-  display: flex;
-  width: 55%;
-  height: 88%;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
-  color: transparent;
-  background: linear-gradient(145deg, #ff2745 5%, #ec002c 43%, #9b0929 78%, #650d25 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  font-family: 'Arial Black', Arial, Helvetica, sans-serif;
-  font-size: clamp(28rem, 66vw, 70rem);
-  font-weight: 900;
-  letter-spacing: -0.13em;
-  line-height: 0.76;
-  opacity: 0.94;
-  transform: translateY(-49%) scaleX(1.02);
-  user-select: none;
-}
-
-.tedx-hero__accents {
   z-index: 3;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  grid-auto-rows: calc(100vw / var(--grid-columns));
+  align-content: start;
   overflow: hidden;
+  pointer-events: auto;
 }
 
 .tedx-hero__cell {
-  position: absolute;
-  left: calc(var(--hero-cell) * var(--cell-x) + 3px);
-  top: calc(var(--hero-cell) * var(--cell-y) + 3px);
-  width: calc(var(--hero-cell) - 6px);
-  height: calc(var(--hero-cell) - 6px);
-  opacity: var(--cell-opacity);
+  position: relative;
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  border-right: 1px solid rgba(151, 38, 57, 0.27);
+  border-bottom: 1px solid rgba(151, 38, 57, 0.27);
+  background: rgba(8, 5, 7, 0.04);
+  transition: background-color 240ms ease, border-color 240ms ease;
 }
 
-.tedx-hero__cell--red { background: #eb0028; }
-.tedx-hero__cell--crimson { background: #b50d2d; }
-.tedx-hero__cell--burgundy { background: #711329; }
-.tedx-hero__cell--charcoal { background: #302024; }
+.tedx-hero__cell--red {
+  border-color: rgba(235, 0, 40, 0.58);
+  background: rgba(235, 0, 40, 0.38);
+}
+
+.tedx-hero__cell--crimson {
+  border-color: rgba(181, 13, 45, 0.52);
+  background: rgba(181, 13, 45, 0.3);
+}
+
+.tedx-hero__cell--burgundy {
+  border-color: rgba(113, 19, 41, 0.5);
+  background: rgba(113, 19, 41, 0.3);
+}
+
+.tedx-hero__cell--charcoal {
+  border-color: rgba(112, 91, 98, 0.25);
+  background: rgba(63, 46, 53, 0.2);
+}
+
+.tedx-hero__cell:hover,
+.tedx-hero__cell.is-filled {
+  border-color: rgba(255, 63, 91, 0.88);
+  background: rgba(235, 0, 40, 0.82);
+}
+
+.tedx-hero__cell--red:hover,
+.tedx-hero__cell--red.is-filled {
+  background: rgba(255, 16, 54, 0.94);
+}
+
+.tedx-hero__cell--crimson:hover,
+.tedx-hero__cell--crimson.is-filled {
+  background: rgba(212, 13, 53, 0.9);
+}
+
+.tedx-hero__cell--burgundy:hover,
+.tedx-hero__cell--burgundy.is-filled {
+  background: rgba(164, 16, 49, 0.9);
+}
+
+.tedx-hero__stage {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  position: absolute;
+  z-index: 1;
+  top: 4%;
+  right: 0;
+  width: 59%;
+  height: 91%;
+  perspective: 1500px;
+  pointer-events: none;
+}
+
+.tedx-hero__stage-glow {
+  position: absolute;
+  top: 18%;
+  right: 8%;
+  width: 76%;
+  height: 68%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(139, 8, 35, 0.23) 0%, rgba(76, 5, 22, 0.11) 43%, transparent 72%);
+  filter: blur(18px);
+  transform: translateZ(-100px);
+}
+
+.tedx-hero__stage-core {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transition: transform 380ms cubic-bezier(0.2, 0.75, 0.25, 1);
+  will-change: transform;
+}
+
+.tedx-hero__x-depth,
+.tedx-hero__x-side,
+.tedx-hero__x-face {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: max-content;
+  font-family: 'Arial Black', Arial, Helvetica, sans-serif;
+  font-size: clamp(25rem, 53vw, 69rem);
+  font-weight: 900;
+  letter-spacing: -0.18em;
+  line-height: 0.78;
+  user-select: none;
+}
+
+.tedx-hero__x-depth {
+  z-index: 0;
+  color: #300813;
+  text-shadow:
+    1px 1px 0 #4b0a1b,
+    3px 3px 0 #4b0a1b,
+    6px 6px 0 #380916,
+    9px 9px 0 #260611,
+    18px 22px 38px rgba(0, 0, 0, 0.75);
+  transform: translate(-48%, -50%) translate3d(38px, 32px, -110px);
+}
+
+.tedx-hero__x-side {
+  z-index: 1;
+  color: #8f0b2a;
+  text-shadow:
+    1px 1px 0 #a40b30,
+    2px 2px 0 #69091f,
+    4px 4px 0 #530818,
+    7px 8px 0 rgba(31, 4, 13, 0.86);
+  transform: translate(-50%, -50%) translate3d(0, 0, -20px);
+}
+
+.tedx-hero__x-face {
+  z-index: 2;
+  color: transparent;
+  background: linear-gradient(138deg, #ff5368 1%, #f20a35 35%, #d4002a 63%, #8e0d2c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-stroke: 1px rgba(255, 89, 112, 0.28);
+  text-shadow: 0 18px 55px rgba(119, 0, 29, 0.18);
+  transform: translate(-51%, -53%) translate3d(0, 0, 28px);
+}
 
 .tedx-hero__content {
   position: relative;
@@ -81,7 +168,7 @@
   width: 100%;
   max-width: 1780px;
   margin: 0 auto;
-  padding: 104px 6.7vw 74px;
+  padding: 112px 6.7vw 74px;
   pointer-events: none;
 }
 
@@ -95,10 +182,10 @@
   align-items: center;
   gap: 19px;
   margin-bottom: 24px;
-  color: #e7e0e2;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.34em;
+  color: #f2e9eb;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.19em;
   line-height: 1.3;
 }
 
@@ -305,19 +392,17 @@
 
 @media (min-width: 1500px) {
   .tedx-hero__content { padding-left: max(7vw, calc((100vw - 1660px) / 2)); }
-  .tedx-hero__x { right: 2.5%; }
 }
 
 @media (max-width: 1100px) {
   .tedx-hero__content { padding-right: 5vw; padding-left: 5vw; }
   .tedx-hero__copy { width: 54%; }
+  .tedx-hero__x-depth,
+  .tedx-hero__x-side,
+  .tedx-hero__x-face { font-size: clamp(24rem, 58vw, 49rem); }
+  .tedx-hero__stage { right: -2%; width: 58%; }
   .tedx-hero__wordmark-line { font-size: clamp(3.6rem, 7.4vw, 5.8rem); }
   .tedx-hero__university { font-size: clamp(3.1rem, 6.8vw, 5.3rem); }
-  .tedx-hero__x {
-    right: -2%;
-    width: 56%;
-    font-size: clamp(27rem, 66vw, 58rem);
-  }
 }
 
 @media (max-width: 760px) {
@@ -327,21 +412,33 @@
     max-height: 980px;
   }
 
-  .tedx-hero__grid {
-    opacity: 0.68;
-    background-image:
-      linear-gradient(to right, rgba(143, 38, 54, 0.35) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(143, 38, 54, 0.35) 1px, transparent 1px);
-  }
-
-  .tedx-hero__x {
-    top: 8%;
-    right: -2%;
+  .tedx-hero__stage {
+    top: 2%;
+    right: -1%;
     width: 100%;
     height: 42%;
-    font-size: min(98vw, 390px);
-    opacity: 0.58;
-    transform: none;
+    perspective: 1100px;
+  }
+
+  .tedx-hero__stage-glow {
+    top: 6%;
+    right: 16%;
+    width: 68%;
+    height: 82%;
+  }
+
+  .tedx-hero__x-depth,
+  .tedx-hero__x-side,
+  .tedx-hero__x-face {
+    font-size: min(88vw, 350px);
+  }
+
+  .tedx-hero__x-depth {
+    transform: translate(-48%, -50%) translate3d(19px, 17px, -75px);
+  }
+
+  .tedx-hero__x-face {
+    transform: translate(-51%, -53%) translate3d(0, 0, 24px);
   }
 
   .tedx-hero__content {
@@ -353,8 +450,8 @@
   .tedx-hero__eyebrow {
     gap: 12px;
     margin-bottom: 20px;
-    font-size: 9px;
-    letter-spacing: 0.24em;
+    font-size: 10px;
+    letter-spacing: 0.16em;
   }
   .tedx-hero__eyebrow i { width: 42px; }
   .tedx-hero__wordmark-line { font-size: clamp(3.05rem, 11.8vw, 5.1rem); }
@@ -369,7 +466,6 @@
   .tedx-hero__meta-item { gap: 7px; }
   .tedx-hero__meta-divider { height: 19px; }
   .tedx-hero__scroll { display: none; }
-  .tedx-hero__cell:nth-child(5n) { display: none; }
 }
 
 @media (max-width: 390px) {
@@ -382,6 +478,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .tedx-hero__cell,
+  .tedx-hero__stage-core,
   .tedx-hero__primary,
-  .tedx-hero__secondary { transition: none; }
+  .tedx-hero__secondary {
+    transition: none;
+  }
+
+  .tedx-hero__stage-core { transform: none; }
 }
