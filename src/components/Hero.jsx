@@ -51,6 +51,7 @@ const Hero = () => {
   const reduceMotion = useReducedMotion();
   const { activeEdition, loading } = useEdition();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [campusImageUnavailable, setCampusImageUnavailable] = useState(false);
 
   useEffect(() => {
     if (reduceMotion || CAMPUS_IMAGES.length < 2) return undefined;
@@ -67,6 +68,9 @@ const Hero = () => {
     [activeEdition, loading],
   );
   const campusImage = CAMPUS_IMAGES[activeImageIndex] || CAMPUS_IMAGES[0];
+  const venueLabel = activeEdition?.is_active === true && activeEdition.venue
+    ? activeEdition.venue
+    : 'IIMT University, Meerut';
 
   return (
     <section className="tedx-hero" aria-labelledby="tedx-hero-title">
@@ -101,21 +105,25 @@ const Hero = () => {
       <div className="tedx-hero__x" aria-hidden="true">X</div>
 
       <div className="tedx-hero__media" aria-hidden="true">
-        <AnimatePresence initial={false} mode="sync">
-          <Motion.img
-            key={campusImage.src}
-            className="tedx-hero__campus-image"
-            src={campusImage.src}
-            alt=""
-            draggable="false"
-            loading="eager"
-            decoding="async"
-            initial={reduceMotion ? false : { opacity: 0, scale: 1.035 }}
-            animate={{ opacity: 1, scale: reduceMotion ? 1 : 1.075 }}
-            exit={reduceMotion ? undefined : { opacity: 0 }}
-            transition={{ duration: 1.25, ease: [0.22, 1, 0.36, 1] }}
-          />
-        </AnimatePresence>
+        {!campusImageUnavailable && (
+          <AnimatePresence initial={false} mode="sync">
+            <Motion.img
+              key={campusImage.src}
+              className="tedx-hero__campus-image"
+              src={campusImage.src}
+              alt=""
+              draggable="false"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              onError={() => setCampusImageUnavailable(true)}
+              initial={reduceMotion ? false : { opacity: 0, scale: 1.015 }}
+              animate={{ opacity: 1, scale: reduceMotion ? 1 : 1.045 }}
+              exit={reduceMotion ? undefined : { opacity: 0 }}
+              transition={{ duration: 1.25, ease: [0.22, 1, 0.36, 1] }}
+            />
+          </AnimatePresence>
+        )}
         <div className="tedx-hero__media-tone" />
         <div className="tedx-hero__media-edge" />
       </div>
@@ -162,9 +170,9 @@ const Hero = () => {
               </span>
             )}
             {eventDate && <span className="tedx-hero__meta-divider" aria-hidden="true" />}
-            <span className="tedx-hero__meta-item">
+            <span className="tedx-hero__meta-item tedx-hero__meta-item--venue">
               <MapPin aria-hidden="true" size={20} />
-              IIMT University, Meerut
+              <span>{venueLabel}</span>
             </span>
           </div>
         </Motion.div>

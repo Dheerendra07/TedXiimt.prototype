@@ -48,7 +48,7 @@ const FeaturedSpeakers = () => {
 
   if (speakers.length === 0) {
     return (
-      <section className="py-16 md:py-24 bg-black text-center text-zinc-500">
+      <section id="featured-speakers" className="py-16 md:py-24 bg-black text-center text-zinc-500">
         <div className="w-8 h-8 border-2 border-[#EB0028] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p className="text-sm">Loading 2025 Speaker Lineup...</p>
       </section>

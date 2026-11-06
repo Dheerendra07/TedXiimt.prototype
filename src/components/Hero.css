@@ -279,7 +279,17 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  white-space: nowrap;
+  min-width: 0;
+}
+
+.tedx-hero__meta-item--venue {
+  max-width: min(100%, 460px);
+  align-items: flex-start;
+  line-height: 1.4;
+}
+
+.tedx-hero__meta-item--venue svg {
+  margin-top: 1px;
 }
 
 .tedx-hero__meta-item svg {

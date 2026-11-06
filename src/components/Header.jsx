@@ -95,6 +95,12 @@ const Header = () => {
               className="relative"
               onMouseEnter={() => item.submenu && setActiveDropdown(idx)}
               onMouseLeave={() => setActiveDropdown(null)}
+              onFocus={() => item.submenu && setActiveDropdown(idx)}
+              onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget)) {
+                  setActiveDropdown(null);
+                }
+              }}
             >
               <a
                 href={item.href}
@@ -224,7 +230,10 @@ const Header = () => {
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-900 rounded-lg focus:outline-none"
+            type="button"
             aria-label="Toggle navigation menu"
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-navigation"
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -235,6 +244,9 @@ const Header = () => {
       <AnimatePresence>
         {isMenuOpen && (
           <Motion.div
+            id="mobile-navigation"
+            role="navigation"
+            aria-label="Mobile navigation"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
