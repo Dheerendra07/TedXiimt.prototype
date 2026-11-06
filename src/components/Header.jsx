@@ -59,17 +59,13 @@ const Header = () => {
       label: 'Event',
       href: '/schedule',
       submenu: [
-        { label: 'Speakers', href: '/speakers', desc: 'Featured thinkers & innovators', Icon: Mic },
         ...(isAdmin ? [{ label: 'Schedule / ROS', href: '/schedule', desc: 'Admin agenda & Backstage cues', Icon: Calendar }] : []),
         { label: 'Interactive Activities', href: '/activities', desc: 'Workshops & ideation zones', Icon: Compass },
         { label: 'Sponsors & Partners', href: '/partners', desc: 'Supporters & university partners', Icon: Handshake },
       ]
     },
-    {
-      label: 'Archive Library',
-      href: '/library',
-      // badge: 'All Years'
-    },
+    { label: 'Speakers', href: '/speakers' },
+    { label: 'Archive', href: '/library' },
     { label: 'Team', href: '/team' },
     {
       label: 'Media',
