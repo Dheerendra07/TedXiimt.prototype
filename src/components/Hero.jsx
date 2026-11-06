@@ -47,7 +47,7 @@ const MONUMENT_REGIONS = [
     name: 'LOTUS TEMPLE',
     bounds: { left: 0, top: 0.61, right: 0.23, bottom: 0.86 },
     anchor: [0.12, 0.77],
-    colour: '#E8D9C5',
+    colour: '#788D98',
     source: 'https://sahbaarchitect.com/lotus/',
     quotes: [
       { text: 'One of the most remarkable achievements of our time, proving that the drive and vision of spirit can achieve miracles.', attribution: 'Arthur Erickson · Canadian architect' },
@@ -59,7 +59,7 @@ const MONUMENT_REGIONS = [
     name: 'QUTUB MINAR',
     bounds: { left: 0.275, top: 0.29, right: 0.35, bottom: 0.86 },
     anchor: [0.28, 0.69],
-    colour: '#C99A5B',
+    colour: '#9B7058',
     source: 'https://ignca.gov.in/Asi_data/41873.pdf',
     quotes: [
       { text: 'May the inscrutable Creator preserve it from all calamities.', attribution: 'Qutub Minar inscription · 1369 translation' },
@@ -71,7 +71,7 @@ const MONUMENT_REGIONS = [
     name: "HUMAYUN’S TOMB",
     bounds: { left: 0.35, top: 0.64, right: 0.48, bottom: 0.86 },
     anchor: [0.47, 0.77],
-    colour: '#B86B54',
+    colour: '#8C6258',
     source: 'https://whc.unesco.org/en/list/232/',
     quotes: [
       { text: 'The first garden-tomb on the Indian subcontinent.', attribution: 'UNESCO World Heritage Centre' },
@@ -83,7 +83,7 @@ const MONUMENT_REGIONS = [
     name: 'INDIA GATE',
     bounds: { left: 0.48, top: 0.42, right: 0.68, bottom: 0.86 },
     anchor: [0.575, 0.69],
-    colour: '#D6C29A',
+    colour: '#A39478',
     source: 'https://www.mea.gov.in/Uploads/PublicationDocs/23460_IWM_Book__11-06-2014_.pdf',
     quotes: [
       { text: 'To the dead of the Indian Armies who fell and are honoured…', attribution: 'India Gate memorial inscription' },
@@ -95,7 +95,7 @@ const MONUMENT_REGIONS = [
     name: 'AKSHARDHAM',
     bounds: { left: 0.68, top: 0.52, right: 1, bottom: 0.86 },
     anchor: [0.835, 0.74],
-    colour: '#C8A36B',
+    colour: '#9A825F',
     source: 'https://akshardham.com/',
     quotes: [
       { text: 'Each soul is potentially divine.', attribution: 'Akshardham · Spiritual premise' },
@@ -108,6 +108,7 @@ const Hero = () => {
   const prefersReducedMotion = useReducedMotion();
   const heroRef = useRef(null);
   const trailCanvasRef = useRef(null);
+  const colourRevealCanvasRef = useRef(null);
   const [countdown, setCountdown] = useState(null);
   const [monumentCards, setMonumentCards] = useState({});
   const [editionData, setEditionData] = useState({
@@ -143,17 +144,19 @@ const Hero = () => {
   }, []);
 
   // The tile lattice is intentionally fixed to the supplied reference.
-  // Cursor tiles are deterministic and are kept clear of both copy and artwork.
+  // The square-cell trail stays on open hero space; hovering artwork reveals its full monument.
   useEffect(() => {
     if (prefersReducedMotion) return undefined;
 
     const section = heroRef.current;
     const canvas = trailCanvasRef.current;
+    const revealCanvas = colourRevealCanvasRef.current;
     const imageLayer = section?.querySelector('[data-mosaic-surface]');
-    if (!section || !canvas || !imageLayer) return undefined;
+    if (!section || !canvas || !revealCanvas || !imageLayer) return undefined;
 
     const context = canvas.getContext('2d', { alpha: true });
-    if (!context) return undefined;
+    const revealContext = revealCanvas.getContext('2d', { alpha: true });
+    if (!context || !revealContext) return undefined;
 
     const MIN_CELL_SIZE = 30;
     const MAX_CELL_SIZE = 40;
@@ -175,6 +178,7 @@ const Hero = () => {
     let artworkMask = null;
     let coverTransform = null;
     let sourceArtwork = null;
+    let backgroundArtwork = null;
     let maskPixels = null;
     const colourCanvas = document.createElement('canvas');
     const colourContext = colourCanvas.getContext('2d');
@@ -186,24 +190,26 @@ const Hero = () => {
     const cells = new Map();
     const textBlockedCells = new Set();
     const regionCells = new Map();
-    const regionProgress = new Map();
     const regionTimers = new Map();
     const regionQuoteIndexes = new Map();
+    let currentRegionId = null;
+    let fadingRegionId = null;
+    let regionTransitionStartedAt = 0;
+    let revealAnimationFrame = 0;
 
     MONUMENT_REGIONS.forEach((region) => {
       regionCells.set(region.id, new Set());
-      regionProgress.set(region.id, { visited: new Set(), completed: false });
       regionQuoteIndexes.set(region.id, 0);
     });
 
-    const resetRegionTracking = () => {
-      regionTimers.forEach((timer) => window.clearTimeout(timer));
-      regionTimers.clear();
-      regionProgress.forEach((progress) => {
-        progress.visited.clear();
-        progress.completed = false;
-      });
-      setMonumentCards({});
+    const clearRegionReveal = () => {
+      currentRegionId = null;
+      fadingRegionId = null;
+      revealContext.clearRect(0, 0, width, height);
+      if (revealAnimationFrame) {
+        window.cancelAnimationFrame(revealAnimationFrame);
+        revealAnimationFrame = 0;
+      }
     };
     const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
     const smoothStep = (value) => value * value * (3 - (2 * value));
@@ -244,12 +250,24 @@ const Hero = () => {
     };
 
     const rebuildColourLayer = () => {
-      if (!sourceArtwork || !artworkMask || !coverTransform || !colourContext) return;
+      if (!sourceArtwork || !backgroundArtwork || !artworkMask || !coverTransform || !colourContext) return;
 
       colourCanvas.width = Math.max(1, Math.round(width * pixelRatio));
       colourCanvas.height = Math.max(1, Math.round(height * pixelRatio));
       colourContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
       colourContext.clearRect(0, 0, width, height);
+
+      // Begin with the actual night panorama so its shading, outlines and details survive.
+      colourContext.drawImage(
+        backgroundArtwork,
+        coverTransform.offsetX,
+        coverTransform.offsetY,
+        artworkMask.width * coverTransform.scaleX,
+        artworkMask.height * coverTransform.scaleY
+      );
+
+      // Clip the panorama to the original transparent monument silhouettes.
+      colourContext.globalCompositeOperation = 'destination-in';
       colourContext.drawImage(
         sourceArtwork,
         coverTransform.offsetX,
@@ -258,9 +276,8 @@ const Hero = () => {
         artworkMask.height * coverTransform.scaleY
       );
 
-      // Keep the supplied alpha artwork unchanged, then tint each landmark
-      // independently inside a fixed source-image region. No second image layer is added.
-      colourContext.globalCompositeOperation = 'source-atop';
+      // COLOR blend changes hue while preserving the luminance of the night scene.
+      colourContext.globalCompositeOperation = 'color';
       MONUMENT_REGIONS.forEach((region) => {
         const left = coverTransform.offsetX + (region.bounds.left * artworkMask.width * coverTransform.scaleX);
         const top = coverTransform.offsetY + (region.bounds.top * artworkMask.height * coverTransform.scaleY);
@@ -270,20 +287,21 @@ const Hero = () => {
         colourContext.beginPath();
         colourContext.rect(left, top, right - left, bottom - top);
         colourContext.clip();
+        colourContext.globalAlpha = 0.78;
         colourContext.fillStyle = region.colour;
-        colourContext.fillRect(0, 0, width, height);
+        colourContext.fillRect(left, top, right - left, bottom - top);
         colourContext.restore();
       });
+      colourContext.globalAlpha = 1;
       colourContext.globalCompositeOperation = 'source-over';
+
       try {
-        // Cache alpha once per artwork/size rebuild; scroll refreshes only text exclusions.
         maskPixels = colourContext.getImageData(0, 0, colourCanvas.width, colourCanvas.height).data;
       } catch (error) {
         maskPixels = null;
-        console.warn('[TEDx hero] Landmark progress sampling is unavailable.', error);
+        console.warn('[TEDx hero] Landmark hit-testing is unavailable.', error);
       }
     };
-
     const collectVisibleTextRects = () => {
       const sectionBounds = section.getBoundingClientRect();
       const roots = [
@@ -426,18 +444,15 @@ const Hero = () => {
       const top = (row * cellSize) + CELL_INSET;
       if (left >= width || top >= height) return false;
       const key = column + ':' + row;
-      return !textBlockedCells.has(key);
+      const overMonument = [...regionCells.values()].some((regionSet) => regionSet.has(key));
+      return !textBlockedCells.has(key) && !overMonument;
     };
 
-    const completeRegion = (region) => {
-      const progress = regionProgress.get(region.id);
-      if (!progress || progress.completed) return;
-
+    const showRegionQuote = (region) => {
       const quotes = region.quotes;
       const quoteIndex = regionQuoteIndexes.get(region.id) || 0;
       const quote = quotes[quoteIndex % quotes.length];
       regionQuoteIndexes.set(region.id, (quoteIndex + 1) % quotes.length);
-      progress.completed = true;
 
       const anchorX = coverTransform.offsetX + (region.anchor[0] * artworkMask.width * coverTransform.scaleX);
       const anchorY = coverTransform.offsetY + (region.anchor[1] * artworkMask.height * coverTransform.scaleY);
@@ -449,9 +464,9 @@ const Hero = () => {
       };
       setMonumentCards((current) => ({ ...current, [region.id]: card }));
 
+      const previousTimer = regionTimers.get(region.id);
+      if (previousTimer) window.clearTimeout(previousTimer);
       const timer = window.setTimeout(() => {
-        progress.visited.clear();
-        progress.completed = false;
         regionTimers.delete(region.id);
         setMonumentCards((current) => {
           const next = { ...current };
@@ -462,16 +477,80 @@ const Hero = () => {
       regionTimers.set(region.id, timer);
     };
 
-    const trackRegionProgress = (key) => {
-      MONUMENT_REGIONS.forEach((region) => {
-        const availableCells = regionCells.get(region.id);
-        const progress = regionProgress.get(region.id);
-        if (!availableCells || !progress || progress.completed || !availableCells.has(key)) return;
+    const getRegionAtPoint = (localX, localY) => {
+      if (!maskPixels || !colourCanvas.width || !colourCanvas.height || !coverTransform || !artworkMask) return null;
 
-        progress.visited.add(key);
-        const completionRatio = progress.visited.size / Math.max(1, availableCells.size);
-        if (completionRatio >= 0.58) completeRegion(region);
-      });
+      const sourceX = (localX - coverTransform.offsetX) / coverTransform.scaleX;
+      const sourceY = (localY - coverTransform.offsetY) / coverTransform.scaleY;
+      const normalX = sourceX / artworkMask.width;
+      const normalY = sourceY / artworkMask.height;
+      const pixelX = Math.min(colourCanvas.width - 1, Math.max(0, Math.floor(localX * pixelRatio)));
+      const pixelY = Math.min(colourCanvas.height - 1, Math.max(0, Math.floor(localY * pixelRatio)));
+      const alphaIndex = ((pixelY * colourCanvas.width) + pixelX) * 4 + 3;
+      if (maskPixels[alphaIndex] < 24) return null;
+
+      return MONUMENT_REGIONS.find((region) => (
+        normalX >= region.bounds.left && normalX <= region.bounds.right &&
+        normalY >= region.bounds.top && normalY <= region.bounds.bottom
+      )) || null;
+    };
+
+    const drawRegionReveal = (now) => {
+      revealAnimationFrame = 0;
+      revealContext.clearRect(0, 0, width, height);
+
+      const regionId = currentRegionId || fadingRegionId;
+      if (!regionId || !colourCanvas.width || !colourCanvas.height) return;
+      const region = MONUMENT_REGIONS.find((item) => item.id === regionId);
+      if (!region) return;
+
+      const progress = Math.min(1, Math.max(0, (now - regionTransitionStartedAt) / 460));
+      const opacity = currentRegionId
+        ? 1 - Math.pow(1 - progress, 3)
+        : Math.pow(1 - progress, 2);
+      const left = coverTransform.offsetX + (region.bounds.left * artworkMask.width * coverTransform.scaleX);
+      const top = coverTransform.offsetY + (region.bounds.top * artworkMask.height * coverTransform.scaleY);
+      const right = coverTransform.offsetX + (region.bounds.right * artworkMask.width * coverTransform.scaleX);
+      const bottom = coverTransform.offsetY + (region.bounds.bottom * artworkMask.height * coverTransform.scaleY);
+
+      revealContext.save();
+      revealContext.beginPath();
+      revealContext.rect(left, top, right - left, bottom - top);
+      revealContext.clip();
+      revealContext.globalAlpha = opacity;
+      revealContext.drawImage(colourCanvas, 0, 0, width, height);
+      revealContext.restore();
+
+      if (progress < 1) {
+        revealAnimationFrame = window.requestAnimationFrame(drawRegionReveal);
+      } else if (!currentRegionId) {
+        fadingRegionId = null;
+      }
+    };
+
+    const setHoveredRegion = (region, now) => {
+      const nextId = region?.id || null;
+      if (nextId === currentRegionId) return;
+
+      if (nextId) {
+        currentRegionId = nextId;
+        fadingRegionId = null;
+        regionTransitionStartedAt = now;
+        showRegionQuote(region);
+        if (!revealAnimationFrame) {
+          revealAnimationFrame = window.requestAnimationFrame(drawRegionReveal);
+        }
+        return;
+      }
+
+      if (currentRegionId) {
+        fadingRegionId = currentRegionId;
+        currentRegionId = null;
+        regionTransitionStartedAt = now;
+        if (!revealAnimationFrame) {
+          revealAnimationFrame = window.requestAnimationFrame(drawRegionReveal);
+        }
+      }
     };
 
     const activateCell = (column, row, enteredAt) => {
@@ -480,7 +559,6 @@ const Hero = () => {
       const key = column + ':' + row;
       cells.delete(key);
       cells.set(key, { column, row, enteredAt, eraseAt: enteredAt + HOLD_MS });
-      trackRegionProgress(key);
 
       while (cells.size > MAX_ACTIVE_CELLS) {
         cells.delete(cells.keys().next().value);
@@ -529,30 +607,18 @@ const Hero = () => {
       const scale = 1 - (0.06 * eraseProgress);
       const left = (cell.column * cellSize) + CELL_INSET;
       const top = (cell.row * cellSize) + CELL_INSET;
-      if (!colourCanvas.width || !colourCanvas.height) return false;
+      const nightCellPalette = ['#392326', '#2B3038', '#3A3028', '#32252D', '#26323A'];
+      const tone = nightCellPalette[(cell.column * 7 + cell.row * 3) % nightCellPalette.length];
 
       context.save();
-      context.globalAlpha = opacity;
+      context.globalAlpha = opacity * 0.62;
       context.translate(left + (tileSize / 2), top + (tileSize / 2));
       context.scale(scale, scale);
-      context.beginPath();
-      context.rect(-(tileSize / 2), -(tileSize / 2), tileSize, tileSize);
-      context.clip();
-      context.drawImage(
-        colourCanvas,
-        Math.round(left * pixelRatio),
-        Math.round(top * pixelRatio),
-        Math.round(tileSize * pixelRatio),
-        Math.round(tileSize * pixelRatio),
-        -(tileSize / 2),
-        -(tileSize / 2),
-        tileSize,
-        tileSize
-      );
+      context.fillStyle = tone;
+      context.fillRect(-(tileSize / 2), -(tileSize / 2), tileSize, tileSize);
       context.restore();
       return true;
     };
-
     const draw = (now) => {
       animationFrame = 0;
       context.clearRect(0, 0, width, height);
@@ -582,11 +648,20 @@ const Hero = () => {
         return;
       }
 
+      const now = performance.now();
+      const hoveredRegion = getRegionAtPoint(localX, localY);
+      if (hoveredRegion) {
+        setHoveredRegion(hoveredRegion, now);
+        previousCell = null;
+        return;
+      }
+
+      setHoveredRegion(null, now);
+
       const nextCell = {
         column: Math.floor(localX / cellSize),
         row: Math.floor(localY / cellSize),
       };
-      const now = performance.now();
 
       if (!previousCell) {
         activateCell(nextCell.column, nextCell.row, now);
@@ -601,6 +676,7 @@ const Hero = () => {
     };
 
     const handlePointerLeave = () => {
+      setHoveredRegion(null, performance.now());
       previousCell = null;
     };
 
@@ -617,11 +693,16 @@ const Hero = () => {
       canvas.height = Math.max(1, Math.round(height * pixelRatio));
       canvas.style.width = width + 'px';
       canvas.style.height = height + 'px';
+      revealCanvas.width = Math.max(1, Math.round(width * pixelRatio));
+      revealCanvas.height = Math.max(1, Math.round(height * pixelRatio));
+      revealCanvas.style.width = width + 'px';
+      revealCanvas.style.height = height + 'px';
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      revealContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
 
       cells.clear();
       previousCell = null;
-      resetRegionTracking();
+      clearRegionReveal();
       context.clearRect(0, 0, width, height);
       updateCoverTransform();
       rebuildColourLayer();
@@ -639,11 +720,15 @@ const Hero = () => {
     };
 
     const maskImage = new Image();
-    maskImage.decoding = 'async';
-    maskImage.onload = () => {
-      if (disposed) return;
+    const backgroundImage = new Image();
+    let maskLoaded = false;
+    let backgroundLoaded = false;
+
+    const initializeArtwork = () => {
+      if (disposed || !maskLoaded || !backgroundLoaded) return;
       try {
         sourceArtwork = maskImage;
+        backgroundArtwork = backgroundImage;
         artworkMask = buildArtworkMask(maskImage);
         resizeCanvas();
       } catch (error) {
@@ -651,16 +736,40 @@ const Hero = () => {
         gridReady = false;
         cells.clear();
         context.clearRect(0, 0, width, height);
-        console.warn('[TEDx hero] Artwork mask unavailable; cursor tiles safely disabled.', error);
+        revealContext.clearRect(0, 0, width, height);
+        console.warn('[TEDx hero] Artwork mask unavailable; colour reveal disabled.', error);
       }
+    };
+
+    maskImage.decoding = 'async';
+    maskImage.onload = () => {
+      maskLoaded = true;
+      initializeArtwork();
     };
     maskImage.onerror = () => {
       artworkMask = null;
       gridReady = false;
       cells.clear();
       context.clearRect(0, 0, width, height);
+      revealContext.clearRect(0, 0, width, height);
     };
+
+    backgroundImage.decoding = 'async';
+    backgroundImage.onload = () => {
+      backgroundLoaded = true;
+      initializeArtwork();
+    };
+    backgroundImage.onerror = () => {
+      backgroundArtwork = null;
+      maskPixels = null;
+      gridReady = false;
+      context.clearRect(0, 0, width, height);
+      revealContext.clearRect(0, 0, width, height);
+      console.warn('[TEDx hero] Original night panorama unavailable; colour reveal disabled.');
+    };
+
     maskImage.src = HERO_ARTWORK;
+    backgroundImage.src = HERO_BACKGROUND;
 
     const resizeObserver = typeof ResizeObserver !== 'undefined'
       ? new ResizeObserver(resizeCanvas)
@@ -695,6 +804,7 @@ const Hero = () => {
       window.clearTimeout(settleTimer);
       if (maskRefreshFrame) window.cancelAnimationFrame(maskRefreshFrame);
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
+      if (revealAnimationFrame) window.cancelAnimationFrame(revealAnimationFrame);
       window.removeEventListener('resize', resizeCanvas);
       window.removeEventListener('scroll', scheduleMaskRefresh);
       section.removeEventListener('pointermove', handlePointerMove);
@@ -703,6 +813,7 @@ const Hero = () => {
       regionTimers.forEach((timer) => window.clearTimeout(timer));
       regionTimers.clear();
       context.clearRect(0, 0, width, height);
+      revealContext.clearRect(0, 0, width, height);
     };
   }, [prefersReducedMotion]);
 
@@ -780,6 +891,13 @@ const Hero = () => {
           backgroundPosition: 'center 58%',
           filter: 'brightness(1.34) contrast(1.08) saturate(0.9)',
         }}
+        aria-hidden="true"
+      />
+
+      <canvas
+        ref={colourRevealCanvasRef}
+        className="pointer-events-none absolute inset-0 z-[2]"
+        style={{ filter: 'brightness(1.34) contrast(1.08) saturate(0.9)' }}
         aria-hidden="true"
       />
 
