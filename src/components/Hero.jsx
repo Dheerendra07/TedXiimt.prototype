@@ -262,7 +262,8 @@ const Hero = () => {
       colourContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
       colourContext.clearRect(0, 0, width, height);
 
-      // Begin with the actual night panorama so its shading, outlines and details survive.
+      // Start with the full night panorama so COLOR blending works against
+      // real luminance rather than transparent pixels.
       colourContext.drawImage(
         backgroundArtwork,
         coverTransform.offsetX,
@@ -271,18 +272,6 @@ const Hero = () => {
         artworkMask.height * coverTransform.scaleY
       );
 
-      // Clip the panorama to the original transparent monument silhouettes.
-      colourContext.globalCompositeOperation = 'destination-in';
-      colourContext.drawImage(
-        sourceArtwork,
-        coverTransform.offsetX,
-        coverTransform.offsetY,
-        artworkMask.width * coverTransform.scaleX,
-        artworkMask.height * coverTransform.scaleY
-      );
-
-      // COLOR blend changes hue while preserving the luminance of the night scene.
-      colourContext.globalCompositeOperation = 'color';
       MONUMENT_REGIONS.forEach((region) => {
         const left = coverTransform.offsetX + (region.bounds.left * artworkMask.width * coverTransform.scaleX);
         const top = coverTransform.offsetY + (region.bounds.top * artworkMask.height * coverTransform.scaleY);
@@ -292,12 +281,24 @@ const Hero = () => {
         colourContext.beginPath();
         colourContext.rect(left, top, right - left, bottom - top);
         colourContext.clip();
+        colourContext.globalCompositeOperation = 'color';
         colourContext.globalAlpha = 0.78;
         colourContext.fillStyle = region.colour;
         colourContext.fillRect(left, top, right - left, bottom - top);
         colourContext.restore();
       });
+
+      // Reapply the original alpha only after tinting. This keeps the exact
+      // monument silhouettes and prevents coloured rectangular hit regions.
       colourContext.globalAlpha = 1;
+      colourContext.globalCompositeOperation = 'destination-in';
+      colourContext.drawImage(
+        sourceArtwork,
+        coverTransform.offsetX,
+        coverTransform.offsetY,
+        artworkMask.width * coverTransform.scaleX,
+        artworkMask.height * coverTransform.scaleY
+      );
       colourContext.globalCompositeOperation = 'source-over';
 
       try {
