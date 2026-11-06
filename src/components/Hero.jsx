@@ -6,7 +6,7 @@ import './Hero.css';
 
 const CAMPUS_IMAGES = [
   {
-    src: '/campus-iimt-hero.jpg',
+    src: '/campus-iimt-hero.avif',
     alt: 'IIMT University campus in Meerut, with its academic building and palm-lined entrance',
   },
 ];
