@@ -47,7 +47,7 @@ const MONUMENT_REGIONS = [
     name: 'LOTUS TEMPLE',
     bounds: { left: 0, top: 0.61, right: 0.23, bottom: 0.86 },
     anchor: [0.12, 0.77],
-    colour: '#788D98',
+    colour: '#B8C9D1',
     source: 'https://sahbaarchitect.com/lotus/',
     quotes: [
       { text: 'One of the most remarkable achievements of our time, proving that the drive and vision of spirit can achieve miracles.', attribution: 'Arthur Erickson · Canadian architect' },
@@ -59,7 +59,7 @@ const MONUMENT_REGIONS = [
     name: 'QUTUB MINAR',
     bounds: { left: 0.275, top: 0.29, right: 0.35, bottom: 0.86 },
     anchor: [0.28, 0.69],
-    colour: '#9B7058',
+    colour: '#B65B3D',
     source: 'https://ignca.gov.in/Asi_data/41873.pdf',
     quotes: [
       { text: 'May the inscrutable Creator preserve it from all calamities.', attribution: 'Qutub Minar inscription · 1369 translation' },
@@ -71,7 +71,7 @@ const MONUMENT_REGIONS = [
     name: "HUMAYUN’S TOMB",
     bounds: { left: 0.35, top: 0.64, right: 0.48, bottom: 0.86 },
     anchor: [0.47, 0.77],
-    colour: '#8C6258',
+    colour: '#A95C4D',
     source: 'https://whc.unesco.org/en/list/232/',
     quotes: [
       { text: 'The first garden-tomb on the Indian subcontinent.', attribution: 'UNESCO World Heritage Centre' },
@@ -83,7 +83,7 @@ const MONUMENT_REGIONS = [
     name: 'INDIA GATE',
     bounds: { left: 0.48, top: 0.42, right: 0.68, bottom: 0.86 },
     anchor: [0.575, 0.69],
-    colour: '#A39478',
+    colour: '#A96A4E',
     source: 'https://www.mea.gov.in/Uploads/PublicationDocs/23460_IWM_Book__11-06-2014_.pdf',
     quotes: [
       { text: 'To the dead of the Indian Armies who fell and are honoured…', attribution: 'India Gate memorial inscription' },
@@ -95,7 +95,7 @@ const MONUMENT_REGIONS = [
     name: 'AKSHARDHAM',
     bounds: { left: 0.68, top: 0.52, right: 1, bottom: 0.86 },
     anchor: [0.835, 0.74],
-    colour: '#9A825F',
+    colour: '#C07D6D',
     source: 'https://akshardham.com/',
     quotes: [
       { text: 'Each soul is potentially divine.', attribution: 'Akshardham · Spiritual premise' },
@@ -282,7 +282,7 @@ const Hero = () => {
         colourContext.rect(left, top, right - left, bottom - top);
         colourContext.clip();
         colourContext.globalCompositeOperation = 'color';
-        colourContext.globalAlpha = 0.78;
+        colourContext.globalAlpha = 1;
         colourContext.fillStyle = region.colour;
         colourContext.fillRect(left, top, right - left, bottom - top);
         colourContext.restore();
@@ -619,11 +619,11 @@ const Hero = () => {
       const scale = 1 - (0.06 * eraseProgress);
       const left = (cell.column * cellSize) + CELL_INSET;
       const top = (cell.row * cellSize) + CELL_INSET;
-      const nightCellPalette = ['#392326', '#2B3038', '#3A3028', '#32252D', '#26323A'];
-      const tone = nightCellPalette[(cell.column * 7 + cell.row * 3) % nightCellPalette.length];
+      const trailPalette = ['#EB0028', '#C8102E', '#A60F2D'];
+      const tone = trailPalette[(cell.column * 7 + cell.row * 3) % trailPalette.length];
 
       context.save();
-      context.globalAlpha = opacity * 0.62;
+      context.globalAlpha = opacity * 0.84;
       context.translate(left + (tileSize / 2), top + (tileSize / 2));
       context.scale(scale, scale);
       context.fillStyle = tone;
