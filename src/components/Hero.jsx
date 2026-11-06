@@ -207,6 +207,9 @@ const Hero = () => {
       currentRegionId = null;
       fadingRegionId = null;
       currentRegionQuoteShown = false;
+      regionTimers.forEach((timer) => window.clearTimeout(timer));
+      regionTimers.clear();
+      setMonumentCards({});
       revealContext.clearRect(0, 0, width, height);
       if (revealAnimationFrame) {
         window.cancelAnimationFrame(revealAnimationFrame);
