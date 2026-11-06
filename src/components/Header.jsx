@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 import { 
   Home as HomeIcon, Info, Users, MapPin, Sparkles,
   Accessibility as AccessibilityIcon, HelpCircle, Mic, Calendar,
@@ -7,12 +7,10 @@ import {
   Ticket, ChevronDown, Menu, X, Library, User, LogOut, LayoutDashboard, Scale
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useEdition } from '../context/EditionContext';
 import logo from './logo-white.png';
 
 const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
-  const { activeEdition } = useEdition();
   const isAdmin = typeof user?.role === 'string' && user.role.toLowerCase() === 'admin';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -116,7 +114,7 @@ const Header = () => {
               {/* Submenu Dropdown */}
               <AnimatePresence>
                 {item.submenu && activeDropdown === idx && (
-                  <motion.div
+                  <Motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
@@ -168,7 +166,7 @@ const Header = () => {
 
               <AnimatePresence>
                 {userMenuOpen && (
-                  <motion.div
+                  <Motion.div
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
@@ -236,7 +234,7 @@ const Header = () => {
       {/* Mobile Drawer Menu */}
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}

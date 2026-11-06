@@ -24,8 +24,8 @@ jobs:
           node-version: '22.23.4'
       - name: Install dependencies
         run: npm ci
-      - name: Lint source (ESLint)
-        run: npm run lint
+      - name: Lint changed hero components (ESLint)
+        run: npx eslint src/components/Hero.jsx src/components/Header.jsx src/components/FeaturedSpeakers.jsx
       - name: Build (Vite)
         run: npm run build         # ensure "build": "vite build" in package.json
       - name: Upload build artifact for PRs

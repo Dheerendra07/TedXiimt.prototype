@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion as Motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, CalendarDays, MapPin, MoveDown } from 'lucide-react';
 import { useEdition } from '../context/EditionContext';
 import './Hero.css';
@@ -102,7 +102,7 @@ const Hero = () => {
 
       <div className="tedx-hero__media" aria-hidden="true">
         <AnimatePresence initial={false} mode="sync">
-          <motion.img
+          <Motion.img
             key={campusImage.src}
             className="tedx-hero__campus-image"
             src={campusImage.src}
@@ -121,7 +121,7 @@ const Hero = () => {
       </div>
 
       <div className="tedx-hero__content">
-        <motion.div
+        <Motion.div
           className="tedx-hero__copy"
           initial={reduceMotion ? false : { opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}

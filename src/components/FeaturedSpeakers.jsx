@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 import speakersData from '../data/speakersData';
 
 const FeaturedSpeakers = () => {
@@ -62,7 +62,7 @@ const FeaturedSpeakers = () => {
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-px bg-[#EB0028]/75" />
       
       <div className="container relative z-10 mx-auto px-4 pt-16 sm:px-6 sm:pt-20 lg:px-8 lg:pt-24">
-        <motion.div
+        <Motion.div
           className="text-center mb-12 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -84,7 +84,7 @@ const FeaturedSpeakers = () => {
           <div className="bg-[#0a0a0a] border-2 border-[#1a1a1a]">
             
             <AnimatePresence mode="wait">
-              <motion.div
+              <Motion.div
                 key={currentSpeaker}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
