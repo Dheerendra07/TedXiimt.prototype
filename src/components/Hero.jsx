@@ -167,7 +167,7 @@ const Hero = () => {
               IIMT University, Meerut
             </span>
           </div>
-        </motion.div>
+        </Motion.div>
       </div>
 
       <a className="tedx-hero__scroll" href="#featured-speakers" aria-label="Scroll to explore the website">

@@ -139,7 +139,7 @@ const Header = () => {
                         </a>
                       );
                     })}
-                  </motion.div>
+                  </Motion.div>
                 )}
               </AnimatePresence>
             </div>
@@ -190,7 +190,7 @@ const Header = () => {
                       <LogOut className="w-4 h-4" />
                       Sign Out
                     </button>
-                  </motion.div>
+                  </Motion.div>
                 )}
               </AnimatePresence>
             </div>
@@ -304,7 +304,7 @@ const Header = () => {
                 )}
               </div>
             </div>
-          </motion.div>
+          </Motion.div>
         )}
       </AnimatePresence>
     </header>

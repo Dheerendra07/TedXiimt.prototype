@@ -78,7 +78,7 @@ const FeaturedSpeakers = () => {
           <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto">
             Visionaries sharing ideas worth spreading
           </p>
-        </motion.div>
+        </Motion.div>
 
         <div className="max-w-7xl mx-auto">
           <div className="bg-[#0a0a0a] border-2 border-[#1a1a1a]">
@@ -169,7 +169,7 @@ const FeaturedSpeakers = () => {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </Motion.div>
             </AnimatePresence>
 
             <div className="border-t-2 border-[#1a1a1a] p-6 md:p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
