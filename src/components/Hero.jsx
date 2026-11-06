@@ -45,7 +45,7 @@ const MONUMENT_REGIONS = [
   {
     id: 'lotus',
     name: 'LOTUS TEMPLE',
-    bounds: { left: 0, top: 0.61, right: 0.23, bottom: 0.86 },
+    bounds: { left: 0, top: 0.61, right: 0.275, bottom: 1 },
     anchor: [0.12, 0.77],
     colour: '#B8C9D1',
     source: 'https://sahbaarchitect.com/lotus/',
@@ -57,7 +57,7 @@ const MONUMENT_REGIONS = [
   {
     id: 'qutub',
     name: 'QUTUB MINAR',
-    bounds: { left: 0.275, top: 0.29, right: 0.35, bottom: 0.86 },
+    bounds: { left: 0.275, top: 0.29, right: 0.35, bottom: 1 },
     anchor: [0.28, 0.69],
     colour: '#B65B3D',
     source: 'https://ignca.gov.in/Asi_data/41873.pdf',
@@ -69,7 +69,7 @@ const MONUMENT_REGIONS = [
   {
     id: 'humayun',
     name: "HUMAYUN’S TOMB",
-    bounds: { left: 0.35, top: 0.64, right: 0.48, bottom: 0.86 },
+    bounds: { left: 0.35, top: 0.64, right: 0.48, bottom: 1 },
     anchor: [0.47, 0.77],
     colour: '#A95C4D',
     source: 'https://whc.unesco.org/en/list/232/',
@@ -81,7 +81,7 @@ const MONUMENT_REGIONS = [
   {
     id: 'india-gate',
     name: 'INDIA GATE',
-    bounds: { left: 0.48, top: 0.42, right: 0.68, bottom: 0.86 },
+    bounds: { left: 0.48, top: 0.42, right: 0.68, bottom: 1 },
     anchor: [0.575, 0.69],
     colour: '#A96A4E',
     source: 'https://www.mea.gov.in/Uploads/PublicationDocs/23460_IWM_Book__11-06-2014_.pdf',
@@ -93,7 +93,7 @@ const MONUMENT_REGIONS = [
   {
     id: 'akshardham',
     name: 'AKSHARDHAM',
-    bounds: { left: 0.68, top: 0.52, right: 1, bottom: 0.86 },
+    bounds: { left: 0.68, top: 0.52, right: 1, bottom: 1 },
     anchor: [0.835, 0.74],
     colour: '#C07D6D',
     source: 'https://akshardham.com/',
