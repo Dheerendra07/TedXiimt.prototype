@@ -58,7 +58,7 @@ const FeaturedSpeakers = () => {
   const active = speakers[currentSpeaker] || speakers[0];
 
   return (
-    <section className="relative overflow-hidden bg-black pb-16 pt-0 md:pb-24 lg:pb-32">
+    <section id="featured-speakers" className="relative overflow-hidden bg-black pb-16 pt-0 md:pb-24 lg:pb-32">
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-px bg-[#EB0028]/75" />
       
       <div className="container relative z-10 mx-auto px-4 pt-16 sm:px-6 sm:pt-20 lg:px-8 lg:pt-24">

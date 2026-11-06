@@ -71,10 +71,23 @@ const Hero = () => {
   return (
     <section className="tedx-hero" aria-labelledby="tedx-hero-title">
       <div className="tedx-hero__grid" aria-hidden="true" />
-      <div className="tedx-hero__accents" aria-hidden="true">
-        {MOSAIC_CELLS.map((cell, index) => (
+      <div className="tedx-hero__accents tedx-hero__accents--under" aria-hidden="true">
+        {MOSAIC_CELLS.filter((cell) => cell.x >= 18 || (cell.x >= 6 && cell.y > 15)).map((cell) => (
           <span
-            key={index}
+            key={cell.x + ':' + cell.y}
+            className={'tedx-hero__cell tedx-hero__cell--' + cell.tone}
+            style={{
+              '--cell-x': cell.x,
+              '--cell-y': cell.y,
+              '--cell-opacity': cell.opacity,
+            }}
+          />
+        ))}
+      </div>
+      <div className="tedx-hero__accents tedx-hero__accents--over" aria-hidden="true">
+        {MOSAIC_CELLS.filter((cell) => cell.x < 18 && !(cell.x >= 6 && cell.y > 15)).map((cell) => (
+          <span
+            key={cell.x + ':' + cell.y}
             className={'tedx-hero__cell tedx-hero__cell--' + cell.tone}
             style={{
               '--cell-x': cell.x,
@@ -157,7 +170,7 @@ const Hero = () => {
         </motion.div>
       </div>
 
-      <a className="tedx-hero__scroll" href="#main-content" aria-label="Scroll to explore the website">
+      <a className="tedx-hero__scroll" href="#featured-speakers" aria-label="Scroll to explore the website">
         <span className="tedx-hero__scroll-icon"><MoveDown size={16} aria-hidden="true" /></span>
         <span>SCROLL TO EXPLORE</span>
       </a>

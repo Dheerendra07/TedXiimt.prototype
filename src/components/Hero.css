@@ -30,9 +30,11 @@
 }
 
 .tedx-hero__accents {
-  z-index: 3;
   overflow: hidden;
 }
+
+.tedx-hero__accents--under { z-index: 2; }
+.tedx-hero__accents--over { z-index: 4; }
 
 .tedx-hero__cell {
   position: absolute;
@@ -69,21 +71,15 @@
 
 .tedx-hero__media {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   top: 21%;
   right: -1.5%;
   width: min(70vw, 1320px);
   height: 56%;
   overflow: hidden;
   background: #12080b;
-  -webkit-mask-image:
-    linear-gradient(to right, transparent 0%, #000 12%, #000 100%),
-    linear-gradient(to bottom, #000 0%, #000 79%, transparent 100%);
-  mask-image:
-    linear-gradient(to right, transparent 0%, #000 12%, #000 100%),
-    linear-gradient(to bottom, #000 0%, #000 79%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 12%, #000 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 12%, #000 100%);
 }
 
 .tedx-hero__campus-image {
