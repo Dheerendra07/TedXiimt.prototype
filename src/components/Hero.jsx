@@ -7,13 +7,13 @@ const HERO_ARTWORK = '/transparent-hero-bg.PNG';
 const HERO_BACKGROUND = '/hero-bg.png';
 const MOSAIC_PALETTE = [
   '#EB0028', // TED red
-  '#B10E2E', // deep crimson
-  '#650F27', // oxblood
-  '#A64C60', // muted rose
-  '#C1BEC3', // soft silver
-  '#6B6570', // graphite plum
-  '#3A303A', // charcoal plum
+  '#CF1237', // vivid crimson
+  '#A80F2D', // rich cherry
+  '#7D1028', // deep burgundy
+  '#570F22', // oxblood
+  '#B31E3D', // muted crimson
 ];
+const MOSAIC_TRAIL_PALETTE = MOSAIC_PALETTE.slice(0, 3);
 
 // Fixed, deliberately arranged cells: a broken diagonal path with a few
 // clustered squares, matching the supplied reference without random placement.
@@ -47,7 +47,8 @@ const MONUMENT_REGIONS = [
     name: 'LOTUS TEMPLE',
     bounds: { left: 0, top: 0.61, right: 0.275, bottom: 1 },
     anchor: [0.12, 0.77],
-    colour: '#B8C9D1',
+    palette: ['#D5E0E5', '#BCCACD', '#788B98'],
+    highlight: '#EDF3F2',
     source: 'https://sahbaarchitect.com/lotus/',
     quotes: [
       { text: 'One of the most remarkable achievements of our time, proving that the drive and vision of spirit can achieve miracles.', attribution: 'Arthur Erickson · Canadian architect' },
@@ -59,7 +60,8 @@ const MONUMENT_REGIONS = [
     name: 'QUTUB MINAR',
     bounds: { left: 0.275, top: 0.29, right: 0.35, bottom: 1 },
     anchor: [0.28, 0.69],
-    colour: '#B65B3D',
+    palette: ['#C27A52', '#A85C3C', '#623A2A'],
+    highlight: '#FFD1A6',
     source: 'https://ignca.gov.in/Asi_data/41873.pdf',
     quotes: [
       { text: 'May the inscrutable Creator preserve it from all calamities.', attribution: 'Qutub Minar inscription · 1369 translation' },
@@ -71,7 +73,8 @@ const MONUMENT_REGIONS = [
     name: "HUMAYUN’S TOMB",
     bounds: { left: 0.35, top: 0.64, right: 0.48, bottom: 1 },
     anchor: [0.47, 0.77],
-    colour: '#A95C4D',
+    palette: ['#D5D3C7', '#B87961', '#754B43'],
+    highlight: '#F2DED0',
     source: 'https://whc.unesco.org/en/list/232/',
     quotes: [
       { text: 'The first garden-tomb on the Indian subcontinent.', attribution: 'UNESCO World Heritage Centre' },
@@ -83,7 +86,8 @@ const MONUMENT_REGIONS = [
     name: 'INDIA GATE',
     bounds: { left: 0.48, top: 0.42, right: 0.68, bottom: 1 },
     anchor: [0.575, 0.69],
-    colour: '#A96A4E',
+    palette: ['#CFA17B', '#AA7452', '#674B3A'],
+    highlight: '#F2C9A3',
     source: 'https://www.mea.gov.in/Uploads/PublicationDocs/23460_IWM_Book__11-06-2014_.pdf',
     quotes: [
       { text: 'To the dead of the Indian Armies who fell and are honoured…', attribution: 'India Gate memorial inscription' },
@@ -95,7 +99,8 @@ const MONUMENT_REGIONS = [
     name: 'AKSHARDHAM',
     bounds: { left: 0.68, top: 0.52, right: 1, bottom: 1 },
     anchor: [0.835, 0.74],
-    colour: '#C07D6D',
+    palette: ['#D8B091', '#BD8468', '#764D3F'],
+    highlight: '#F4D0AD',
     source: 'https://akshardham.com/',
     quotes: [
       { text: 'Each soul is potentially divine.', attribution: 'Akshardham · Spiritual premise' },
@@ -192,32 +197,37 @@ const Hero = () => {
     const regionCells = new Map();
     const regionTimers = new Map();
     const regionQuoteIndexes = new Map();
-    let currentRegionId = null;
-    let fadingRegionId = null;
-    let regionTransitionStartedAt = 0;
+    const regionRevealStates = new Map();
+    const MONUMENT_REVEAL_MS = 420;
     let revealAnimationFrame = 0;
-    let currentRegionQuoteShown = false;
 
     MONUMENT_REGIONS.forEach((region) => {
       regionCells.set(region.id, new Set());
       regionQuoteIndexes.set(region.id, 0);
     });
 
-    const clearRegionReveal = () => {
-      currentRegionId = null;
-      fadingRegionId = null;
-      currentRegionQuoteShown = false;
-      regionTimers.forEach((timer) => window.clearTimeout(timer));
-      regionTimers.clear();
-      setMonumentCards({});
-      revealContext.clearRect(0, 0, width, height);
-      if (revealAnimationFrame) {
-        window.cancelAnimationFrame(revealAnimationFrame);
-        revealAnimationFrame = 0;
-      }
-    };
     const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
     const smoothStep = (value) => value * value * (3 - (2 * value));
+
+    const updateMosaicAccents = (hideAll = false) => {
+      const accents = section.querySelectorAll('[data-mosaic-accent]');
+      accents.forEach((accent) => {
+        const column = Number(accent.dataset.mosaicColumn);
+        const row = Number(accent.dataset.mosaicRow);
+        const accentWidth = Number(accent.dataset.mosaicWidth);
+        const accentHeight = Number(accent.dataset.mosaicHeight);
+        let overlapsArtwork = hideAll || !maskPixels;
+
+        for (let y = 0; y < accentHeight && !overlapsArtwork; y += 1) {
+          for (let x = 0; x < accentWidth && !overlapsArtwork; x += 1) {
+            const key = (column + x) + ':' + (row + y);
+            overlapsArtwork = [...regionCells.values()].some((regionSet) => regionSet.has(key));
+          }
+        }
+
+        accent.style.visibility = overlapsArtwork ? 'hidden' : 'visible';
+      });
+    };
 
     const buildArtworkMask = (image) => {
       const maskWidth = image.naturalWidth;
@@ -281,9 +291,24 @@ const Hero = () => {
         colourContext.beginPath();
         colourContext.rect(left, top, right - left, bottom - top);
         colourContext.clip();
+        const materialGradient = colourContext.createLinearGradient(0, top, 0, bottom);
+        region.palette.forEach((tone, index) => {
+          materialGradient.addColorStop(index / (region.palette.length - 1), tone);
+        });
         colourContext.globalCompositeOperation = 'color';
         colourContext.globalAlpha = 1;
-        colourContext.fillStyle = region.colour;
+        colourContext.fillStyle = materialGradient;
+        colourContext.fillRect(left, top, right - left, bottom - top);
+
+        // A restrained screen-light pass lifts the material colour without
+        // flattening the original night shading or silhouette detail.
+        const nightIllumination = colourContext.createLinearGradient(0, top, 0, bottom);
+        nightIllumination.addColorStop(0, region.highlight);
+        nightIllumination.addColorStop(0.38, 'rgba(0, 0, 0, 0.08)');
+        nightIllumination.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        colourContext.globalCompositeOperation = 'screen';
+        colourContext.globalAlpha = 0.34;
+        colourContext.fillStyle = nightIllumination;
         colourContext.fillRect(left, top, right - left, bottom - top);
         colourContext.restore();
       });
@@ -377,6 +402,7 @@ const Hero = () => {
     const rebuildGridMasks = () => {
       textBlockedCells.clear();
       gridReady = false;
+      updateMosaicAccents(true);
 
       const bounds = section.getBoundingClientRect();
       width = bounds.width;
@@ -440,11 +466,12 @@ const Hero = () => {
       }
 
       gridReady = true;
+      updateMosaicAccents(false);
     };
 
     const cellIsSafe = (column, row) => {
       if (
-        !gridReady || column < 0 || row < 0 ||
+        !gridReady || !maskPixels || column < 0 || row < 0 ||
         column >= gridColumns || row >= gridRows
       ) return false;
 
@@ -470,6 +497,8 @@ const Hero = () => {
         left: Math.min(width - 120, Math.max(120, anchorX)),
         top: Math.min(height - 90, Math.max(20, anchorY)),
       };
+      regionTimers.forEach((timer) => window.clearTimeout(timer));
+      regionTimers.clear();
       setMonumentCards({ [region.id]: card });
 
       const timer = window.setTimeout(() => {
@@ -505,63 +534,51 @@ const Hero = () => {
       revealAnimationFrame = 0;
       revealContext.clearRect(0, 0, width, height);
 
-      const regionId = currentRegionId || fadingRegionId;
-      if (!regionId || !colourCanvas.width || !colourCanvas.height) return;
-      const region = MONUMENT_REGIONS.find((item) => item.id === regionId);
-      if (!region) return;
+      if (!colourCanvas.width || !colourCanvas.height || !coverTransform || !artworkMask) return;
 
-      const progress = Math.min(1, Math.max(0, (now - regionTransitionStartedAt) / 460));
-      const opacity = currentRegionId
-        ? 1 - Math.pow(1 - progress, 3)
-        : Math.pow(1 - progress, 2);
-      const left = coverTransform.offsetX + (region.bounds.left * artworkMask.width * coverTransform.scaleX);
-      const top = coverTransform.offsetY + (region.bounds.top * artworkMask.height * coverTransform.scaleY);
-      const right = coverTransform.offsetX + (region.bounds.right * artworkMask.width * coverTransform.scaleX);
-      const bottom = coverTransform.offsetY + (region.bounds.bottom * artworkMask.height * coverTransform.scaleY);
+      let hasPendingReveal = false;
+      regionRevealStates.forEach((state, regionId) => {
+        const region = MONUMENT_REGIONS.find((item) => item.id === regionId);
+        if (!region) return;
 
-      revealContext.save();
-      revealContext.beginPath();
-      revealContext.rect(left, top, right - left, bottom - top);
-      revealContext.clip();
-      revealContext.globalAlpha = opacity;
-      revealContext.drawImage(colourCanvas, 0, 0, width, height);
-      revealContext.restore();
+        const progress = Math.min(1, Math.max(0, (now - state.startedAt) / MONUMENT_REVEAL_MS));
+        const opacity = easeOutCubic(progress);
+        const left = coverTransform.offsetX + (region.bounds.left * artworkMask.width * coverTransform.scaleX);
+        const top = coverTransform.offsetY + (region.bounds.top * artworkMask.height * coverTransform.scaleY);
+        const right = coverTransform.offsetX + (region.bounds.right * artworkMask.width * coverTransform.scaleX);
+        const bottom = coverTransform.offsetY + (region.bounds.bottom * artworkMask.height * coverTransform.scaleY);
 
-      if (progress < 1) {
+        revealContext.save();
+        revealContext.beginPath();
+        revealContext.rect(left, top, right - left, bottom - top);
+        revealContext.clip();
+        revealContext.globalAlpha = opacity;
+        revealContext.drawImage(colourCanvas, 0, 0, width, height);
+        revealContext.restore();
+
+        if (progress < 1) {
+          hasPendingReveal = true;
+        } else if (!state.quoteShown) {
+          state.quoteShown = true;
+          showRegionQuote(region);
+        }
+      });
+
+      if (hasPendingReveal) {
         revealAnimationFrame = window.requestAnimationFrame(drawRegionReveal);
-      } else if (!currentRegionId) {
-        fadingRegionId = null;
-      } else if (!currentRegionQuoteShown) {
-        currentRegionQuoteShown = true;
-        showRegionQuote(region);
       }
     };
 
     const setHoveredRegion = (region, now) => {
-      const nextId = region?.id || null;
-      if (nextId === currentRegionId) return;
+      if (!region || regionRevealStates.has(region.id)) return;
 
-      if (nextId) {
-        currentRegionId = nextId;
-        fadingRegionId = null;
-        currentRegionQuoteShown = false;
-        regionTransitionStartedAt = now;
-        regionTimers.forEach((timer) => window.clearTimeout(timer));
-        regionTimers.clear();
-        setMonumentCards({});
-        if (!revealAnimationFrame) {
-          revealAnimationFrame = window.requestAnimationFrame(drawRegionReveal);
-        }
-        return;
-      }
+      regionRevealStates.set(region.id, {
+        startedAt: now,
+        quoteShown: false,
+      });
 
-      if (currentRegionId) {
-        fadingRegionId = currentRegionId;
-        currentRegionId = null;
-        regionTransitionStartedAt = now;
-        if (!revealAnimationFrame) {
-          revealAnimationFrame = window.requestAnimationFrame(drawRegionReveal);
-        }
+      if (!revealAnimationFrame) {
+        revealAnimationFrame = window.requestAnimationFrame(drawRegionReveal);
       }
     };
 
@@ -619,8 +636,7 @@ const Hero = () => {
       const scale = 1 - (0.06 * eraseProgress);
       const left = (cell.column * cellSize) + CELL_INSET;
       const top = (cell.row * cellSize) + CELL_INSET;
-      const trailPalette = ['#EB0028', '#C8102E', '#A60F2D'];
-      const tone = trailPalette[(cell.column * 7 + cell.row * 3) % trailPalette.length];
+      const tone = MOSAIC_TRAIL_PALETTE[(cell.column * 7 + cell.row * 3) % MOSAIC_TRAIL_PALETTE.length];
 
       context.save();
       context.globalAlpha = opacity * 0.84;
@@ -714,11 +730,18 @@ const Hero = () => {
 
       cells.clear();
       previousCell = null;
-      clearRegionReveal();
+      if (revealAnimationFrame) {
+        window.cancelAnimationFrame(revealAnimationFrame);
+        revealAnimationFrame = 0;
+      }
       context.clearRect(0, 0, width, height);
+      revealContext.clearRect(0, 0, width, height);
       updateCoverTransform();
       rebuildColourLayer();
       rebuildGridMasks();
+      if (regionRevealStates.size > 0) {
+        drawRegionReveal(performance.now());
+      }
     };
 
     const scheduleMaskRefresh = () => {
@@ -824,6 +847,7 @@ const Hero = () => {
       cells.clear();
       regionTimers.forEach((timer) => window.clearTimeout(timer));
       regionTimers.clear();
+      regionRevealStates.clear();
       context.clearRect(0, 0, width, height);
       revealContext.clearRect(0, 0, width, height);
     };
@@ -918,6 +942,11 @@ const Hero = () => {
         {MOSAIC_ACCENTS.map((cell, index) => (
           <span
             key={index}
+            data-mosaic-accent
+            data-mosaic-column={cell.column}
+            data-mosaic-row={cell.row}
+            data-mosaic-width={cell.width}
+            data-mosaic-height={cell.height}
             className="absolute"
             style={{
               left: 'calc(var(--hero-grid-cell, 38px) * ' + cell.column + ' + 4px)',
@@ -925,7 +954,8 @@ const Hero = () => {
               width: 'calc(var(--hero-grid-cell, 38px) * ' + cell.width + ' - 8px)',
               height: 'calc(var(--hero-grid-cell, 38px) * ' + cell.height + ' - 8px)',
               backgroundColor: MOSAIC_PALETTE[cell.color],
-              opacity: cell.opacity,
+              opacity: Math.min(cell.opacity, 0.5),
+              visibility: 'hidden',
             }}
           />
         ))}
