@@ -79,7 +79,7 @@ const Header = () => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-      isScrolled ? 'bg-black/92 backdrop-blur-2xl border-b border-white/10 shadow-[0_12px_36px_rgba(0,0,0,0.28)] py-2.5' : 'bg-transparent py-3.5'
+      isScrolled ? 'bg-black/95 backdrop-blur-2xl border-b border-[#EB0028]/20 shadow-[0_12px_36px_rgba(0,0,0,0.34)] py-2.5' : 'bg-black/55 backdrop-blur-lg border-b border-[#651125]/45 py-3.5'
     }`}>
       <div className="mx-auto flex w-[92%] max-w-[1780px] items-center justify-between gap-5">
         
@@ -101,7 +101,7 @@ const Header = () => {
               <a
                 href={item.href}
                 className={`flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors rounded-md ${
-                  activeDropdown === idx ? 'text-[#EB0028] bg-zinc-900/60' : 'text-zinc-300 hover:text-white hover:bg-zinc-900/40'
+                  (activeDropdown === idx || (typeof window !== 'undefined' && window.location.pathname === item.href)) ? 'text-[#EB0028] bg-zinc-900/50' : 'text-zinc-200 hover:text-white hover:bg-zinc-900/40'
                 }`}
               >
                 {item.label}
@@ -206,7 +206,7 @@ const Header = () => {
               </a>
               <a
                 href="/register"
-                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-[#EB0028] hover:bg-[#c90022] rounded-lg shadow-lg shadow-[#EB0028]/25 transition-all hover:scale-105 active:scale-95"
+                className="flex items-center gap-2 rounded-full border border-[#EB0028] bg-transparent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#EB0028]/10 active:scale-[0.98]"
               >
                 <Ticket className="w-4 h-4" />
                 Get Tickets
