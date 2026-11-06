@@ -198,7 +198,7 @@ const Hero = () => {
     const regionTimers = new Map();
     const regionQuoteIndexes = new Map();
     const regionRevealStates = new Map();
-    const MONUMENT_REVEAL_MS = 460;
+    const MONUMENT_REVEAL_MS = 420;
     let revealAnimationFrame = 0;
 
     MONUMENT_REGIONS.forEach((region) => {
@@ -307,7 +307,7 @@ const Hero = () => {
         nightIllumination.addColorStop(0.38, 'rgba(0, 0, 0, 0.08)');
         nightIllumination.addColorStop(1, 'rgba(0, 0, 0, 0)');
         colourContext.globalCompositeOperation = 'screen';
-        colourContext.globalAlpha = 0.2;
+        colourContext.globalAlpha = 0.34;
         colourContext.fillStyle = nightIllumination;
         colourContext.fillRect(left, top, right - left, bottom - top);
         colourContext.restore();
