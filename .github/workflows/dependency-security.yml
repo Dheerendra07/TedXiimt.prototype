@@ -78,7 +78,7 @@ jobs:
           NODE
 
       - name: Upload dependency manifests for reviewed PRs
-        if: github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: dependency-manifests-${{ github.run_id }}
