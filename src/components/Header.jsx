@@ -22,7 +22,7 @@ const Header = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -76,7 +76,7 @@ const Header = () => {
   ];
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled ? 'bg-black/95 backdrop-blur-2xl border-b border-[#EB0028]/20 shadow-[0_12px_36px_rgba(0,0,0,0.34)] py-2.5' : 'bg-black/55 backdrop-blur-lg border-b border-[#651125]/45 py-3.5'
     }`}>
       <div className="mx-auto flex w-[92%] max-w-[1780px] items-center justify-between gap-5">
@@ -84,7 +84,6 @@ const Header = () => {
         {/* Logo Lockup */}
         <a href="/" aria-label="TEDxIIMT University home" className="group flex shrink-0 flex-col items-start gap-1 rounded-lg p-1 focus:outline-none focus:ring-2 focus:ring-[#EB0028]">
           <img src={logo} alt="TEDxIIMT University Logo" className="h-12 w-auto max-w-[270px] object-contain object-left transition-transform duration-300 group-hover:scale-[1.015] sm:h-14" />
-          <span className="pl-0.5 text-[9px] font-semibold leading-none tracking-[0.025em] text-zinc-200 sm:text-[10px]">x = independently organized TED event</span>
         </a>
 
         {/* Desktop Nav Items */}

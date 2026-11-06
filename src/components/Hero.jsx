@@ -1,40 +1,25 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, CalendarDays, MapPin, MoveDown } from 'lucide-react';
 import { useEdition } from '../context/EditionContext';
 import './Hero.css';
 
-const MOSAIC_CELLS = [
-  { x: 0, y: 4, tone: 'burgundy', opacity: 0.64 },
-  { x: 1, y: 5, tone: 'red', opacity: 0.86 },
-  { x: 4, y: 14, tone: 'charcoal', opacity: 0.78 },
-  { x: 7, y: 1, tone: 'burgundy', opacity: 0.56 },
-  { x: 9, y: 18, tone: 'red', opacity: 0.72 },
-  { x: 12, y: 3, tone: 'charcoal', opacity: 0.7 },
-  { x: 15, y: 7, tone: 'red', opacity: 0.9 },
-  { x: 17, y: 17, tone: 'burgundy', opacity: 0.68 },
-  { x: 19, y: 2, tone: 'crimson', opacity: 0.72 },
-  { x: 21, y: 12, tone: 'red', opacity: 0.82 },
-  { x: 23, y: 5, tone: 'burgundy', opacity: 0.62 },
-  { x: 25, y: 18, tone: 'charcoal', opacity: 0.76 },
-  { x: 27, y: 1, tone: 'red', opacity: 0.9 },
-  { x: 29, y: 9, tone: 'crimson', opacity: 0.7 },
-  { x: 31, y: 4, tone: 'burgundy', opacity: 0.7 },
-  { x: 33, y: 15, tone: 'red', opacity: 0.82 },
-  { x: 35, y: 2, tone: 'charcoal', opacity: 0.78 },
-  { x: 37, y: 11, tone: 'crimson', opacity: 0.76 },
-  { x: 39, y: 5, tone: 'red', opacity: 0.9 },
-  { x: 41, y: 17, tone: 'burgundy', opacity: 0.72 },
-  { x: 43, y: 8, tone: 'red', opacity: 0.82 },
-  { x: 2, y: 18, tone: 'crimson', opacity: 0.58 },
-  { x: 6, y: 9, tone: 'red', opacity: 0.74 },
-  { x: 11, y: 12, tone: 'burgundy', opacity: 0.68 },
-  { x: 16, y: 20, tone: 'charcoal', opacity: 0.8 },
-  { x: 22, y: 16, tone: 'red', opacity: 0.78 },
-  { x: 28, y: 13, tone: 'burgundy', opacity: 0.7 },
-  { x: 34, y: 19, tone: 'crimson', opacity: 0.68 },
-  { x: 40, y: 1, tone: 'red', opacity: 0.76 },
-];
+const GRID_COLUMNS = {
+  mobile: 12,
+  tablet: 24,
+  desktop: 40,
+};
+
+const getCellTone = (index, columns) => {
+  const row = Math.floor(index / columns);
+  const pattern = (index * 17 + row * 11) % 37;
+
+  if (pattern === 0 || pattern === 1) return 'red';
+  if (pattern === 8) return 'crimson';
+  if (pattern === 19) return 'burgundy';
+  if (pattern === 29) return 'charcoal';
+  return '';
+};
 
 const formatEventDate = (edition) => {
   if (!edition || edition.is_active !== true || !edition.date) return null;
@@ -52,33 +37,130 @@ const formatEventDate = (edition) => {
 const Hero = () => {
   const reduceMotion = useReducedMotion();
   const { activeEdition, loading } = useEdition();
+  const heroRef = useRef(null);
+  const stageRef = useRef(null);
+  const [gridSize, setGridSize] = useState({ columns: GRID_COLUMNS.desktop, rows: 28 });
+
+  useEffect(() => {
+    const measureGrid = () => {
+      const hero = heroRef.current;
+      if (!hero) return;
+
+      const width = hero.clientWidth || window.innerWidth;
+      const height = hero.clientHeight || window.innerHeight;
+      const columns = width < 760
+        ? GRID_COLUMNS.mobile
+        : width < 1100
+          ? GRID_COLUMNS.tablet
+          : GRID_COLUMNS.desktop;
+      const cellSize = width / columns;
+      const rows = Math.ceil(height / cellSize) + 1;
+
+      setGridSize((current) => (
+        current.columns === columns && current.rows === rows
+          ? current
+          : { columns, rows }
+      ));
+    };
+
+    measureGrid();
+    window.addEventListener('resize', measureGrid, { passive: true });
+
+    const observer = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(measureGrid)
+      : null;
+
+    if (heroRef.current && observer) observer.observe(heroRef.current);
+
+    return () => {
+      window.removeEventListener('resize', measureGrid);
+      observer?.disconnect();
+    };
+  }, []);
+
+  const gridCells = useMemo(
+    () => Array.from({ length: gridSize.columns * gridSize.rows }, (_, index) => ({
+      index,
+      tone: getCellTone(index, gridSize.columns),
+    })),
+    [gridSize],
+  );
 
   const eventDate = useMemo(
     () => (!loading ? formatEventDate(activeEdition) : null),
     [activeEdition, loading],
   );
+
   const venueLabel = activeEdition?.is_active === true && activeEdition.venue
     ? activeEdition.venue
     : 'IIMT University, Meerut';
 
+  const resetStageTilt = () => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    stage.style.setProperty('--tilt-x', '0deg');
+    stage.style.setProperty('--tilt-y', '0deg');
+  };
+
+  const handleHeroPointerMove = (event) => {
+    if (event.pointerType !== 'mouse' || !stageRef.current) return;
+
+    const bounds = stageRef.current.getBoundingClientRect();
+    const isInsideStage = event.clientX >= bounds.left
+      && event.clientX <= bounds.right
+      && event.clientY >= bounds.top
+      && event.clientY <= bounds.bottom;
+
+    if (!isInsideStage) {
+      resetStageTilt();
+      return;
+    }
+
+    const horizontal = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
+    const vertical = ((event.clientY - bounds.top) / bounds.height) * 2 - 1;
+    const tiltX = Math.max(-1, Math.min(1, vertical)) * -5.5;
+    const tiltY = Math.max(-1, Math.min(1, horizontal)) * 8;
+
+    stageRef.current.style.setProperty('--tilt-x', tiltX.toFixed(2) + 'deg');
+    stageRef.current.style.setProperty('--tilt-y', tiltY.toFixed(2) + 'deg');
+  };
+
+  const fillCell = (event) => {
+    if (event.pointerType === 'mouse' || event.pointerType === 'pen' || event.type === 'pointerdown') {
+      event.currentTarget.classList.add('is-filled');
+    }
+  };
+
   return (
-    <section className="tedx-hero" aria-labelledby="tedx-hero-title">
-      <div className="tedx-hero__grid" aria-hidden="true" />
-
-      <div className="tedx-hero__x" aria-hidden="true">X</div>
-
-      <div className="tedx-hero__accents" aria-hidden="true">
-        {MOSAIC_CELLS.map((cell, index) => (
+    <section
+      ref={heroRef}
+      className="tedx-hero"
+      aria-labelledby="tedx-hero-title"
+      onPointerMove={handleHeroPointerMove}
+      onPointerLeave={resetStageTilt}
+    >
+      <div
+        className="tedx-hero__grid"
+        aria-hidden="true"
+        style={{ '--grid-columns': gridSize.columns }}
+      >
+        {gridCells.map((cell) => (
           <span
-            key={index}
-            className={'tedx-hero__cell tedx-hero__cell--' + cell.tone}
-            style={{
-              '--cell-x': cell.x,
-              '--cell-y': cell.y,
-              '--cell-opacity': cell.opacity,
-            }}
+            key={cell.index}
+            className={'tedx-hero__cell' + (cell.tone ? ' tedx-hero__cell--' + cell.tone : '')}
+            onPointerEnter={fillCell}
+            onPointerDown={fillCell}
           />
         ))}
+      </div>
+
+      <div className="tedx-hero__stage" ref={stageRef} aria-hidden="true">
+        <div className="tedx-hero__stage-glow" />
+        <div className="tedx-hero__stage-core">
+          <span className="tedx-hero__x-depth">X</span>
+          <span className="tedx-hero__x-side">X</span>
+          <span className="tedx-hero__x-face">X</span>
+        </div>
       </div>
 
       <div className="tedx-hero__content">
@@ -89,7 +171,7 @@ const Hero = () => {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
           <div className="tedx-hero__eyebrow">
-            <span>IDEAS. INSPIRATION. IMPACT.</span>
+            <span>#TEDxIIMTUniversity</span>
             <i aria-hidden="true" />
           </div>
 
