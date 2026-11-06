@@ -24,6 +24,12 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Refresh dependency lockfile for pull requests
+        if: github.event_name == 'pull_request'
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          npm audit fix --package-lock-only --ignore-scripts --no-fund --audit-level=low
+
       - name: Install locked dependencies
         run: npm ci
 
@@ -70,3 +76,13 @@ jobs:
             process.exit(result.status || 1);
           }
           NODE
+
+      - name: Upload dependency manifests for reviewed PRs
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-manifests-${{ github.run_id }}
+          path: |
+            package.json
+            package-lock.json
+          if-no-files-found: error
