@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     name: Build (runs for PRs and pushes)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -24,8 +24,38 @@ jobs:
           node-version: '22.23.4'
       - name: Install dependencies
         run: npm ci
+      - name: Lint changed hero components (ESLint)
+        run: npx eslint src/components/Hero.jsx src/components/Header.jsx src/components/FeaturedSpeakers.jsx
       - name: Build (Vite)
         run: npm run build         # ensure "build": "vite build" in package.json
+      - name: Install Playwright Chromium
+        if: github.event_name == 'pull_request'
+        run: npx --yes playwright@1.56.0 install chromium
+      - name: Start Vite production preview
+        if: github.event_name == 'pull_request'
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4173 --strictPort > /tmp/tedx-vite-preview.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/tedx-vite-preview.log
+          exit 1
+      - name: Capture desktop and mobile browser screenshots
+        if: github.event_name == 'pull_request'
+        run: |
+          mkdir -p artifacts/hero
+          npx --yes playwright@1.56.0 screenshot --browser chromium --viewport-size="1440,900" --wait-for-timeout=1800 http://127.0.0.1:4173/ artifacts/hero/desktop.png
+          npx --yes playwright@1.56.0 screenshot --browser chromium --viewport-size="390,844" --wait-for-timeout=1800 http://127.0.0.1:4173/ artifacts/hero/mobile.png
+      - name: Upload hero browser screenshots
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hero-browser-screenshots
+          path: artifacts/hero/*.png
+          if-no-files-found: warn
       - name: Upload build artifact for PRs
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4

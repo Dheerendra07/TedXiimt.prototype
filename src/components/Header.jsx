@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 import { 
   Home as HomeIcon, Info, Users, MapPin, Sparkles,
   Accessibility as AccessibilityIcon, HelpCircle, Mic, Calendar,
@@ -7,12 +7,10 @@ import {
   Ticket, ChevronDown, Menu, X, Library, User, LogOut, LayoutDashboard, Scale
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useEdition } from '../context/EditionContext';
 import logo from './logo-white.png';
 
 const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
-  const { activeEdition } = useEdition();
   const isAdmin = typeof user?.role === 'string' && user.role.toLowerCase() === 'admin';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -59,17 +57,13 @@ const Header = () => {
       label: 'Event',
       href: '/schedule',
       submenu: [
-        { label: 'Speakers', href: '/speakers', desc: 'Featured thinkers & innovators', Icon: Mic },
         ...(isAdmin ? [{ label: 'Schedule / ROS', href: '/schedule', desc: 'Admin agenda & Backstage cues', Icon: Calendar }] : []),
         { label: 'Interactive Activities', href: '/activities', desc: 'Workshops & ideation zones', Icon: Compass },
         { label: 'Sponsors & Partners', href: '/partners', desc: 'Supporters & university partners', Icon: Handshake },
       ]
     },
-    {
-      label: 'Archive Library',
-      href: '/library',
-      // badge: 'All Years'
-    },
+    { label: 'Speakers', href: '/speakers' },
+    { label: 'Archive', href: '/library' },
     { label: 'Team', href: '/team' },
     {
       label: 'Media',
@@ -83,7 +77,7 @@ const Header = () => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-      isScrolled ? 'bg-black/92 backdrop-blur-2xl border-b border-white/10 shadow-[0_12px_36px_rgba(0,0,0,0.28)] py-2.5' : 'bg-transparent py-3.5'
+      isScrolled ? 'bg-black/95 backdrop-blur-2xl border-b border-[#EB0028]/20 shadow-[0_12px_36px_rgba(0,0,0,0.34)] py-2.5' : 'bg-black/55 backdrop-blur-lg border-b border-[#651125]/45 py-3.5'
     }`}>
       <div className="mx-auto flex w-[92%] max-w-[1780px] items-center justify-between gap-5">
         
@@ -101,11 +95,17 @@ const Header = () => {
               className="relative"
               onMouseEnter={() => item.submenu && setActiveDropdown(idx)}
               onMouseLeave={() => setActiveDropdown(null)}
+              onFocus={() => item.submenu && setActiveDropdown(idx)}
+              onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget)) {
+                  setActiveDropdown(null);
+                }
+              }}
             >
               <a
                 href={item.href}
                 className={`flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors rounded-md ${
-                  activeDropdown === idx ? 'text-[#EB0028] bg-zinc-900/60' : 'text-zinc-300 hover:text-white hover:bg-zinc-900/40'
+                  (activeDropdown === idx || (typeof window !== 'undefined' && window.location.pathname === item.href)) ? 'text-[#EB0028] bg-zinc-900/50' : 'text-zinc-200 hover:text-white hover:bg-zinc-900/40'
                 }`}
               >
                 {item.label}
@@ -120,7 +120,7 @@ const Header = () => {
               {/* Submenu Dropdown */}
               <AnimatePresence>
                 {item.submenu && activeDropdown === idx && (
-                  <motion.div
+                  <Motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
@@ -145,7 +145,7 @@ const Header = () => {
                         </a>
                       );
                     })}
-                  </motion.div>
+                  </Motion.div>
                 )}
               </AnimatePresence>
             </div>
@@ -172,7 +172,7 @@ const Header = () => {
 
               <AnimatePresence>
                 {userMenuOpen && (
-                  <motion.div
+                  <Motion.div
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
@@ -196,7 +196,7 @@ const Header = () => {
                       <LogOut className="w-4 h-4" />
                       Sign Out
                     </button>
-                  </motion.div>
+                  </Motion.div>
                 )}
               </AnimatePresence>
             </div>
@@ -210,7 +210,7 @@ const Header = () => {
               </a>
               <a
                 href="/register"
-                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-[#EB0028] hover:bg-[#c90022] rounded-lg shadow-lg shadow-[#EB0028]/25 transition-all hover:scale-105 active:scale-95"
+                className="flex items-center gap-2 rounded-full border border-[#EB0028] bg-transparent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#EB0028]/10 active:scale-[0.98]"
               >
                 <Ticket className="w-4 h-4" />
                 Get Tickets
@@ -230,7 +230,10 @@ const Header = () => {
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-900 rounded-lg focus:outline-none"
+            type="button"
             aria-label="Toggle navigation menu"
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-navigation"
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -240,7 +243,10 @@ const Header = () => {
       {/* Mobile Drawer Menu */}
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.div
+          <Motion.div
+            id="mobile-navigation"
+            role="navigation"
+            aria-label="Mobile navigation"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -310,7 +316,7 @@ const Header = () => {
                 )}
               </div>
             </div>
-          </motion.div>
+          </Motion.div>
         )}
       </AnimatePresence>
     </header>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 import speakersData from '../data/speakersData';
 
 const FeaturedSpeakers = () => {
@@ -48,7 +48,7 @@ const FeaturedSpeakers = () => {
 
   if (speakers.length === 0) {
     return (
-      <section className="py-16 md:py-24 bg-black text-center text-zinc-500">
+      <section id="featured-speakers" className="py-16 md:py-24 bg-black text-center text-zinc-500">
         <div className="w-8 h-8 border-2 border-[#EB0028] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p className="text-sm">Loading 2025 Speaker Lineup...</p>
       </section>
@@ -58,11 +58,11 @@ const FeaturedSpeakers = () => {
   const active = speakers[currentSpeaker] || speakers[0];
 
   return (
-    <section className="relative overflow-hidden bg-black pb-16 pt-0 md:pb-24 lg:pb-32">
+    <section id="featured-speakers" className="relative overflow-hidden bg-black pb-16 pt-0 md:pb-24 lg:pb-32">
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-px bg-[#EB0028]/75" />
       
       <div className="container relative z-10 mx-auto px-4 pt-16 sm:px-6 sm:pt-20 lg:px-8 lg:pt-24">
-        <motion.div
+        <Motion.div
           className="text-center mb-12 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -78,13 +78,13 @@ const FeaturedSpeakers = () => {
           <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto">
             Visionaries sharing ideas worth spreading
           </p>
-        </motion.div>
+        </Motion.div>
 
         <div className="max-w-7xl mx-auto">
           <div className="bg-[#0a0a0a] border-2 border-[#1a1a1a]">
             
             <AnimatePresence mode="wait">
-              <motion.div
+              <Motion.div
                 key={currentSpeaker}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -169,7 +169,7 @@ const FeaturedSpeakers = () => {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </Motion.div>
             </AnimatePresence>
 
             <div className="border-t-2 border-[#1a1a1a] p-6 md:p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
