@@ -196,6 +196,7 @@ const Hero = () => {
     let fadingRegionId = null;
     let regionTransitionStartedAt = 0;
     let revealAnimationFrame = 0;
+    let currentRegionQuoteShown = false;
 
     MONUMENT_REGIONS.forEach((region) => {
       regionCells.set(region.id, new Set());
@@ -205,6 +206,7 @@ const Hero = () => {
     const clearRegionReveal = () => {
       currentRegionId = null;
       fadingRegionId = null;
+      currentRegionQuoteShown = false;
       revealContext.clearRect(0, 0, width, height);
       if (revealAnimationFrame) {
         window.cancelAnimationFrame(revealAnimationFrame);
@@ -402,7 +404,9 @@ const Hero = () => {
           // A cell counts only when its tile samples the original opaque artwork
           // inside one known landmark region. Empty background cells never count.
           MONUMENT_REGIONS.forEach((region) => {
-            const samples = [0.22, 0.5, 0.78];
+            // Dense sampling prevents a square tile from slipping across narrow
+            // monument edges or the thinner lotus petals.
+            const samples = [0.1, 0.3, 0.5, 0.7, 0.9];
             let touchesArtwork = false;
             for (let sampleY = 0; sampleY < samples.length && !touchesArtwork; sampleY += 1) {
               for (let sampleX = 0; sampleX < samples.length; sampleX += 1) {
@@ -462,10 +466,8 @@ const Hero = () => {
         left: Math.min(width - 120, Math.max(120, anchorX)),
         top: Math.min(height - 90, Math.max(20, anchorY)),
       };
-      setMonumentCards((current) => ({ ...current, [region.id]: card }));
+      setMonumentCards({ [region.id]: card });
 
-      const previousTimer = regionTimers.get(region.id);
-      if (previousTimer) window.clearTimeout(previousTimer);
       const timer = window.setTimeout(() => {
         regionTimers.delete(region.id);
         setMonumentCards((current) => {
@@ -525,6 +527,9 @@ const Hero = () => {
         revealAnimationFrame = window.requestAnimationFrame(drawRegionReveal);
       } else if (!currentRegionId) {
         fadingRegionId = null;
+      } else if (!currentRegionQuoteShown) {
+        currentRegionQuoteShown = true;
+        showRegionQuote(region);
       }
     };
 
@@ -535,8 +540,11 @@ const Hero = () => {
       if (nextId) {
         currentRegionId = nextId;
         fadingRegionId = null;
+        currentRegionQuoteShown = false;
         regionTransitionStartedAt = now;
-        showRegionQuote(region);
+        regionTimers.forEach((timer) => window.clearTimeout(timer));
+        regionTimers.clear();
+        setMonumentCards({});
         if (!revealAnimationFrame) {
           revealAnimationFrame = window.requestAnimationFrame(drawRegionReveal);
         }
