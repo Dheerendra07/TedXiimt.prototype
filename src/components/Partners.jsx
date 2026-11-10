@@ -36,7 +36,7 @@ const Partners = () => {
     <section className="home-section home-section--partners" aria-labelledby="home-partners-title">
       <div className="home-section__container">
         <HomeSectionHeading
-          number="07"
+          number="06"
           eyebrow="THE PEOPLE WHO MAKE IT POSSIBLE"
           title="Made possible"
           accent="together."
