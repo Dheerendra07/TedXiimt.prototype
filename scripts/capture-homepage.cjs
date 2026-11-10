@@ -17,7 +17,7 @@ const sectionCaptures = [
 
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
-async function captureViewport(browser, label, width, height) {
+async function captureViewport(label, width, height) {
   const pageErrors = [];
   const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
   const context = await browser.newContext({
