@@ -8,7 +8,6 @@ import ValueProposition from '../components/ValueProposition';
 import SocialMedia from '../components/SocialMedia';
 import Partners from '../components/Partners';
 import Blog from '../components/Blog';
-import FloatingCTA from '../components/FloatingCTA';
 import './HomePage.css';
 import './HomeDynamicSections.css';
 
@@ -47,8 +46,6 @@ const HomePage = () => (
         </div>
       </section>
     </main>
-
-    <FloatingCTA />
   </div>
 );
 

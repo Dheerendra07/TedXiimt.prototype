@@ -98,6 +98,9 @@
 
 .home-speakers__row {
   display: grid;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   grid-template-columns: 28px 72px minmax(0, 1fr) 20px;
   align-items: center;
   gap: 17px;
@@ -214,11 +217,13 @@
 
 @media (max-width: 520px) {
   .home-speakers__row {
-    grid-template-columns: 22px 58px minmax(0, 1fr) 17px;
-    gap: 10px;
-    min-height: 115px;
+    grid-template-columns: 18px 52px minmax(0, 1fr) 14px;
+    gap: 8px;
+    min-height: 110px;
+    padding-inline: 0;
   }
-  .home-speakers__portrait { width: 58px; height: 72px; }
+  .home-speakers__portrait { width: 52px; height: 68px; }
+  .home-speakers__row-arrow { width: 14px; height: 14px; }
   .home-speakers__row-copy strong { font-size: 13px; }
   .home-speakers__row-copy em { font-size: 11px; }
 }
