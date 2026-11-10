@@ -1,12 +1,17 @@
 import React, { useRef, useState } from 'react';
 import { motion as Motion } from 'framer-motion';
-import { Play, Pause, Volume2 } from 'lucide-react';
+import { Pause, Play, Volume2 } from 'lucide-react';
 import HomeSectionHeading from './HomeSectionHeading';
 import './SocialMedia.css';
 
-const reelVideos = ['/1.mp4', '/2.mp4', '/3.mp4', '/4.mp4'];
+const reelVideos = [
+  { src: '/1.mp4', poster: '/assets/highlight-01.webp', orientation: 'portrait' },
+  { src: '/2.mp4', poster: '/assets/highlight-02.webp', orientation: 'portrait' },
+  { src: '/3.mp4', poster: '/assets/highlight-03.webp', orientation: 'landscape' },
+  { src: '/4.mp4', poster: '/assets/highlight-04.webp', orientation: 'landscape' },
+];
 
-const ReelCard = ({ src, index, activeVideoRef, setActiveVideo }) => {
+const ReelCard = ({ reel, index, activeVideoRef }) => {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -21,7 +26,6 @@ const ReelCard = ({ src, index, activeVideoRef, setActiveVideo }) => {
         }
         await video.play();
         activeVideoRef.current = video;
-        setActiveVideo(video);
       } catch (error) {
         console.warn('Unable to play TEDxIIMT highlight:', error);
       }
@@ -29,36 +33,26 @@ const ReelCard = ({ src, index, activeVideoRef, setActiveVideo }) => {
     }
 
     video.pause();
-    setIsPlaying(false);
-    if (activeVideoRef.current === video) {
-      activeVideoRef.current = null;
-      setActiveVideo(null);
-    }
   };
 
   const handlePlay = () => {
+    if (activeVideoRef.current && activeVideoRef.current !== videoRef.current) {
+      activeVideoRef.current.pause();
+    }
+    activeVideoRef.current = videoRef.current;
     setIsPlaying(true);
-    setActiveVideo(videoRef.current);
   };
 
   const handlePause = () => {
     setIsPlaying(false);
     if (activeVideoRef.current === videoRef.current) {
       activeVideoRef.current = null;
-      setActiveVideo(null);
-    }
-  };
-
-  const handleKeyDown = (event) => {
-    if ((event.key === 'Enter' || event.key === ' ') && isPlaying) {
-      event.preventDefault();
-      togglePlayback();
     }
   };
 
   return (
     <Motion.article
-      className="home-reel"
+      className={'home-reel home-reel--' + reel.orientation}
       initial={{ opacity: 0, y: 26 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.18 }}
@@ -67,7 +61,8 @@ const ReelCard = ({ src, index, activeVideoRef, setActiveVideo }) => {
       <div className="home-reel__frame">
         <video
           ref={videoRef}
-          src={src}
+          src={reel.src}
+          poster={reel.poster}
           className="home-reel__video"
           playsInline
           loop
@@ -75,9 +70,6 @@ const ReelCard = ({ src, index, activeVideoRef, setActiveVideo }) => {
           onPlay={handlePlay}
           onPause={handlePause}
           onEnded={handlePause}
-          onClick={isPlaying ? togglePlayback : undefined}
-          onKeyDown={handleKeyDown}
-          tabIndex={isPlaying ? 0 : -1}
           aria-label={'TEDxIIMT event highlight ' + (index + 1)}
         />
 
@@ -115,7 +107,6 @@ const ReelCard = ({ src, index, activeVideoRef, setActiveVideo }) => {
 
 const SocialMedia = () => {
   const activeVideoRef = useRef(null);
-  const [, setActiveVideo] = useState(null);
 
   return (
     <section
@@ -133,13 +124,12 @@ const SocialMedia = () => {
         />
 
         <div className="home-reels-grid">
-          {reelVideos.map((src, index) => (
+          {reelVideos.map((reel, index) => (
             <ReelCard
-              key={src}
-              src={src}
+              key={reel.src}
+              reel={reel}
               index={index}
               activeVideoRef={activeVideoRef}
-              setActiveVideo={setActiveVideo}
             />
           ))}
         </div>

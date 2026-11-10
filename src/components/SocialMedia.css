@@ -1,16 +1,26 @@
 .home-reels-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(12px, 1.8vw, 24px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(18px, 2.2vw, 30px);
 }
 
 .home-reel {
   min-width: 0;
 }
 
+.home-reel--portrait .home-reel__frame {
+  width: min(100%, 380px);
+  aspect-ratio: 9 / 16;
+  margin-inline: auto;
+}
+
+.home-reel--landscape .home-reel__frame {
+  aspect-ratio: 16 / 9;
+}
+
 .home-reel__frame {
   position: relative;
-  aspect-ratio: 9 / 16;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.14);
   background: #11090c;
@@ -33,7 +43,7 @@
   justify-content: center;
   gap: 15px;
   border: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.58), rgba(0,0,0,0.12));
+  background: linear-gradient(to top, rgba(0,0,0,0.52), rgba(0,0,0,0.08));
   color: #fff;
   cursor: pointer;
   transition: background-color 220ms ease;
@@ -102,11 +112,12 @@
 }
 
 @media (max-width: 900px) {
-  .home-reels-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .home-reels-grid { gap: 16px; }
+  .home-reel--portrait .home-reel__frame { width: min(100%, 340px); }
 }
 
 @media (max-width: 520px) {
-  .home-reels-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .home-reels-grid { gap: 12px; }
   .home-reel__play span { width: 46px; height: 46px; }
   .home-reel__caption { flex-direction: column; gap: 5px; }
 }

@@ -8,8 +8,8 @@ const discoverCards = [
   {
     number: '01',
     title: 'Our Speakers',
-    description: 'Meet the voices behind the ideas and revisit talks from the TEDxIIMT stage.',
-    href: '/speakers',
+    description: 'Revisit the talks and perspectives shared on the 2025 TEDxIIMT University stage.',
+    href: '/archive/2025',
     image: '/assets/Miriam.jpg',
     alt: 'Miriam Chandy Menacherry, TEDxIIMT University 2025 speaker',
     note: 'PEOPLE & PERSPECTIVES',
@@ -17,10 +17,10 @@ const discoverCards = [
   {
     number: '02',
     title: 'Our Team',
-    description: 'Discover the people who bring the event together through care, craft and collaboration.',
+    description: 'Meet the people who bring an event together through care, craft and collaboration.',
     href: '/team',
-    image: '/hero-bg.png',
-    alt: 'TEDxIIMT University event artwork',
+    image: '/assets/highlight-03.webp',
+    alt: 'IIMT University event team gathered around a table',
     note: 'THE PEOPLE BEHIND IT',
   },
   {
@@ -28,8 +28,7 @@ const discoverCards = [
     title: 'Partners',
     description: 'Explore the organizations and people who support a platform for ideas worth spreading.',
     href: '/partners',
-    image: '/transparent-hero-bg.PNG',
-    alt: 'TEDxIIMT University partner artwork',
+    artwork: 'partners',
     note: 'BUILT TOGETHER',
   },
 ];
@@ -61,11 +60,27 @@ const EventHighlights = () => (
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
           >
-            <div className="home-discover-card__image">
-              <img src={card.image} alt={card.alt} loading="lazy" />
-              <span>{card.number}</span>
-              <div className="home-discover-card__image-shade" />
-            </div>
+            {card.artwork === 'partners' ? (
+              <div className="home-discover-card__image home-discover-card__image--partners" aria-hidden="true">
+                <span className="home-discover-card__image-index">{card.number}</span>
+                <div className="home-partner-art__grid">
+                  <i /><i /><i /><i /><i /><i /><i /><i /><i />
+                </div>
+                <div className="home-partner-art__wordmark">
+                  <span>IDEAS</span>
+                  <span>GROW</span>
+                  <strong>TOGETHER.</strong>
+                </div>
+                <div className="home-partner-art__baseline">TEDxIIMT UNIVERSITY / PARTNERS</div>
+              </div>
+            ) : (
+              <div className="home-discover-card__image">
+                <img src={card.image} alt={card.alt} loading="lazy" />
+                <span>{card.number}</span>
+                <div className="home-discover-card__image-shade" />
+              </div>
+            )}
+
             <div className="home-discover-card__copy">
               <div className="home-discover-card__meta">
                 <span>{card.note}</span>
