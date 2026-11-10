@@ -44,7 +44,7 @@ const Blog = () => {
     <section className="home-section home-section--journal" aria-labelledby="home-journal-title">
       <div className="home-section__container">
         <HomeSectionHeading
-          number="07"
+          number="09"
           eyebrow="IDEAS IN PRINT"
           title="Stories worth"
           accent="staying with."

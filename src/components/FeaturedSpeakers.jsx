@@ -20,7 +20,7 @@ const FeaturedSpeakers = () => (
   >
     <div className="home-section__container">
       <HomeSectionHeading
-        number="02"
+        number="04"
         eyebrow="THE 2025 EDITION · SPEAKER ARCHIVE"
         title="Voices that"
         accent="broke the flow."

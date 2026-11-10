@@ -42,7 +42,7 @@ const EventHighlights = () => (
   >
     <div className="home-section__container">
       <HomeSectionHeading
-        number="03"
+        number="05"
         eyebrow="EXPLORE TEDxIIMT"
         title="More than"
         accent="a stage."

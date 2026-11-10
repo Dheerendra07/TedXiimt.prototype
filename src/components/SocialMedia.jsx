@@ -124,7 +124,7 @@ const SocialMedia = () => {
     >
       <div className="home-section__container">
         <HomeSectionHeading
-          number="05"
+          number="07"
           eyebrow="MOMENTS FROM THE ROOM"
           title="The energy"
           accent="lives on."

@@ -54,7 +54,7 @@ const ValueProposition = () => {
     >
       <div className="home-section__container">
         <HomeSectionHeading
-          number="04"
+          number="06"
           eyebrow="WHY BE IN THE ROOM"
           title="An idea can"
           accent="change your direction."
