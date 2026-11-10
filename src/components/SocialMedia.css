@@ -1,0 +1,112 @@
+.home-reels-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(12px, 1.8vw, 24px);
+}
+
+.home-reel {
+  min-width: 0;
+}
+
+.home-reel__frame {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: #11090c;
+}
+
+.home-reel__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #090708;
+}
+
+.home-reel__play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  border: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.58), rgba(0,0,0,0.12));
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 220ms ease;
+}
+
+.home-reel__play:hover { background-color: rgba(90,0,20,0.2); }
+
+.home-reel__play span {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,0.75);
+  border-radius: 50%;
+  background: rgba(5,4,5,0.45);
+  transition: transform 220ms ease, border-color 220ms ease, background-color 220ms ease;
+}
+
+.home-reel__play:hover span {
+  transform: scale(1.07);
+  border-color: #eb1238;
+  background: #eb1238;
+}
+
+.home-reel__play small {
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.2em;
+}
+
+.home-reel__pause {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,0.45);
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  cursor: pointer;
+}
+
+.home-reel__caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 12px;
+  color: #92868d;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+}
+
+.home-reel__caption span:last-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #c5b9bf;
+}
+
+.home-reel button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+}
+
+@media (max-width: 900px) {
+  .home-reels-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+}
+
+@media (max-width: 520px) {
+  .home-reels-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .home-reel__play span { width: 46px; height: 46px; }
+  .home-reel__caption { flex-direction: column; gap: 5px; }
+}
