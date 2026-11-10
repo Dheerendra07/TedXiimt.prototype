@@ -91,6 +91,8 @@ const Hero = () => {
     [activeEdition, loading],
   );
 
+  const hasUpcomingEdition = activeEdition?.is_active === true
+    && (!activeEdition.date || new Date(activeEdition.date).getTime() >= Date.now());
   const venueLabel = activeEdition?.is_active === true && activeEdition.venue
     ? activeEdition.venue
     : 'IIMT University, Meerut';
@@ -189,11 +191,12 @@ const Hero = () => {
           </div>
 
           <div className="tedx-hero__actions">
-            <a className="tedx-hero__primary" href="/register">
-              Register Now <ArrowRight aria-hidden="true" size={18} />
+            <a className="tedx-hero__primary" href={hasUpcomingEdition ? '/register' : '/archive/2025'}>
+              {hasUpcomingEdition ? 'Register Now' : 'Explore the 2025 Edition'}
+              <ArrowRight aria-hidden="true" size={18} />
             </a>
-            <a className="tedx-hero__secondary" href="/speakers">
-              Meet Our Speakers
+            <a className="tedx-hero__secondary" href={hasUpcomingEdition ? '/speakers' : '/archive/2025'}>
+              {hasUpcomingEdition ? 'Meet Our Speakers' : 'View Past Speakers'}
             </a>
           </div>
 
@@ -213,7 +216,7 @@ const Hero = () => {
         </Motion.div>
       </div>
 
-      <a className="tedx-hero__scroll" href="#featured-speakers" aria-label="Scroll to explore the website">
+      <a className="tedx-hero__scroll" href="#what-is-tedx" aria-label="Scroll to explore the website">
         <span className="tedx-hero__scroll-icon"><MoveDown size={16} aria-hidden="true" /></span>
         <span>SCROLL TO EXPLORE</span>
       </a>

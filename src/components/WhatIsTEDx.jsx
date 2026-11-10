@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { motion as Motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import HomeSectionHeading from './HomeSectionHeading';
+import './WhatIsTEDx.css';
 
 const stories = [
   {
@@ -70,6 +71,12 @@ const StoryFrame = ({ story, index, progress, reduceMotion }) => {
   const y = useTransform(progress, [start, start + 0.08], [34, 0], { clamp: true });
   const scale = useTransform(progress, [start, start + 0.08, end], [0.985, 1, 1], { clamp: true });
   const baseLine = start + 0.06;
+  const linkOpacity = useTransform(
+    progress,
+    [baseLine + 0.19, baseLine + 0.25],
+    [0, 1],
+    { clamp: true },
+  );
 
   return (
     <Motion.article
@@ -115,14 +122,7 @@ const StoryFrame = ({ story, index, progress, reduceMotion }) => {
         <Motion.a
           href={story.link}
           className="home-link home-link--primary home-story__link"
-          style={{
-            opacity: reduceMotion ? 1 : useTransform(
-              progress,
-              [baseLine + 0.19, baseLine + 0.25],
-              [0, 1],
-              { clamp: true },
-            ),
-          }}
+          style={{ opacity: reduceMotion ? 1 : linkOpacity }}
         >
           {story.linkLabel}
           <span aria-hidden="true">→</span>
