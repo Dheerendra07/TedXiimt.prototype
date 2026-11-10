@@ -7,10 +7,14 @@ import {
   Ticket, ChevronDown, Menu, X, Library, User, LogOut, LayoutDashboard, Scale
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useEdition } from '../context/EditionContext';
 import logo from './logo-white.png';
 
 const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
+  const { activeEdition } = useEdition();
+  const hasUpcomingEdition = activeEdition?.is_active === true
+    && (!activeEdition.date || new Date(activeEdition.date).getTime() >= Date.now());
   const isAdmin = typeof user?.role === 'string' && user.role.toLowerCase() === 'admin';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -208,11 +212,11 @@ const Header = () => {
                 Sign In
               </a>
               <a
-                href="/register"
+                href={hasUpcomingEdition ? '/register' : '/archive/2025'}
                 className="flex items-center gap-2 rounded-full border border-[#EB0028] bg-transparent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#EB0028]/10 active:scale-[0.98]"
               >
-                <Ticket className="w-4 h-4" />
-                Get Tickets
+                {hasUpcomingEdition ? <Ticket className="w-4 h-4" /> : <Library className="w-4 h-4" />}
+                {hasUpcomingEdition ? 'Get Tickets' : 'Explore Archive'}
               </a>
             </>
           )}
@@ -221,10 +225,10 @@ const Header = () => {
         {/* Mobile Menu Toggle */}
         <div className="flex items-center gap-2 lg:hidden">
           <a
-            href="/register"
+            href={hasUpcomingEdition ? '/register' : '/archive/2025'}
             className="px-3 py-1.5 text-xs font-bold text-white bg-[#EB0028] rounded-md shadow"
           >
-            Tickets
+            {hasUpcomingEdition ? 'Tickets' : 'Archive'}
           </a>
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
