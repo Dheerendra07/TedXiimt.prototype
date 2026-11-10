@@ -4,7 +4,7 @@ const { chromium } = require('playwright');
 
 const BASE_URL = process.env.HOMEPAGE_PREVIEW_URL || 'http://127.0.0.1:4173/';
 const OUTPUT_DIR = process.env.HOMEPAGE_ARTIFACT_DIR || 'artifacts/homepage';
-const storyProgress = [0.06, 0.48, 0.86];
+const storyProgress = [0.27, 0.61, 0.95];
 const sectionCaptures = [
   ['#featured-speakers', 'speakers'],
   ['#discover', 'discover'],
@@ -75,6 +75,23 @@ async function captureViewport(label, width, height) {
     storyFrames: document.querySelectorAll('.home-story__frame').length,
     sectionCount: document.querySelectorAll('main .home-section').length,
     navPosition: getComputedStyle(document.querySelector('header')).position,
+    overflowingElements: [...document.querySelectorAll('body *')]
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return {
+          tag: element.tagName.toLowerCase(),
+          className: typeof element.className === 'string' ? element.className.slice(0, 120) : '',
+          id: element.id || '',
+          left: Math.round(rect.left),
+          right: Math.round(rect.right),
+          width: Math.round(rect.width),
+          position: style.position,
+          overflow: style.overflow,
+        };
+      })
+      .filter((element) => element.width > 0 && (element.left < -1 || element.right > document.documentElement.clientWidth + 1))
+      .slice(0, 24),
   }));
 
   await context.close();
