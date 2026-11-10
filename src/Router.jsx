@@ -88,7 +88,7 @@ const Router = () => {
     '/home': {
       component: React.lazy(() => import('./App')),
       title: 'TEDxIIMT University | Break the Flow',
-      description: 'Official Platform for TEDxIIMT University 2025: Break the Flow.'
+      description: 'Ideas, inspiration and perspectives from TEDxIIMT University in Meerut.'
     },
     '/about': {
       component: React.lazy(() => import('./pages/AboutPage')),

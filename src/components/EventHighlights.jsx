@@ -10,8 +10,8 @@ const discoverCards = [
     title: 'Our Speakers',
     description: 'Meet the voices behind the ideas and revisit talks from the TEDxIIMT stage.',
     href: '/speakers',
-    image: '/assets/Aditya_Yadav.jpeg',
-    alt: 'TEDxIIMT speaker on stage',
+    image: '/assets/Miriam.jpg',
+    alt: 'Miriam Chandy Menacherry, TEDxIIMT University 2025 speaker',
     note: 'PEOPLE & PERSPECTIVES',
   },
   {

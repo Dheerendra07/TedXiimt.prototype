@@ -309,11 +309,11 @@ const Header = () => {
                       Sign In
                     </a>
                     <a
-                      href="/register"
+                      href={hasUpcomingEdition ? '/register' : '/archive/2025'}
                       onClick={() => setIsMenuOpen(false)}
                       className="block w-full py-2.5 text-center text-sm font-semibold bg-[#EB0028] text-white rounded-lg shadow-md"
                     >
-                      Get Tickets
+                      {hasUpcomingEdition ? 'Get Tickets' : 'Explore the Archive'}
                     </a>
                   </>
                 )}

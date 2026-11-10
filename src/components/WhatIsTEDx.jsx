@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { motion as Motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
-import HomeSectionHeading from './HomeSectionHeading';
 import './WhatIsTEDx.css';
 
 const stories = [
@@ -77,6 +76,9 @@ const StoryFrame = ({ story, index, progress, reduceMotion }) => {
     [0, 1],
     { clamp: true },
   );
+  const pointerEvents = useTransform(progress, (value) => (
+    value >= start && value <= end ? 'auto' : 'none'
+  ));
 
   return (
     <Motion.article
@@ -86,6 +88,7 @@ const StoryFrame = ({ story, index, progress, reduceMotion }) => {
         y: reduceMotion ? 0 : y,
         scale: reduceMotion ? 1 : scale,
         zIndex: index + 1,
+        pointerEvents: reduceMotion ? 'auto' : pointerEvents,
       }}
       aria-label={story.eyebrow}
     >

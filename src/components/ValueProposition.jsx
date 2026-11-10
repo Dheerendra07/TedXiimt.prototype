@@ -40,11 +40,12 @@ const benefits = [
 const ValueProposition = () => {
   const { isAuthenticated } = useAuth();
   const { activeEdition } = useEdition();
-  const hasActiveEdition = activeEdition?.is_active === true;
-  const actionHref = hasActiveEdition
+  const hasUpcomingEdition = activeEdition?.is_active === true
+    && (!activeEdition.date || new Date(activeEdition.date).getTime() >= Date.now());
+  const actionHref = hasUpcomingEdition
     ? (isAuthenticated ? '/attendee-form' : '/register')
     : '/archive/2025';
-  const actionLabel = hasActiveEdition ? 'Reserve your seat' : 'Explore the 2025 edition';
+  const actionLabel = hasUpcomingEdition ? 'Reserve your seat' : 'Explore the 2025 edition';
 
   return (
     <section
@@ -98,7 +99,7 @@ const ValueProposition = () => {
         >
           <div>
             <span className="home-section__eyebrow">TAKE THE NEXT STEP</span>
-            <p>{hasActiveEdition
+            <p>{hasUpcomingEdition
               ? 'Be part of the next room where ideas meet action.'
               : 'Revisit the ideas and people from the 2025 edition.'}
             </p>
