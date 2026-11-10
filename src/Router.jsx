@@ -1,5 +1,5 @@
 import React, { Suspense, useState, useEffect, createContext, useContext } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 import SkipToContent from './components/SkipToContent';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -341,7 +341,7 @@ const Router = () => {
 
         <div className="flex-1">
           <AnimatePresence mode="wait">
-            <motion.div
+            <Motion.div
               key={currentPath}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -351,7 +351,7 @@ const Router = () => {
               <Suspense fallback={<LoadingScreen />}>
                 <Component />
               </Suspense>
-            </motion.div>
+            </Motion.div>
           </AnimatePresence>
         </div>
 
