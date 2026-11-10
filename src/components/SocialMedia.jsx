@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { motion as Motion } from 'framer-motion';
 import { Play, Pause, Volume2 } from 'lucide-react';
 import HomeSectionHeading from './HomeSectionHeading';
+import './SocialMedia.css';
 
 const reelVideos = ['/1.mp4', '/2.mp4', '/3.mp4', '/4.mp4'];
 
@@ -123,7 +124,7 @@ const SocialMedia = () => {
     >
       <div className="home-section__container">
         <HomeSectionHeading
-          number="06"
+          number="05"
           eyebrow="MOMENTS FROM THE ROOM"
           title="The energy"
           accent="lives on."

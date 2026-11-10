@@ -2,6 +2,7 @@ import React from 'react';
 import { motion as Motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import HomeSectionHeading from './HomeSectionHeading';
+import './EventHighlights.css';
 
 const discoverCards = [
   {
@@ -41,7 +42,7 @@ const EventHighlights = () => (
   >
     <div className="home-section__container">
       <HomeSectionHeading
-        number="04"
+        number="03"
         eyebrow="EXPLORE TEDxIIMT"
         title="More than"
         accent="a stage."

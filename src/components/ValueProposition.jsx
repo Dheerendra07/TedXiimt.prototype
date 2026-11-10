@@ -4,6 +4,7 @@ import { ArrowRight, Compass, Lightbulb, Network, Rocket } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useEdition } from '../context/EditionContext';
 import HomeSectionHeading from './HomeSectionHeading';
+import './ValueProposition.css';
 
 const benefits = [
   {
@@ -52,7 +53,7 @@ const ValueProposition = () => {
     >
       <div className="home-section__container">
         <HomeSectionHeading
-          number="05"
+          number="04"
           eyebrow="WHY BE IN THE ROOM"
           title="An idea can"
           accent="change your direction."

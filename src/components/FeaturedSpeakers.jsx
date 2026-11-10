@@ -3,6 +3,7 @@ import { motion as Motion } from 'framer-motion';
 import { ArrowUpRight, Play } from 'lucide-react';
 import { SPEAKERS_2025 } from '../data/TEDx2025';
 import HomeSectionHeading from './HomeSectionHeading';
+import './FeaturedSpeakers.css';
 
 const archivedSpeakers = SPEAKERS_2025.filter((speaker) => (
   typeof speaker.photo_url === 'string'
