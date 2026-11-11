@@ -4,7 +4,7 @@ const { chromium } = require('playwright');
 
 const BASE_URL = process.env.HOMEPAGE_PREVIEW_URL || 'http://127.0.0.1:4173/';
 const OUTPUT_DIR = process.env.HOMEPAGE_ARTIFACT_DIR || 'artifacts/homepage';
-const storyProgress = [0.27, 0.61, 0.95];
+const storyProgress = [0.33, 0.66, 0.99];
 const sectionCaptures = [
   ['#featured-speakers', 'speakers'],
   ['#discover', 'discover'],
@@ -28,6 +28,37 @@ async function captureViewport(label, width, height) {
 
   await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(1200);
+
+  const hero = page.locator('.tedx-hero');
+  const heroBounds = await hero.boundingBox();
+  let mosaicInteraction = { attempted: false, trailAppeared: false, trailFaded: false };
+
+  if (heroBounds && width >= 600) {
+    mosaicInteraction.attempted = true;
+    await page.mouse.move(
+      heroBounds.x + heroBounds.width * 0.43,
+      heroBounds.y + heroBounds.height * 0.52,
+    );
+    await page.waitForTimeout(70);
+    mosaicInteraction.trailAppeared = (await hero.locator('.tedx-hero__cell.is-trailing').count()) > 0;
+    await page.mouse.move(
+      heroBounds.x + heroBounds.width * 0.46,
+      heroBounds.y + heroBounds.height * 0.54,
+    );
+    await page.waitForTimeout(760);
+    mosaicInteraction.trailFaded = (await hero.locator('.tedx-hero__cell.is-trailing').count()) === 0;
+  } else if (heroBounds && width < 600) {
+    mosaicInteraction.attempted = true;
+    await page.touchscreen.tap(
+      heroBounds.x + heroBounds.width * 0.46,
+      heroBounds.y + heroBounds.height * 0.52,
+    );
+    await page.waitForTimeout(70);
+    mosaicInteraction.trailAppeared = (await hero.locator('.tedx-hero__cell.is-trailing').count()) > 0;
+    await page.waitForTimeout(760);
+    mosaicInteraction.trailFaded = (await hero.locator('.tedx-hero__cell.is-trailing').count()) === 0;
+  }
+
   await page.screenshot({ path: path.join(OUTPUT_DIR, `${label}-hero.png`) });
 
   const story = page.locator('#what-is-tedx');
@@ -73,6 +104,8 @@ async function captureViewport(label, width, height) {
     sectionCount: document.querySelectorAll('main .home-section').length,
     heroArtworkLoaded: Boolean(document.querySelector('.tedx-hero__art-image')?.naturalWidth),
     heroArtworkNaturalWidth: document.querySelector('.tedx-hero__art-image')?.naturalWidth || 0,
+    loadedContentImages: [...document.querySelectorAll('main img')].filter((image) => image.complete && image.naturalWidth > 0).length,
+    brokenContentImages: [...document.querySelectorAll('main img')].filter((image) => image.complete && image.naturalWidth === 0).map((image) => image.src),
     exploreCards: document.querySelectorAll('.home-discover-card').length,
     highlightVideos: document.querySelectorAll('#home-highlights video').length,
     navPosition: getComputedStyle(document.querySelector('header')).position,
@@ -95,10 +128,27 @@ async function captureViewport(label, width, height) {
       .slice(0, 24),
   }));
 
+  const responsiveChecks = [];
+  for (const probeWidth of [320, 360, 768, 1024]) {
+    if (probeWidth === width) continue;
+    await page.setViewportSize({ width: probeWidth, height: probeWidth < 600 ? 740 : 900 });
+    await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(500);
+    const probe = await page.evaluate(() => ({
+      viewportWidth: document.documentElement.clientWidth,
+      documentWidth: document.documentElement.scrollWidth,
+      horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
+      heroArtworkLoaded: Boolean(document.querySelector('.tedx-hero__art-image')?.naturalWidth),
+      heroCopyWidth: Math.round(document.querySelector('.tedx-hero__copy')?.getBoundingClientRect().width || 0),
+    }));
+    responsiveChecks.push({ width: probeWidth, ...probe });
+    await page.screenshot({ path: path.join(OUTPUT_DIR, `${label}-responsive-${probeWidth}.png`) });
+  }
+
   await context.close();
   await browser.close();
 
-  return { viewport: { width, height }, metrics, sections, pageErrors };
+  return { viewport: { width, height }, metrics, mosaicInteraction, sections, responsiveChecks, pageErrors };
 }
 
 (async () => {
@@ -107,10 +157,17 @@ async function captureViewport(label, width, height) {
   const report = { desktop, mobile };
   fs.writeFileSync(path.join(OUTPUT_DIR, 'qa-report.json'), JSON.stringify(report, null, 2));
 
-  const overflows = [desktop, mobile].filter((entry) => entry.metrics.horizontalOverflow);
+  const overflows = [
+    ...[desktop, mobile].filter((entry) => entry.metrics.horizontalOverflow),
+    ...desktop.responsiveChecks.filter((entry) => entry.horizontalOverflow),
+    ...mobile.responsiveChecks.filter((entry) => entry.horizontalOverflow),
+  ];
   const pageErrors = [...desktop.pageErrors, ...mobile.pageErrors];
-  if (overflows.length || pageErrors.length) {
-    console.error(JSON.stringify({ overflows, pageErrors }, null, 2));
+  const failedMosaic = [desktop, mobile].filter((entry) => (
+    !entry.mosaicInteraction.trailAppeared || !entry.mosaicInteraction.trailFaded
+  ));
+  if (overflows.length || pageErrors.length || failedMosaic.length) {
+    console.error(JSON.stringify({ overflows, pageErrors, failedMosaic }, null, 2));
     process.exitCode = 1;
   }
 
