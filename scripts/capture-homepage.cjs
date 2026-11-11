@@ -8,11 +8,8 @@ const storyProgress = [0.27, 0.61, 0.95];
 const sectionCaptures = [
   ['#featured-speakers', 'speakers'],
   ['#discover', 'discover'],
-  ['.home-section--benefits', 'benefits'],
-  ['.home-section--social', 'highlights'],
-  ['.home-section--partners', 'partners'],
-  ['.home-section--journal', 'journal'],
-  ['.home-finale', 'finale'],
+  ['.home-section--benefits', 'why-attend'],
+  ['#home-highlights', 'highlights'],
 ];
 
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -74,6 +71,10 @@ async function captureViewport(label, width, height) {
     horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
     storyFrames: document.querySelectorAll('.home-story__frame').length,
     sectionCount: document.querySelectorAll('main .home-section').length,
+    heroArtworkLoaded: Boolean(document.querySelector('.tedx-hero__art-image')?.naturalWidth),
+    heroArtworkNaturalWidth: document.querySelector('.tedx-hero__art-image')?.naturalWidth || 0,
+    exploreCards: document.querySelectorAll('.home-discover-card').length,
+    highlightVideos: document.querySelectorAll('#home-highlights video').length,
     navPosition: getComputedStyle(document.querySelector('header')).position,
     overflowingElements: [...document.querySelectorAll('body *')]
       .map((element) => {
