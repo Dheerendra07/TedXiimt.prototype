@@ -1,132 +1,143 @@
 import React, { useRef, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Play } from 'lucide-react';
+import { motion as Motion } from 'framer-motion';
+import { Pause, Play, Volume2 } from 'lucide-react';
+import HomeSectionHeading from './HomeSectionHeading';
+import './SocialMedia.css';
 
-const reelVideos = ['/1.mp4', '/2.mp4', '/3.mp4', '/4.mp4'];
+const reelVideos = [
+  { src: '/1.mp4', poster: '/assets/highlight-01.webp', orientation: 'portrait' },
+  { src: '/2.mp4', poster: '/assets/highlight-02.webp', orientation: 'portrait' },
+  { src: '/3.mp4', poster: '/assets/highlight-03.webp', orientation: 'landscape' },
+  { src: '/4.mp4', poster: '/assets/highlight-04.webp', orientation: 'landscape' },
+];
 
-const ReelCard = ({ post, index, onPlaybackStart }) => {
+const ReelCard = ({ reel, index, activeVideoRef }) => {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const togglePlayback = () => {
-    if (!videoRef.current) return;
+  const togglePlayback = async () => {
+    const video = videoRef.current;
+    if (!video) return;
 
-    if (videoRef.current.paused) {
-      videoRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch((error) => console.warn('Unable to play reel:', error));
+    if (video.paused) {
+      try {
+        if (activeVideoRef.current && activeVideoRef.current !== video) {
+          activeVideoRef.current.pause();
+        }
+        await video.play();
+        activeVideoRef.current = video;
+      } catch (error) {
+        console.warn('Unable to play TEDxIIMT highlight:', error);
+      }
       return;
     }
 
-    videoRef.current.pause();
-    setIsPlaying(false);
+    video.pause();
   };
 
   const handlePlay = () => {
-    onPlaybackStart(videoRef.current);
+    if (activeVideoRef.current && activeVideoRef.current !== videoRef.current) {
+      activeVideoRef.current.pause();
+    }
+    activeVideoRef.current = videoRef.current;
     setIsPlaying(true);
   };
 
   const handlePause = () => {
     setIsPlaying(false);
-  };
-
-  const handleVideoKeyDown = (event) => {
-    if (isPlaying && (event.key === 'Enter' || event.key === ' ')) {
-      event.preventDefault();
-      togglePlayback();
+    if (activeVideoRef.current === videoRef.current) {
+      activeVideoRef.current = null;
     }
   };
 
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 28 }}
+    <Motion.article
+      className={'home-reel home-reel--' + reel.orientation}
+      initial={{ opacity: 0, y: 26 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.6, delay: index * 0.12 }}
-      className="group overflow-hidden rounded-[24px] border border-white/5 bg-zinc-950 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#EB0028]/70 hover:shadow-[0_24px_70px_-28px_rgba(235,0,40,0.7)]"
+      viewport={{ once: true, amount: 0.18 }}
+      transition={{ duration: 0.55, delay: index * 0.08 }}
     >
-      <div className="relative aspect-[9/16] overflow-hidden rounded-3xl bg-black">
+      <div className="home-reel__frame">
         <video
           ref={videoRef}
-          src={post.src}
-          className="h-full w-full object-cover"
+          src={reel.src}
+          poster={reel.poster}
+          className="home-reel__video"
           playsInline
           loop
           preload="metadata"
           onPlay={handlePlay}
           onPause={handlePause}
           onEnded={handlePause}
-          onClick={isPlaying ? togglePlayback : undefined}
-          onKeyDown={handleVideoKeyDown}
-          tabIndex={isPlaying ? 0 : -1}
-          aria-label={`Reel ${index + 1}; press Enter or Space to pause while playing`}
+          aria-label={'TEDxIIMT event highlight ' + (index + 1)}
         />
+
         {!isPlaying && (
           <button
             type="button"
+            className="home-reel__play"
             onClick={togglePlayback}
-            className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 backdrop-blur-[2px] transition-all hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#EB0028]"
-            aria-label={`Play reel ${index + 1}`}
+            aria-label={'Play TEDxIIMT highlight ' + (index + 1)}
           >
-            <span className="flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-2xl backdrop-blur-md transition-transform group-hover:scale-110">
-              <Play className="h-10 w-10 fill-current" aria-hidden="true" />
-            </span>
-            <span className="absolute bottom-8 left-4 right-4 text-center text-sm font-semibold uppercase tracking-widest text-white/80 drop-shadow-md">
-              Play Reel
-            </span>
+            <span><Play size={20} fill="currentColor" aria-hidden="true" /></span>
+            <small>PLAY HIGHLIGHT</small>
+          </button>
+        )}
+
+        {isPlaying && (
+          <button
+            type="button"
+            className="home-reel__pause"
+            onClick={togglePlayback}
+            aria-label={'Pause TEDxIIMT highlight ' + (index + 1)}
+          >
+            <Pause size={15} fill="currentColor" aria-hidden="true" />
           </button>
         )}
       </div>
-    </motion.article>
+
+      <div className="home-reel__caption">
+        <span>HIGHLIGHT / {String(index + 1).padStart(2, '0')}</span>
+        <span><Volume2 size={13} aria-hidden="true" /> EVENT FILM</span>
+      </div>
+    </Motion.article>
   );
 };
 
 const SocialMedia = () => {
   const activeVideoRef = useRef(null);
 
-  const handlePlaybackStart = (video) => {
-    if (activeVideoRef.current && activeVideoRef.current !== video) {
-      activeVideoRef.current.pause();
-    }
-
-    activeVideoRef.current = video;
-  };
-
   return (
-    <section className="relative overflow-hidden border-y border-white/10 bg-black px-5 py-20 text-white sm:px-8 md:py-28 lg:px-12" aria-labelledby="social-media-heading">
-      <div className="pointer-events-none absolute -left-32 top-0 h-80 w-80 rounded-full bg-[#EB0028]/10 blur-3xl" />
-      <div className="pointer-events-none absolute -right-32 bottom-0 h-80 w-80 rounded-full bg-[#EB0028]/5 blur-3xl" />
+    <section
+      id="home-highlights"
+      className="home-section home-section--social"
+      aria-labelledby="home-highlights-title"
+    >
+      <div className="home-section__container">
+        <HomeSectionHeading
+          number="04"
+          eyebrow="WATCH THE MOMENTS"
+          title="Highlights"
+          accent="from the room."
+          description="A closer look at the speakers, stage and community moments from TEDxIIMT University."
+          id="home-highlights-title"
+        />
 
-      <div className="relative mx-auto max-w-7xl">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="mb-12 flex flex-col items-center gap-5 text-center md:mb-16"
-        >
-          <div className="max-w-2xl">
-            <h2 id="social-media-heading" className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Highlights
-            </h2>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-400 sm:text-base">
-              Explore our latest stories and features across social media.
-            </p>
-          </div>
-        </motion.div>
+        <div className="home-reels-grid">
+          {reelVideos.map((reel, index) => (
+            <ReelCard
+              key={reel.src}
+              reel={reel}
+              index={index}
+              activeVideoRef={activeVideoRef}
+            />
+          ))}
+        </div>
 
-        <div className="mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {reelVideos.map((src, index) => {
-            return (
-              <ReelCard
-                key={src}
-                post={{ src }}
-                index={index}
-                onPlaybackStart={handlePlaybackStart}
-              />
-            );
-          })}
+        <div className="home-section__bottom-note">
+          <span>WATCH · LISTEN · REVISIT</span>
+          <span>TEDxIIMT UNIVERSITY / HIGHLIGHTS</span>
         </div>
       </div>
     </section>

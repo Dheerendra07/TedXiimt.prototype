@@ -1,106 +1,105 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-
-const AnimatedDiv = motion.div;
+import { motion as Motion } from 'framer-motion';
+import { ArrowUpRight } from 'lucide-react';
+import HomeSectionHeading from './HomeSectionHeading';
+import './EventHighlights.css';
+import './EventHighlightsPremium.css';
 
 const discoverCards = [
   {
+    number: '01',
     title: 'Our Speakers',
-    description: 'Meet the visionaries who bring powerful ideas to our stage.',
-    href: '/speakers',
-    image: '/assets/Aditya_Yadav.jpeg',
-    alt: 'TEDxIIMT speaker portrait',
+    description: 'Meet the speakers and revisit their 2025 talks and perspectives.',
+    href: '/archive/2025',
+    image: '/assets/Miriam.jpg',
+    alt: 'Miriam Chandy Menacherry, TEDxIIMT University 2025 speaker',
+    note: 'PEOPLE & PERSPECTIVES',
   },
   {
+    number: '02',
     title: 'Our Team',
-    description: 'Discover the passionate people who make TEDxIIMT possible.',
+    description: 'Meet the people who bring an event together through care, craft and collaboration.',
     href: '/team',
-    image: '/hero-bg.png',
-    alt: 'TEDxIIMT event background',
+    image: '/assets/highlight-03.webp',
+    alt: 'IIMT University event team gathered around a table',
+    note: 'THE PEOPLE BEHIND IT',
   },
   {
+    number: '03',
     title: 'Partners',
-    description: 'Explore the organizations supporting our mission of spreading ideas.',
+    description: 'Explore the organizations and people who support a platform for ideas worth spreading.',
     href: '/partners',
-    image: '/transparent-hero-bg.PNG',
-    alt: 'TEDxIIMT event visual',
+    artwork: 'partners',
+    note: 'BUILT TOGETHER',
   },
 ];
 
-const EventHighlights = () => {
-  return (
-    <section className="relative bg-black py-24 text-white md:py-32" aria-labelledby="discover-heading">
-      <div className="container mx-auto px-5 sm:px-8 lg:px-12">
-        <AnimatedDiv
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="mb-14 w-full text-center md:mb-16"
-        >
-          <span className="text-sm font-semibold uppercase tracking-[0.25em] text-[#EB0028]">
-            Explore
-          </span>
-          <h2 id="discover-heading" className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
-            <span className="text-[#EB0028]">TEDx</span>IIMT University 
-          </h2>
-        </AnimatedDiv>
+const EventHighlights = () => (
+  <section
+    id="discover"
+    className="home-section home-section--discover"
+    aria-labelledby="home-discover-title"
+  >
+    <div className="home-section__container">
+      <HomeSectionHeading
+        number="03"
+        eyebrow="EXPLORE TEDxIIMT"
+        title="Explore"
+        accent="TEDxIIMT."
+        description="Meet the people, stories and partners that shape the TEDxIIMT University experience."
+        id="home-discover-title"
+      />
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {discoverCards.map((card, index) => (
-            <AnimatedDiv
-              key={card.title}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.6, delay: index * 0.12 }}
-              className="h-full"
-            >
-              <a
-                href={card.href}
-                className="group relative block h-full min-h-[360px] overflow-hidden rounded-2xl border border-white/10 bg-[#101012] outline-none transition-all duration-300 hover:border-[#EB0028]/70 hover:shadow-[0_16px_50px_-20px_rgba(235,0,40,0.65)] focus-visible:ring-2 focus-visible:ring-[#EB0028] focus-visible:ring-offset-2 focus-visible:ring-offset-black active:scale-[0.98]"
-              >
-                <div className="absolute inset-0 overflow-hidden">
-                  <img
-                    src={card.image}
-                    alt={card.alt}
-                    loading="lazy"
-                    className="h-full w-full object-cover object-center opacity-75 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-90"
-                  />
-                  <div
-                    className="absolute inset-0 bg-gradient-to-t from-black via-black/65 to-black/5"
-                    aria-hidden="true"
-                  />
+      <div className="home-discover-grid">
+        {discoverCards.map((card, index) => (
+          <Motion.a
+            key={card.number}
+            href={card.href}
+            className="home-discover-card"
+            initial={{ opacity: 0, y: 26 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
+          >
+            {card.artwork === 'partners' ? (
+              <div className="home-discover-card__image home-discover-card__image--partners" aria-hidden="true">
+                <span className="home-discover-card__image-index">{card.number}</span>
+                <div className="home-partner-art__grid">
+                  <i /><i /><i /><i /><i /><i /><i /><i /><i />
                 </div>
+                <div className="home-partner-art__wordmark">
+                  <span>IDEAS</span>
+                  <span>GROW</span>
+                  <strong>TOGETHER.</strong>
+                </div>
+                <div className="home-partner-art__baseline">TEDxIIMT UNIVERSITY / PARTNERS</div>
+              </div>
+            ) : (
+              <div className="home-discover-card__image">
+                <img src={card.image} alt={card.alt} loading="lazy" />
+                <span>{card.number}</span>
+                <div className="home-discover-card__image-shade" />
+              </div>
+            )}
 
-                <div className="absolute inset-x-0 bottom-0 p-6 md:p-7">
-                  <div className="mb-4 h-1 w-10 bg-[#EB0028] transition-all duration-300 group-hover:w-16" />
-                  <h3 className="mb-2 text-2xl font-bold transition-colors duration-300 group-hover:text-[#ff3150]">
-                    {card.title}
-                  </h3>
-                  <p className="max-w-sm text-sm leading-relaxed text-gray-300 md:text-base">
-                    {card.description}
-                  </p>
-                  <div className="mt-5 flex items-center gap-2 font-semibold text-[#ff3150] opacity-100 transition-all duration-300 md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100">
-                    Explore
-                    <svg
-                      className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14m-7-7 7 7-7 7" />
-                    </svg>
-                  </div>
-                </div>
-              </a>
-            </AnimatedDiv>
-          ))}
-        </div>
+            <div className="home-discover-card__copy">
+              <div className="home-discover-card__meta">
+                <span>{card.note}</span>
+                <ArrowUpRight size={18} aria-hidden="true" />
+              </div>
+              <h3>{card.title}</h3>
+              <p>{card.description}</p>
+            </div>
+          </Motion.a>
+        ))}
       </div>
-    </section>
-  );
-};
+
+      <div className="home-section__bottom-note">
+        <span>PEOPLE MAKE THE PLATFORM</span>
+        <span>EXPLORE / TEDxIIMT UNIVERSITY</span>
+      </div>
+    </div>
+  </section>
+);
 
 export default EventHighlights;

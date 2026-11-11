@@ -2,48 +2,22 @@ import React from 'react';
 import Hero from '../components/Hero';
 import FeaturedSpeakers from '../components/FeaturedSpeakers';
 import WhatIsTEDx from '../components/WhatIsTEDx';
-import ValueProposition from '../components/ValueProposition';
 import EventHighlights from '../components/EventHighlights';
+import ValueProposition from '../components/ValueProposition';
 import SocialMedia from '../components/SocialMedia';
-import Partners from '../components/Partners';
-import Blog from '../components/Blog';
-import FloatingCTA from '../components/FloatingCTA';
+import './HomePage.css';
 
-const HomePage = () => {
-  return (
-    <div className="min-h-screen bg-black text-white overflow-x-clip">
-      <main id="main-content">
-        {/* 1. Hero Section */}
-        <Hero />
-
-        {/* 2. Featured Speakers */}
-        <FeaturedSpeakers />
-        
-        {/* 3. What is TEDx */}
-        <WhatIsTEDx />
-
-       
-        
-        {/* 5. Event Highlights */}
-        <EventHighlights />
-
-        {/* 6. Community & Social */}
-        <SocialMedia />
-
-         {/* 4. Value Proposition */}
-        <ValueProposition />
-
-        {/* 6. Strategic Partners */}
-        <Partners />
-
-        {/* 7. Latest Editorial Stories */}
-        <Blog />
-      </main>
-
-      {/* Floating CTA */}
-      <FloatingCTA />
-    </div>
-  );
-};
+const HomePage = () => (
+  <div className="homepage-root min-h-screen text-white">
+    <main id="main-content">
+      <Hero />
+      <FeaturedSpeakers />
+      <WhatIsTEDx />
+      <EventHighlights />
+      <ValueProposition />
+      <SocialMedia />
+    </main>
+  </div>
+);
 
 export default HomePage;

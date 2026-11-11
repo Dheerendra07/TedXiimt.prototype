@@ -1,235 +1,116 @@
-import React, { useState, useEffect } from 'react';
-import { motion as Motion, AnimatePresence } from 'framer-motion';
-import speakersData from '../data/speakersData';
+import React from 'react';
+import { motion as Motion } from 'framer-motion';
+import { ArrowUpRight, Play } from 'lucide-react';
+import { SPEAKERS_2025 } from '../data/TEDx2025';
+import HomeSectionHeading from './HomeSectionHeading';
+import './FeaturedSpeakers.css';
 
-const FeaturedSpeakers = () => {
-  const speakers = speakersData.map((speaker) => ({
-    id: speaker.id,
-    name: speaker.name,
-    title: speaker.designation || 'Featured Speaker',
-    company: 'TEDxIIMT University',
-    image: speaker.image || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80',
-    talk: speaker.topic || speaker.quote || 'Ideas Worth Spreading',
-    description: speaker.shortBio || 'Sharing revolutionary perspectives and pioneering insights at TEDxIIMT University 2025.',
-    credentials: [speaker.designation?.split(',')[0] || 'Visionary Leader', 'TEDx Speaker'],
-    expertise: ['Storytelling', 'Film', 'Social Impact'],
-  }));
-  const [currentSpeaker, setCurrentSpeaker] = useState(0);
-  const [isAutoPlay, setIsAutoPlay] = useState(true);
+const archivedSpeakers = SPEAKERS_2025.filter((speaker) => (
+  typeof speaker.photo_url === 'string'
+  && speaker.photo_url.startsWith('/assets/')
+  && speaker.name
+  && speaker.topic
+));
 
-  useEffect(() => {
-    let interval;
-    if (isAutoPlay && speakers.length > 1) {
-      interval = setInterval(() => {
-        setCurrentSpeaker((prev) => (prev + 1) % speakers.length);
-      }, 6000);
-    }
-    return () => clearInterval(interval);
-  }, [isAutoPlay, speakers.length]);
+const FeaturedSpeakers = () => (
+  <section
+    id="featured-speakers"
+    className="home-section home-section--speakers"
+    aria-labelledby="home-speakers-title"
+  >
+    <div className="home-section__container">
+      <HomeSectionHeading
+        number="01"
+        eyebrow="THE 2025 EDITION · SPEAKER ARCHIVE"
+        title="Featured"
+        accent="speakers."
+        description="Meet the voices who brought their ideas, questions and perspectives to the TEDxIIMT University stage in 2025."
+        id="home-speakers-title"
+      />
 
-  const nextSpeaker = () => {
-    if (speakers.length > 0) {
-      setCurrentSpeaker((prev) => (prev + 1) % speakers.length);
-      setIsAutoPlay(false);
-    }
-  };
-
-  const prevSpeaker = () => {
-    if (speakers.length > 0) {
-      setCurrentSpeaker((prev) => (prev - 1 + speakers.length) % speakers.length);
-      setIsAutoPlay(false);
-    }
-  };
-
-  const goToSpeaker = (index) => {
-    setCurrentSpeaker(index);
-    setIsAutoPlay(false);
-  };
-
-  if (speakers.length === 0) {
-    return (
-      <section id="featured-speakers" className="py-16 md:py-24 bg-black text-center text-zinc-500">
-        <div className="w-8 h-8 border-2 border-[#EB0028] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-sm">Loading 2025 Speaker Lineup...</p>
-      </section>
-    );
-  }
-
-  const active = speakers[currentSpeaker] || speakers[0];
-
-  return (
-    <section id="featured-speakers" className="relative overflow-hidden bg-black pb-16 pt-0 md:pb-24 lg:pb-32">
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-px bg-[#EB0028]/75" />
-      
-      <div className="container relative z-10 mx-auto px-4 pt-16 sm:px-6 sm:pt-20 lg:px-8 lg:pt-24">
-        <Motion.div
-          className="text-center mb-12 md:mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="inline-block mb-4">
-            <div className="h-1 w-16 bg-[#EB0028]"></div>
-          </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-            Featured <span className="text-[#EB0028]">Speakers</span>
-          </h2>
-          <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto">
-            Visionaries sharing ideas worth spreading
-          </p>
-        </Motion.div>
-
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-[#0a0a0a] border-2 border-[#1a1a1a]">
-            
-            <AnimatePresence mode="wait">
-              <Motion.div
-                key={currentSpeaker}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="grid lg:grid-cols-2 gap-0"
-              >
-                <div className="relative aspect-square lg:aspect-auto">
-                  <img
-                    src={active.image}
-                    alt={active.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.src = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80';
-                    }}
-                  />
-                </div>
-
-                <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center">
-                  <div className="space-y-6">
-                    <div>
-                      <div className="text-[#EB0028] text-xs md:text-sm font-bold uppercase tracking-widest mb-3">
-                        Speaker {currentSpeaker + 1} of {speakers.length}
-                      </div>
-                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3">
-                        {active.name}
-                      </h3>
-                      <p className="text-lg md:text-xl text-gray-400 mb-2">
-                        {active.title}
-                      </p>
-                      <p className="text-base text-gray-500">
-                        {active.company}
-                      </p>
-                    </div>
-
-                    <div className="h-px w-full bg-[#1a1a1a]"></div>
-
-                    <div>
-                      <h4 className="text-[#EB0028] text-sm font-bold uppercase tracking-wider mb-3">
-                        Talk Topic
-                      </h4>
-                      <p className="text-xl md:text-2xl font-semibold text-white mb-4">
-                        {active.talk}
-                      </p>
-                      <p className="text-gray-300 leading-relaxed">
-                        {active.description}
-                      </p>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div>
-                        <h4 className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">
-                          Credentials
-                        </h4>
-                        <div className="flex flex-wrap gap-2">
-                          {active.credentials.map((cred, idx) => (
-                            <span
-                              key={idx}
-                              className="bg-[#EB0028]/10 border border-[#EB0028]/30 text-[#EB0028] px-3 py-1 text-sm"
-                            >
-                              {cred}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div>
-                        <h4 className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">
-                          Focus Areas
-                        </h4>
-                        <div className="flex flex-wrap gap-2">
-                          {active.expertise.map((exp, idx) => (
-                            <span
-                              key={idx}
-                              className="bg-[#1a1a1a] border border-[#EB0028]/20 text-gray-300 px-3 py-1 text-sm"
-                            >
-                              {exp}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Motion.div>
-            </AnimatePresence>
-
-            <div className="border-t-2 border-[#1a1a1a] p-6 md:p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex gap-2">
-                <button
-                  onClick={prevSpeaker}
-                  className="w-12 h-12 border-2 border-[#1a1a1a] hover:border-[#EB0028] text-white transition-all duration-300 flex items-center justify-center cursor-pointer"
-                  aria-label="Previous speaker"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button
-                  onClick={nextSpeaker}
-                  className="w-12 h-12 border-2 border-[#1a1a1a] hover:border-[#EB0028] text-white transition-all duration-300 flex items-center justify-center cursor-pointer"
-                  aria-label="Next speaker"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="flex gap-2">
-                {speakers.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => goToSpeaker(index)}
-                    className={`h-2 transition-all duration-300 cursor-pointer ${
-                      index === currentSpeaker
-                        ? 'w-12 bg-[#EB0028]'
-                        : 'w-2 bg-[#1a1a1a] hover:bg-[#EB0028]/50'
-                    }`}
-                    aria-label={`Go to speaker ${index + 1}`}
-                  />
-                ))}
-              </div>
-
-              <button
-                onClick={() => setIsAutoPlay(!isAutoPlay)}
-                className="w-12 h-12 border-2 border-[#1a1a1a] hover:border-[#EB0028] text-white transition-all duration-300 flex items-center justify-center cursor-pointer"
-                aria-label={isAutoPlay ? 'Pause autoplay' : 'Start autoplay'}
-              >
-                {isAutoPlay ? (
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                  </svg>
-                ) : (
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                )}
-              </button>
+      {archivedSpeakers.length > 0 ? (
+        <div className="home-speakers__layout">
+          <Motion.div
+            className="home-speakers__feature"
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.65 }}
+          >
+            <div className="home-speakers__feature-image">
+              <img
+                src={archivedSpeakers[0].photo_url}
+                alt={archivedSpeakers[0].name}
+                loading="lazy"
+              />
+              <span className="home-speakers__image-index">01 / 04</span>
             </div>
+            <div className="home-speakers__feature-copy">
+              <span className="home-speakers__label">FEATURED TALK · 2025</span>
+              <h3>{archivedSpeakers[0].name}</h3>
+              <p className="home-speakers__role">{archivedSpeakers[0].title}</p>
+              <p className="home-speakers__topic">{archivedSpeakers[0].topic}</p>
+              {archivedSpeakers[0].talk_video_url && (
+                <a
+                  className="home-link home-link--primary"
+                  href={archivedSpeakers[0].talk_video_url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Play size={14} fill="currentColor" aria-hidden="true" />
+                  Watch the talk
+                </a>
+              )}
+            </div>
+          </Motion.div>
+
+          <div className="home-speakers__list">
+            {archivedSpeakers.slice(1).map((speaker, index) => (
+              <Motion.a
+                key={speaker.id}
+                href={speaker.talk_video_url || '/archive/2025'}
+                target={speaker.talk_video_url ? '_blank' : undefined}
+                rel={speaker.talk_video_url ? 'noreferrer' : undefined}
+                className="home-speakers__row"
+                initial={{ opacity: 0, x: 22 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.55, delay: index * 0.08 }}
+              >
+                <span className="home-speakers__row-index">
+                  {String(index + 2).padStart(2, '0')}
+                </span>
+                <span className="home-speakers__portrait">
+                  <img src={speaker.photo_url} alt="" loading="lazy" />
+                </span>
+                <span className="home-speakers__row-copy">
+                  <strong>{speaker.name}</strong>
+                  <small>{speaker.title}</small>
+                  <em>{speaker.topic}</em>
+                </span>
+                <ArrowUpRight size={18} aria-hidden="true" className="home-speakers__row-arrow" />
+              </Motion.a>
+            ))}
+            <a className="home-speakers__archive-link" href="/archive/2025">
+              Explore the full 2025 edition
+              <ArrowUpRight size={16} aria-hidden="true" />
+            </a>
           </div>
         </div>
+      ) : (
+        <div className="home-speakers__empty">
+          <span className="home-speakers__label">SPEAKER ARCHIVE</span>
+          <p>Speaker stories will appear here when the edition records are published.</p>
+          <a className="home-link" href="/library">Explore the archive <ArrowUpRight size={15} /></a>
+        </div>
+      )}
+
+      <div className="home-section__bottom-note">
+        <span>IDEAS · PEOPLE · PERSPECTIVES</span>
+        <span>ARCHIVE / 2025</span>
       </div>
-    </section>
-  );
-};
+    </div>
+  </section>
+);
 
 export default FeaturedSpeakers;
