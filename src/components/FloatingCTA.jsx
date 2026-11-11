@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Award, BookOpen, ChevronRight, Mic, Ticket, X } from 'lucide-react';
-import { useEdition } from '../context/EditionContext';
+import { Award, ChevronRight, Mic, Ticket, X } from 'lucide-react';
 
 const AnimatedDiv = motion.div;
 const AnimatedButton = motion.button;
@@ -28,7 +27,6 @@ const ctaActions = [
 ];
 
 const FloatingCTA = () => {
-  const { activeEdition } = useEdition();
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -51,26 +49,7 @@ const FloatingCTA = () => {
     return null;
   }
 
-  const hasUpcomingEdition = activeEdition?.is_active === true
-    && (!activeEdition.date || new Date(activeEdition.date).getTime() >= Date.now());
-  const actionItems = hasUpcomingEdition
-    ? ctaActions
-    : [
-        {
-          primary: 'Explore Archive',
-          secondary: 'Revisit the 2025 edition',
-          action: 'archive',
-          Icon: BookOpen,
-        },
-        ...ctaActions.filter((action) => action.action !== 'tickets'),
-      ];
-
   const handleCTAClick = (action) => {
-    if (action === 'archive') {
-      window.location.href = '/archive/2025';
-      return;
-    }
-
     if (action === 'sponsor') {
       window.location.href = '/join-us/sponsor';
       return;
@@ -102,7 +81,7 @@ const FloatingCTA = () => {
               </div>
 
               <div className="space-y-2">
-                {actionItems.map((cta) => (
+                {ctaActions.map((cta) => (
                   <AnimatedButton
                     key={cta.action}
                     type="button"
@@ -136,8 +115,8 @@ const FloatingCTA = () => {
         aria-expanded={isExpanded}
         className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-white/20 bg-[#EB0028] px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_30px_-12px_rgba(235,0,40,0.9)] transition-colors duration-300 hover:bg-[#c90024] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EB0028] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
       >
-        {isExpanded ? <X className="h-4 w-4" aria-hidden="true" /> : hasUpcomingEdition ? <Ticket className="h-4 w-4" aria-hidden="true" /> : <BookOpen className="h-4 w-4" aria-hidden="true" />}
-        <span>{isExpanded ? 'Close' : hasUpcomingEdition ? 'Get Tickets' : 'Explore Archive'}</span>
+        {isExpanded ? <X className="h-4 w-4" aria-hidden="true" /> : <Ticket className="h-4 w-4" aria-hidden="true" />}
+        <span>{isExpanded ? 'Close' : 'Get Tickets'}</span>
       </button>
     </div>
   );

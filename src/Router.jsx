@@ -1,5 +1,5 @@
 import React, { Suspense, useState, useEffect, createContext, useContext } from 'react';
-import { motion as Motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import SkipToContent from './components/SkipToContent';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -83,12 +83,12 @@ const Router = () => {
     '/': {
       component: React.lazy(() => import('./App')),
       title: 'TEDxIIMT University | Break the Flow',
-      description: 'Ideas, inspiration and perspectives from TEDxIIMT University in Meerut.'
+      description: 'Official Platform for TEDxIIMT University 2025: Break the Flow.'
     },
     '/home': {
       component: React.lazy(() => import('./App')),
       title: 'TEDxIIMT University | Break the Flow',
-      description: 'Ideas, inspiration and perspectives from TEDxIIMT University in Meerut.'
+      description: 'Official Platform for TEDxIIMT University 2025: Break the Flow.'
     },
     '/about': {
       component: React.lazy(() => import('./pages/AboutPage')),
@@ -341,7 +341,7 @@ const Router = () => {
 
         <div className="flex-1">
           <AnimatePresence mode="wait">
-            <Motion.div
+            <motion.div
               key={currentPath}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -351,7 +351,7 @@ const Router = () => {
               <Suspense fallback={<LoadingScreen />}>
                 <Component />
               </Suspense>
-            </Motion.div>
+            </motion.div>
           </AnimatePresence>
         </div>
 
