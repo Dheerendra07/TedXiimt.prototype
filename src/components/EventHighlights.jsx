@@ -3,12 +3,13 @@ import { motion as Motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import HomeSectionHeading from './HomeSectionHeading';
 import './EventHighlights.css';
+import './EventHighlightsPremium.css';
 
 const discoverCards = [
   {
     number: '01',
     title: 'Our Speakers',
-    description: 'Revisit the talks and perspectives shared on the 2025 TEDxIIMT University stage.',
+    description: 'Meet the speakers and revisit their 2025 talks and perspectives.',
     href: '/archive/2025',
     image: '/assets/Miriam.jpg',
     alt: 'Miriam Chandy Menacherry, TEDxIIMT University 2025 speaker',
@@ -41,11 +42,11 @@ const EventHighlights = () => (
   >
     <div className="home-section__container">
       <HomeSectionHeading
-        number="05"
+        number="03"
         eyebrow="EXPLORE TEDxIIMT"
-        title="More than"
-        accent="a stage."
-        description="An event is made of people, ideas and the work that brings them into the same room. Explore the parts that make TEDxIIMT what it is."
+        title="Explore"
+        accent="TEDxIIMT."
+        description="Meet the people, stories and partners that shape the TEDxIIMT University experience."
         id="home-discover-title"
       />
 

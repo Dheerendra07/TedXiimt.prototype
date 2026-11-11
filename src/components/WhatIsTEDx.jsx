@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { motion as Motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import './WhatIsTEDx.css';
+import './WhatIsTEDxPremium.css';
 
 const stories = [
   {
@@ -14,6 +15,7 @@ const stories = [
     linkLabel: 'Discover TEDx',
     link: '/about',
     visualLabel: 'A GLOBAL IDEA',
+    visualImage: '/ted-conference.webp',
     visualLines: ['TED', 'TO THE', 'WORLD'],
     visualFoot: 'INDEPENDENTLY ORGANIZED · LOCALLY ROOTED',
   },
@@ -27,6 +29,7 @@ const stories = [
     linkLabel: 'Explore IIMT University',
     link: '/about',
     visualLabel: 'THE PLACE',
+    visualImage: '/hero-bg.png',
     visualLines: ['IIMT', 'UNIVERSITY'],
     visualFoot: 'MEERUT · UTTAR PRADESH',
   },
@@ -41,6 +44,7 @@ const stories = [
     linkLabel: 'Explore the 2025 Edition',
     link: '/archive/2025',
     visualLabel: 'TEDxIIMT UNIVERSITY · 2025',
+    visualImage: '/assets/highlight-03.webp',
     visualLines: ['BREAK', 'THE', 'FLOW.'],
     visualFoot: 'CHALLENGE INERTIA · OPEN NEW PERSPECTIVES',
   },
@@ -133,6 +137,8 @@ const StoryFrame = ({ story, index, progress, reduceMotion }) => {
       </div>
 
       <div className="home-story__visual" aria-hidden="true">
+        <img className="home-story__visual-image" src={story.visualImage} alt="" />
+        <div className="home-story__visual-overlay" />
         <div className="home-story__visual-grid" />
         <div className="home-story__visual-top">
           <span>{story.visualLabel}</span>

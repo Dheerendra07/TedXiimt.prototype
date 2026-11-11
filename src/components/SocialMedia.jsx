@@ -110,16 +110,17 @@ const SocialMedia = () => {
 
   return (
     <section
+      id="home-highlights"
       className="home-section home-section--social"
       aria-labelledby="home-highlights-title"
     >
       <div className="home-section__container">
         <HomeSectionHeading
-          number="07"
-          eyebrow="MOMENTS FROM THE ROOM"
-          title="The energy"
-          accent="lives on."
-          description="A look back at the moments, voices and details that made the TEDxIIMT University experience."
+          number="04"
+          eyebrow="WATCH THE MOMENTS"
+          title="Highlights"
+          accent="from the room."
+          description="A closer look at the speakers, stage and community moments from TEDxIIMT University."
           id="home-highlights-title"
         />
 

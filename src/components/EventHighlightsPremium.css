@@ -1,0 +1,114 @@
+/* Full-image editorial cards for the homepage's Explore chapter. */
+.home-discover-grid {
+  gap: clamp(16px, 2vw, 28px);
+}
+.home-discover-card {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 420px;
+  aspect-ratio: 4 / 5;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 16px;
+  background: #0a0809;
+  box-shadow: 0 14px 40px rgba(0,0,0,.22);
+  transition: border-color 280ms ease, transform 520ms cubic-bezier(.2,.75,.25,1), box-shadow 280ms ease;
+}
+.home-discover-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(235,0,40,.68);
+  box-shadow: 0 28px 70px rgba(0,0,0,.42), 0 0 28px rgba(235,0,40,.09);
+}
+.home-discover-card__image {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.home-discover-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .76;
+  filter: saturate(.72);
+  transform: scale(1.015);
+  transition: opacity 500ms ease, transform 900ms cubic-bezier(.2,.7,.2,1), filter 500ms ease;
+}
+.home-discover-card:hover .home-discover-card__image img {
+  transform: scale(1.055);
+  opacity: .97;
+  filter: saturate(.95);
+}
+.home-discover-card__image > span {
+  position: absolute;
+  z-index: 2;
+  top: 17px;
+  left: 18px;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: .12em;
+}
+.home-discover-card__image-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(4,3,4,.96) 0%, rgba(4,3,4,.72) 25%, rgba(4,3,4,.12) 72%),
+    linear-gradient(125deg, rgba(235,0,40,.1), transparent 46%);
+}
+.home-discover-card__copy {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  min-height: 100%;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(22px, 2.3vw, 32px);
+}
+.home-discover-card__meta {
+  padding-bottom: 14px;
+  border-bottom-color: rgba(255,255,255,.2);
+}
+.home-discover-card h3 {
+  margin: 19px 0 9px;
+  font-size: clamp(1.5rem, 2.35vw, 2.15rem);
+}
+.home-discover-card p {
+  max-width: 360px;
+  color: #c1b8bd;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.home-discover-card__image--partners {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+}
+.home-discover-card__image-index {
+  position: absolute;
+  z-index: 2;
+  top: 17px;
+  left: 18px;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+}
+.home-discover-card:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+@media (max-width: 900px) {
+  .home-discover-card { min-height: 390px; }
+}
+@media (max-width: 600px) {
+  .home-discover-card {
+    min-height: 0;
+    aspect-ratio: 5 / 4;
+    border-radius: 13px;
+  }
+}

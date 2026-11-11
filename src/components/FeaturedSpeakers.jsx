@@ -20,11 +20,11 @@ const FeaturedSpeakers = () => (
   >
     <div className="home-section__container">
       <HomeSectionHeading
-        number="04"
+        number="01"
         eyebrow="THE 2025 EDITION · SPEAKER ARCHIVE"
-        title="Voices that"
-        accent="broke the flow."
-        description="A selection of ideas shared on the TEDxIIMT University stage. Each talk is a different way to look at the world."
+        title="Featured"
+        accent="speakers."
+        description="Meet the voices who brought their ideas, questions and perspectives to the TEDxIIMT University stage in 2025."
         id="home-speakers-title"
       />
 

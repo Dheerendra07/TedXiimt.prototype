@@ -54,11 +54,12 @@ const ValueProposition = () => {
     >
       <div className="home-section__container">
         <HomeSectionHeading
-          number="06"
-          eyebrow="WHY BE IN THE ROOM"
-          title="An idea can"
-          accent="change your direction."
-          description="Join a gathering designed to challenge your thinking, widen your perspective and leave you with something worth carrying forward."
+          number="05"
+          eyebrow="WHY ATTEND TEDxIIMT UNIVERSITY?"
+          title="Why attend"
+          accent="TEDxIIMT University?"
+          description="Because one idea, one conversation or one new connection can change the way you see what is possible."
+          align="center"
           id="home-benefits-title"
         />
 
