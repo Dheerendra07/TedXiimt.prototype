@@ -218,8 +218,8 @@
 @media (max-width: 520px) {
   .home-speakers__list { min-width: 0; width: 100%; overflow: hidden; }
   .home-speakers__row {
-    width: 100%;
-    max-width: 100%;
+    width: calc(100% - 8px);
+    max-width: calc(100% - 8px);
     grid-template-columns: 16px 48px minmax(0, 1fr) 12px;
     gap: 6px;
     min-height: 108px;
