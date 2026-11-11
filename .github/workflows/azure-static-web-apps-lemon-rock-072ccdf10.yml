@@ -35,9 +35,6 @@ jobs:
           src/components/EventHighlights.jsx
           src/components/ValueProposition.jsx
           src/components/SocialMedia.jsx
-          src/components/Partners.jsx
-          src/components/Blog.jsx
-          src/components/FloatingCTA.jsx
           src/pages/HomePage.jsx
           scripts/capture-homepage.cjs
       - name: Check browser QA script syntax
