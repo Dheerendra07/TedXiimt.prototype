@@ -216,14 +216,18 @@
 }
 
 @media (max-width: 520px) {
+  .home-speakers__list { min-width: 0; width: 100%; overflow: hidden; }
   .home-speakers__row {
-    grid-template-columns: 18px 52px minmax(0, 1fr) 14px;
-    gap: 8px;
-    min-height: 110px;
+    width: 100%;
+    max-width: 100%;
+    grid-template-columns: 16px 48px minmax(0, 1fr) 12px;
+    gap: 6px;
+    min-height: 108px;
     padding-inline: 0;
+    overflow: hidden;
   }
-  .home-speakers__portrait { width: 52px; height: 68px; }
-  .home-speakers__row-arrow { width: 14px; height: 14px; }
+  .home-speakers__portrait { width: 48px; height: 64px; }
+  .home-speakers__row-arrow { width: 12px; height: 12px; }
   .home-speakers__row-copy strong { font-size: 13px; }
   .home-speakers__row-copy em { font-size: 11px; }
 }

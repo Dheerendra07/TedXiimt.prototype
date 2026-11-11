@@ -41,6 +41,9 @@ jobs:
           src/pages/HomePage.jsx
           src/Router.jsx
           scripts/capture-homepage.cjs
+      - name: Check browser QA script syntax
+        run: node --check scripts/capture-homepage.cjs
+
       - name: Build (Vite)
         run: npm run build         # ensure "build": "vite build" in package.json
       - name: Install Playwright Chromium
