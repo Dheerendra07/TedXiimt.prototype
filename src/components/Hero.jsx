@@ -479,13 +479,13 @@ const Hero = () => {
       const quote = quotes[quoteIndex % quotes.length];
       regionQuoteIndexes.set(region.id, (quoteIndex + 1) % quotes.length);
 
-      const anchorX = coverTransform.offsetX + (region.anchor[0] * artworkMask.width * coverTransform.scaleX);
-      const anchorY = coverTransform.offsetY + (region.anchor[1] * artworkMask.height * coverTransform.scaleY);
+      const cardWidth = Math.min(220, width * 0.64);
       const card = {
         ...quote,
         source: region.source,
-        left: Math.min(width - 120, Math.max(120, anchorX)),
-        top: Math.min(height - 90, Math.max(20, anchorY)),
+        // Keep the quote in the open upper-right sky, clear of the hero copy on desktop and mobile.
+        left: width - 14 - (cardWidth / 2),
+        top: Math.max(128, Math.min(220, height * 0.22)),
       };
       regionTimers.forEach((timer) => window.clearTimeout(timer));
       regionTimers.clear();
