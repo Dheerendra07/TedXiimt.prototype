@@ -4,9 +4,25 @@ const { chromium } = require('playwright');
 const BASE_URL = process.env.BASE_URL || 'http://127.0.0.1:4173/';
 
 const REGIONS = {
+  lotus: {
+    name: 'LOTUS TEMPLE',
+    bounds: { left: 0, top: 0.61, right: 0.275, bottom: 1 },
+  },
+  qutub: {
+    name: 'QUTUB MINAR',
+    bounds: { left: 0.275, top: 0.29, right: 0.35, bottom: 1 },
+  },
+  humayun: {
+    name: 'HUMAYUN’S TOMB',
+    bounds: { left: 0.35, top: 0.64, right: 0.48, bottom: 1 },
+  },
   'india-gate': {
     name: 'INDIA GATE',
     bounds: { left: 0.48, top: 0.42, right: 0.68, bottom: 1 },
+  },
+  akshardham: {
+    name: 'AKSHARDHAM',
+    bounds: { left: 0.68, top: 0.52, right: 1, bottom: 1 },
   },
 };
 
@@ -165,7 +181,9 @@ async function assertReveal(page, region, interaction) {
     const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     await desktop.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
     await desktop.locator('.tedx-hero').waitFor({ state: 'visible' });
-    await assertReveal(desktop, REGIONS['india-gate'], 'mouse');
+    for (const region of Object.values(REGIONS)) {
+      await assertReveal(desktop, region, 'mouse');
+    }
 
     const mobileContext = await browser.newContext({
       viewport: { width: 390, height: 844 },
