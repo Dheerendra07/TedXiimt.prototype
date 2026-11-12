@@ -127,10 +127,9 @@ async function findVisibleLandmarkPoint(page, region) {
 }
 
 async function assertReveal(page, region, interaction) {
-  await page.waitForFunction(() => {
-    const section = document.querySelector('.tedx-hero');
-    return Boolean(section?.style.getPropertyValue('--hero-grid-cell'));
-  }, { timeout: 10000 });
+  await page.waitForFunction(() => (
+    document.querySelector('.tedx-hero')?.dataset.monumentMaskReady === 'true'
+  ), undefined, { timeout: 15000 });
 
   await page.waitForFunction(() => {
     const mask = document.querySelector('[data-mosaic-surface]');
