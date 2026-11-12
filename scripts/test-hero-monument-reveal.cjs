@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
 const { chromium } = require('playwright');
 
 const BASE_URL = process.env.BASE_URL || 'http://127.0.0.1:4173/';
@@ -176,6 +177,7 @@ async function assertReveal(page, region, interaction) {
 }
 
 (async () => {
+  fs.mkdirSync('artifacts/hero', { recursive: true });
   const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
   try {
     const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 } });
@@ -184,6 +186,7 @@ async function assertReveal(page, region, interaction) {
     for (const region of Object.values(REGIONS)) {
       await assertReveal(desktop, region, 'mouse');
     }
+    await desktop.screenshot({ path: 'artifacts/hero/desktop-revealed.png' });
 
     const mobileContext = await browser.newContext({
       viewport: { width: 390, height: 844 },
@@ -195,6 +198,7 @@ async function assertReveal(page, region, interaction) {
     await mobile.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
     await mobile.locator('.tedx-hero').waitFor({ state: 'visible' });
     await assertReveal(mobile, REGIONS['india-gate'], 'touch');
+    await mobile.screenshot({ path: 'artifacts/hero/mobile-revealed.png' });
     await mobileContext.close();
     await desktop.close();
   } finally {
