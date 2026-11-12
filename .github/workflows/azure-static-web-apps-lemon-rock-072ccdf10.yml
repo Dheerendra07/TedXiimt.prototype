@@ -43,6 +43,12 @@ jobs:
           done
           cat /tmp/tedx-vite-preview.log
           exit 1
+      - name: Install Playwright runtime for interaction smoke test
+        if: github.event_name == 'pull_request'
+        run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.0
+      - name: Verify desktop hover and mobile touch monument reveals
+        if: github.event_name == 'pull_request'
+        run: node scripts/test-hero-monument-reveal.cjs
       - name: Capture desktop and mobile browser screenshots
         if: github.event_name == 'pull_request'
         run: |
