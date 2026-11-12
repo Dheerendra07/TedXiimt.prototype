@@ -161,6 +161,7 @@ async function assertReveal(page, region, interaction) {
 
   const quoteBounds = await quote.boundingBox();
   const viewport = page.viewportSize();
+  const copyBounds = await page.locator('.tedx-hero__copy').boundingBox();
   assert.ok(quoteBounds, region.name + ' quote card has no layout bounds.');
   assert.ok(
     quoteBounds.x >= -1 && quoteBounds.y >= -1 &&
@@ -168,6 +169,15 @@ async function assertReveal(page, region, interaction) {
     quoteBounds.y + quoteBounds.height <= viewport.height + 1,
     region.name + ' quote card is clipped outside the viewport.'
   );
+  if (copyBounds) {
+    const overlapsHeroCopy = (
+      quoteBounds.x < copyBounds.x + copyBounds.width &&
+      quoteBounds.x + quoteBounds.width > copyBounds.x &&
+      quoteBounds.y < copyBounds.y + copyBounds.height &&
+      quoteBounds.y + quoteBounds.height > copyBounds.y
+    );
+    assert.equal(overlapsHeroCopy, false, region.name + ' quote card overlaps the hero copy.');
+  }
 
   const revealHasPixels = await page.evaluate(({ x, y }) => {
     const section = document.querySelector('.tedx-hero');
