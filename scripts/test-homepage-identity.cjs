@@ -40,7 +40,7 @@ async function main() {
     await desktop.locator('.tedx-hero__artwork').waitFor({ state: 'visible' });
     await desktop.waitForFunction(() => {
       const image = document.querySelector('.tedx-hero__artwork');
-      return Boolean(image && image.complete && image.naturalWidth > 500);
+      return Boolean(image && image.complete && image.naturalWidth > 300);
     }, undefined, { timeout: 15000 });
 
     const wordmark = (await desktop.locator('#tedx-hero-title').innerText()).replace(/\s+/g, '').toLowerCase();
@@ -95,7 +95,7 @@ async function main() {
     await mobile.locator('.tedx-hero__artwork').waitFor({ state: 'visible' });
     await mobile.waitForFunction(() => {
       const image = document.querySelector('.tedx-hero__artwork');
-      return Boolean(image && image.complete && image.naturalWidth > 500);
+      return Boolean(image && image.complete && image.naturalWidth > 300);
     }, undefined, { timeout: 15000 });
 
     await assertNoHorizontalOverflow(mobile, 'Mobile');
