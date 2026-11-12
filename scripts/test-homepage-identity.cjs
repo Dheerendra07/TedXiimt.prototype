@@ -53,13 +53,26 @@ async function main() {
     assert.ok(await desktop.locator('#tedx-about-title').isVisible());
 
     await desktop.locator('#featured-speakers').scrollIntoViewIfNeeded();
+    const speakersSection = desktop.locator('#featured-speakers');
     const nextSpeaker = desktop.getByRole('button', { name: 'Next speaker' });
     const pauseAutoplay = desktop.getByRole('button', { name: 'Pause autoplay' });
-    if (await pauseAutoplay.count()) await pauseAutoplay.click();
-    if (await nextSpeaker.count()) {
+    const speakerStatus = await speakersSection.innerText();
+    const countMatch = speakerStatus.match(/SPEAKER\s+\d+\s+OF\s+(\d+)/i);
+    const speakerCount = countMatch ? Number(countMatch[1]) : 0;
+
+    if (await pauseAutoplay.count()) {
+      await pauseAutoplay.click();
+      assert.ok(await desktop.getByRole('button', { name: 'Start autoplay' }).isVisible());
+    }
+
+    if (speakerCount > 1 && await nextSpeaker.count()) {
       await nextSpeaker.click();
       await desktop.waitForTimeout(450);
-      assert.match(await desktop.locator('#featured-speakers').innerText(), /Speaker 2 of/i);
+      assert.match(await speakersSection.innerText(), /Speaker 2 of/i);
+      console.log('PASS speakers: next/previous controls with ' + speakerCount + ' entries');
+    } else {
+      assert.equal(speakerCount, 1, 'Speaker carousel should render at least its current placeholder state.');
+      console.log('PASS speakers: single-entry placeholder and autoplay controls');
     }
 
     await moveThroughSections(desktop);
