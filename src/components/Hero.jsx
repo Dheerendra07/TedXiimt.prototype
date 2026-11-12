@@ -210,7 +210,8 @@ const Hero = () => {
         for (let y = 0; y < accentHeight && !overlapsArtwork; y += 1) {
           for (let x = 0; x < accentWidth && !overlapsArtwork; x += 1) {
             const key = (column + x) + ':' + (row + y);
-            overlapsArtwork = [...regionCells.values()].some((regionSet) => regionSet.has(key));
+            overlapsArtwork = textBlockedCells.has(key)
+              || [...regionCells.values()].some((regionSet) => regionSet.has(key));
           }
         }
 
@@ -503,6 +504,11 @@ const Hero = () => {
 
     const getRegionAtPoint = (localX, localY) => {
       if (!maskPixels || !colourCanvas.width || !colourCanvas.height || !coverTransform || !artworkMask) return null;
+
+      // Copy, navigation and quote text are never treated as landmark hover targets.
+      const column = Math.floor(localX / cellSize);
+      const row = Math.floor(localY / cellSize);
+      if (textBlockedCells.has(column + ':' + row)) return null;
 
       const sourceX = (localX - coverTransform.offsetX) / coverTransform.scaleX;
       const sourceY = (localY - coverTransform.offsetY) / coverTransform.scaleY;
