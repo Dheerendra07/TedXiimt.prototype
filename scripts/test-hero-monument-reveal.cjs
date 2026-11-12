@@ -159,6 +159,16 @@ async function assertReveal(page, region, interaction) {
   const quote = page.locator('.tedx-hero__quote-card').filter({ hasText: region.name });
   await quote.waitFor({ state: 'visible', timeout: 5000 });
 
+  const quoteBounds = await quote.boundingBox();
+  const viewport = page.viewportSize();
+  assert.ok(quoteBounds, region.name + ' quote card has no layout bounds.');
+  assert.ok(
+    quoteBounds.x >= -1 && quoteBounds.y >= -1 &&
+    quoteBounds.x + quoteBounds.width <= viewport.width + 1 &&
+    quoteBounds.y + quoteBounds.height <= viewport.height + 1,
+    region.name + ' quote card is clipped outside the viewport.'
+  );
+
   const revealHasPixels = await page.evaluate(({ x, y }) => {
     const section = document.querySelector('.tedx-hero');
     const canvas = section?.querySelector('.tedx-hero__colour-reveal');
