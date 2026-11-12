@@ -926,28 +926,32 @@ const Hero = () => {
           if (!monument) return null;
 
           return (
-            <Motion.div
+            <div
               key={monumentId}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="tedx-hero__quote-card"
+              className="tedx-hero__quote-anchor"
               style={{ left: card.left, top: card.top }}
               data-mosaic-exclusion
             >
-              <div className="tedx-hero__quote-heading">{monument.name}</div>
-              <p className="tedx-hero__quote-text">“{card.text}”</p>
-              <div className="tedx-hero__quote-footer">
-                <span>{card.attribution}</span>
-                <a
-                  href={card.source}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={'Open source for ' + monument.name}
-                >
-                  SOURCE
-                </a>
-              </div>
-            </Motion.div>
+              <Motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="tedx-hero__quote-card"
+              >
+                <div className="tedx-hero__quote-heading">{monument.name}</div>
+                <p className="tedx-hero__quote-text">“{card.text}”</p>
+                <div className="tedx-hero__quote-footer">
+                  <span>{card.attribution}</span>
+                  <a
+                    href={card.source}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={'Open source for ' + monument.name}
+                  >
+                    SOURCE
+                  </a>
+                </div>
+              </Motion.div>
+            </div>
           );
         })}
       </div>
