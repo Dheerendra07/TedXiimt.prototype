@@ -777,9 +777,11 @@ const Hero = () => {
         backgroundArtwork = backgroundImage;
         artworkMask = buildArtworkMask(maskImage);
         resizeCanvas();
+        section.dataset.monumentMaskReady = 'true';
       } catch (error) {
         artworkMask = null;
         gridReady = false;
+        delete section.dataset.monumentMaskReady;
         cells.clear();
         context.clearRect(0, 0, width, height);
         revealContext.clearRect(0, 0, width, height);
@@ -795,6 +797,7 @@ const Hero = () => {
     maskImage.onerror = () => {
       artworkMask = null;
       gridReady = false;
+      delete section.dataset.monumentMaskReady;
       cells.clear();
       context.clearRect(0, 0, width, height);
       revealContext.clearRect(0, 0, width, height);
@@ -809,6 +812,7 @@ const Hero = () => {
       backgroundArtwork = null;
       maskPixels = null;
       gridReady = false;
+      delete section.dataset.monumentMaskReady;
       context.clearRect(0, 0, width, height);
       revealContext.clearRect(0, 0, width, height);
       console.warn('[TEDx hero] Original night panorama unavailable; colour reveal disabled.');
@@ -846,6 +850,7 @@ const Hero = () => {
 
     return () => {
       disposed = true;
+      delete section.dataset.monumentMaskReady;
       resizeObserver?.disconnect();
       mutationObserver?.disconnect();
       window.clearTimeout(settleTimer);
