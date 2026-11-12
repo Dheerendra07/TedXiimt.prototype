@@ -43,7 +43,8 @@ async function main() {
       return Boolean(image && image.complete && image.naturalWidth > 500);
     }, undefined, { timeout: 15000 });
 
-    assert.match(await desktop.locator('#tedx-hero-title').innerText(), /TEDx\s*IIMT University/i);
+    const wordmark = (await desktop.locator('#tedx-hero-title').innerText()).replace(/\s+/g, '').toLowerCase();
+    assert.ok(wordmark.startsWith('tedxiimtuniversity'), 'Hero wordmark should read TEDxIIMT University.');
     assert.equal(await desktop.locator('.tedx-hero__primary').getAttribute('href'), '/register');
     assert.equal(await desktop.locator('.tedx-hero__secondary').getAttribute('href'), '/gallery');
 
