@@ -55,11 +55,16 @@
   overflow: hidden;
 }
 
-.tedx-hero__quote-card {
+.tedx-hero__quote-anchor {
   position: absolute;
   width: min(220px, 64vw);
-  padding: 11px 13px 10px;
   transform: translate(-50%, -50%);
+}
+
+.tedx-hero__quote-card {
+  position: relative;
+  width: 100%;
+  padding: 11px 13px 10px;
   border-left: 2px solid #eb0028;
   background: rgba(8, 8, 8, 0.9);
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.34);
