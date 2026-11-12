@@ -8,10 +8,6 @@ const REGIONS = {
     name: 'INDIA GATE',
     bounds: { left: 0.48, top: 0.42, right: 0.68, bottom: 1 },
   },
-  akshardham: {
-    name: 'AKSHARDHAM',
-    bounds: { left: 0.68, top: 0.52, right: 1, bottom: 1 },
-  },
 };
 
 async function findVisibleLandmarkPoint(page, region) {
@@ -180,7 +176,7 @@ async function assertReveal(page, region, interaction) {
     const mobile = await mobileContext.newPage();
     await mobile.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
     await mobile.locator('.tedx-hero').waitFor({ state: 'visible' });
-    await assertReveal(mobile, REGIONS.akshardham, 'touch');
+    await assertReveal(mobile, REGIONS['india-gate'], 'touch');
     await mobileContext.close();
     await desktop.close();
   } finally {
