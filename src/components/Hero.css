@@ -16,7 +16,7 @@
   filter: blur(26px); pointer-events: none;
 }
 .tedx-hero__floor {
-  position: absolute; z-index: 2; right: 0; bottom: 0; left: 0; height: 19%;
+  position: absolute; z-index: 2; right: 0; bottom: 0; left: 0; height: 15%;
   border-top: 1px solid rgba(235,0,40,.18);
   background: linear-gradient(180deg,rgba(8,5,7,.02),rgba(0,0,0,.77) 64%,#030304);
   pointer-events: none;
@@ -111,7 +111,8 @@
   .tedx-hero::before { background: linear-gradient(180deg,rgba(5,5,6,.1),rgba(5,5,6,.14) 24%,#050506 50%,#050506 100%); }
   .tedx-hero__architecture { top: 7%; right: -12%; width: 116%; height: 45%; opacity: .9; }
   .tedx-hero__architecture img { object-position: center top; }
-  .tedx-hero__content { align-items: flex-end; padding: 340px 7vw 118px; }
+  .tedx-hero__floor { height: 7%; border-top: 0; background: linear-gradient(180deg, transparent, rgba(0,0,0,.62)); }
+  .tedx-hero__content { align-items: flex-end; padding: 368px 7vw 118px; }
   .tedx-hero__copy { width: 100%; }
   .tedx-hero__eyebrow { gap: 9px; margin-bottom: 17px; font-size: 9px; letter-spacing: .19em; }
   .tedx-hero__ted { font-size: clamp(4.7rem,17vw,6rem); }
