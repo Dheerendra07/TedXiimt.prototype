@@ -109,7 +109,7 @@
 @media (max-width:760px) {
   .tedx-hero { min-height: 780px; height: auto; max-height: none; padding-top: 72px; }
   .tedx-hero::before { background: linear-gradient(180deg,rgba(5,5,6,.1),rgba(5,5,6,.14) 24%,#050506 50%,#050506 100%); }
-  .tedx-hero__architecture { top: 7%; right: -12%; width: 116%; height: 45%; opacity: .9; }
+  .tedx-hero__architecture { top: 7%; right: -12%; width: 116%; height: 41%; opacity: .9; }
   .tedx-hero__architecture img { object-position: center top; }
   .tedx-hero__floor { height: 7%; border-top: 0; background: linear-gradient(180deg, transparent, rgba(0,0,0,.62)); }
   .tedx-hero__content { align-items: flex-end; padding: 368px 7vw 118px; }
