@@ -94,7 +94,7 @@ const SocialMedia = () => {
   };
 
   return (
-    <section className="relative overflow-hidden border-y border-white/10 bg-black px-5 py-20 text-white sm:px-8 md:py-28 lg:px-12" aria-labelledby="social-media-heading">
+    <section className="tedx-social relative overflow-hidden border-y border-white/10 bg-black px-5 py-20 text-white sm:px-8 md:py-28 lg:px-12" aria-labelledby="social-media-heading">
       <div className="pointer-events-none absolute -left-32 top-0 h-80 w-80 rounded-full bg-[#EB0028]/10 blur-3xl" />
       <div className="pointer-events-none absolute -right-32 bottom-0 h-80 w-80 rounded-full bg-[#EB0028]/5 blur-3xl" />
 

@@ -32,7 +32,7 @@ const Partners = () => {
   }
 
   return (
-    <section className="py-20 bg-black/90 border-t border-zinc-900">
+    <section className="tedx-partners py-20 bg-black/90 border-t border-zinc-900">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           className="text-center mb-16"

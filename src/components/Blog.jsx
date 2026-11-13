@@ -41,7 +41,7 @@ const Blog = () => {
   }
 
   return (
-    <section className="relative w-full overflow-hidden border-t border-white/10 bg-zinc-950 px-5 py-16 text-white sm:px-6 md:py-24">
+    <section className="tedx-blog relative w-full overflow-hidden border-t border-white/10 bg-zinc-950 px-5 py-16 text-white sm:px-6 md:py-24">
       <div className="pointer-events-none absolute right-0 top-0 h-72 w-72 rounded-full bg-[#EB0028]/10 blur-3xl" />
       <div className="relative mx-auto max-w-7xl">
         

@@ -12,6 +12,7 @@ import logo from './logo-white.png';
 const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const isAdmin = typeof user?.role === 'string' && user.role.toLowerCase() === 'admin';
+  const isHomePage = typeof window !== 'undefined' && window.location.pathname === '/';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -208,11 +209,11 @@ const Header = () => {
                 Sign In
               </a>
               <a
-                href="/register"
+                href={isHomePage ? "/library" : "/register"}
                 className="flex items-center gap-2 rounded-full border border-[#EB0028] bg-transparent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#EB0028]/10 active:scale-[0.98]"
               >
                 <Ticket className="w-4 h-4" />
-                Get Tickets
+                {isHomePage ? 'Explore Edition' : 'Get Tickets'}
               </a>
             </>
           )}
@@ -221,10 +222,10 @@ const Header = () => {
         {/* Mobile Menu Toggle */}
         <div className="flex items-center gap-2 lg:hidden">
           <a
-            href="/register"
+            href={isHomePage ? "/library" : "/register"}
             className="px-3 py-1.5 text-xs font-bold text-white bg-[#EB0028] rounded-md shadow"
           >
-            Tickets
+            {isHomePage ? 'Edition' : 'Tickets'}
           </a>
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
