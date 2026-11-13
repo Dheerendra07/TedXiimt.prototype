@@ -12,7 +12,23 @@ import logo from './logo-white.png';
 const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const isAdmin = typeof user?.role === 'string' && user.role.toLowerCase() === 'admin';
-  const isHomePage = typeof window !== 'undefined' && window.location.pathname === '/';
+  const [isHomePage, setIsHomePage] = useState(() => typeof window !== 'undefined' && window.location.pathname === '/');
+
+  useEffect(() => {
+    const syncHomeState = () => setIsHomePage(window.location.pathname === '/');
+    const handleInternalNavigation = (event) => {
+      if (event.target.closest('a')) {
+        window.requestAnimationFrame(syncHomeState);
+      }
+    };
+
+    window.addEventListener('popstate', syncHomeState);
+    document.addEventListener('click', handleInternalNavigation);
+    return () => {
+      window.removeEventListener('popstate', syncHomeState);
+      document.removeEventListener('click', handleInternalNavigation);
+    };
+  }, []);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
