@@ -111,7 +111,7 @@ const Hero = () => {
       <div className="tedx-hero__content">
         <Motion.div
           className="tedx-hero__copy"
-          initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.85, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
         >

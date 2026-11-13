@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { Handshake, Star, ExternalLink } from 'lucide-react';
 import api from '../services/api';
 
@@ -34,7 +34,7 @@ const Partners = () => {
   return (
     <section className="tedx-partners py-20 bg-black/90 border-t border-zinc-900">
       <div className="container mx-auto px-4 sm:px-6">
-        <motion.div
+        <Motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -51,11 +51,11 @@ const Partners = () => {
           <p className="text-base text-zinc-400 max-w-2xl mx-auto leading-relaxed">
             We are deeply grateful to our visionary partner organizations who support the spread of transformative ideas.
           </p>
-        </motion.div>
+        </Motion.div>
 
         <div className="space-y-12 max-w-6xl mx-auto">
           {tiers.map((tier) => (
-            <motion.div
+            <Motion.div
               key={tier.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -100,7 +100,7 @@ const Partners = () => {
                   </a>
                 ))}
               </div>
-            </motion.div>
+            </Motion.div>
           ))}
         </div>
       </div>

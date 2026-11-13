@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { BookOpen, ArrowRight, Clock } from 'lucide-react';
 import api from '../services/api';
 
@@ -46,7 +46,7 @@ const Blog = () => {
       <div className="relative mx-auto max-w-7xl">
         
         {/* Section Header */}
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -63,12 +63,12 @@ const Blog = () => {
           <p className="mx-auto max-w-xl text-sm leading-6 text-zinc-400 sm:text-base">
             Explore speaker spotlights, stagecraft stories, and deep dives into the 2025 theme "Break the Flow".
           </p>
-        </motion.div>
+        </Motion.div>
 
         {/* Blog Posts Grid */}
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {posts.map((post, index) => (
-            <motion.article
+            <Motion.article
               key={post.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -115,7 +115,7 @@ const Blog = () => {
                   <ArrowRight className="w-3.5 h-3.5" />
                 </div>
               </div>
-            </motion.article>
+            </Motion.article>
           ))}
         </div>
       </div>

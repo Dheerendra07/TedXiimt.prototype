@@ -49,7 +49,7 @@ const EventHighlights = () => (
         >
           <div className="tedx-discover__card-top">
             <span>{number}</span>
-            <Icon size={23} strokeWidth={1.35} aria-hidden="true" />
+            {React.createElement(Icon, { size: 23, strokeWidth: 1.35, 'aria-hidden': true })}
           </div>
           <div className="tedx-discover__card-body">
             <h3>{title}</h3>

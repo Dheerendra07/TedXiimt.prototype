@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { Play } from 'lucide-react';
 
 const reelVideos = ['/1.mp4', '/2.mp4', '/3.mp4', '/4.mp4'];
@@ -39,7 +39,7 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
   };
 
   return (
-    <motion.article
+    <Motion.article
       initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
@@ -78,7 +78,7 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
           </button>
         )}
       </div>
-    </motion.article>
+    </Motion.article>
   );
 };
 
@@ -99,7 +99,7 @@ const SocialMedia = () => {
       <div className="pointer-events-none absolute -right-32 bottom-0 h-80 w-80 rounded-full bg-[#EB0028]/5 blur-3xl" />
 
       <div className="relative mx-auto max-w-7xl">
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -114,7 +114,7 @@ const SocialMedia = () => {
               Explore our latest stories and features across social media.
             </p>
           </div>
-        </motion.div>
+        </Motion.div>
 
         <div className="mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {reelVideos.map((src, index) => {

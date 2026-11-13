@@ -52,7 +52,7 @@ const ValueProposition = () => (
         >
           <span className="tedx-values__number">{number}</span>
           <div><h3>{title}</h3><p>{copy}</p></div>
-          <Icon size={24} strokeWidth={1.25} aria-hidden="true" />
+          {React.createElement(Icon, { size: 24, strokeWidth: 1.25, 'aria-hidden': true })}
         </Motion.article>
       ))}
     </div>
