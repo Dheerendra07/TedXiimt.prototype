@@ -8,42 +8,22 @@ import SocialMedia from '../components/SocialMedia';
 import Partners from '../components/Partners';
 import Blog from '../components/Blog';
 import FloatingCTA from '../components/FloatingCTA';
+import '../styles/homepage-editorial.css';
 
-const HomePage = () => {
-  return (
-    <div className="min-h-screen bg-black text-white overflow-x-clip">
-      <main id="main-content">
-        {/* 1. Hero Section */}
-        <Hero />
-
-        {/* 2. Featured Speakers */}
-        <FeaturedSpeakers />
-        
-        {/* 3. What is TEDx */}
-        <WhatIsTEDx />
-
-       
-        
-        {/* 5. Event Highlights */}
-        <EventHighlights />
-
-        {/* 6. Community & Social */}
-        <SocialMedia />
-
-         {/* 4. Value Proposition */}
-        <ValueProposition />
-
-        {/* 6. Strategic Partners */}
-        <Partners />
-
-        {/* 7. Latest Editorial Stories */}
-        <Blog />
-      </main>
-
-      {/* Floating CTA */}
-      <FloatingCTA />
-    </div>
-  );
-};
+const HomePage = () => (
+  <div className="tedx-home min-h-screen overflow-x-clip bg-black text-white">
+    <main id="main-content">
+      <Hero />
+      <WhatIsTEDx />
+      <div className="tedx-home__featured"><FeaturedSpeakers /></div>
+      <div className="tedx-home__discover"><EventHighlights /></div>
+      <div className="tedx-home__value"><ValueProposition /></div>
+      <div className="tedx-home__social"><SocialMedia /></div>
+      <div className="tedx-home__partners"><Partners /></div>
+      <div className="tedx-home__blog"><Blog /></div>
+    </main>
+    <FloatingCTA />
+  </div>
+);
 
 export default HomePage;

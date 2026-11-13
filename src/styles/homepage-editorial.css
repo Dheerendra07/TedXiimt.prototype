@@ -1,0 +1,112 @@
+/* Shared TEDxIIMT editorial system — homepage only. */
+.tedx-home {
+  --tedx-red:#eb0028; --tedx-ink:#050506; --tedx-panel:#0d0d0f;
+  --tedx-line:rgba(255,255,255,.12); --tedx-muted:#a6a1a3;
+  background:var(--tedx-ink); color:#f6f3f4; font-family:Inter,Arial,sans-serif;
+}
+.tedx-home main>section:not(.tedx-hero){position:relative;scroll-margin-top:90px}
+.tedx-section-kicker{display:flex;align-items:center;gap:12px;margin-bottom:23px;color:#d2cacc;font:600 10px Georgia,serif;letter-spacing:.2em}
+.tedx-section-kicker span{color:var(--tedx-red)} .tedx-section-kicker i{width:30px;height:1px;background:var(--tedx-red)}
+
+/* Header is shared with every route; style it only while the homepage is mounted. */
+body:has(.tedx-home) #root header{
+  min-height:82px;padding-top:10px!important;padding-bottom:10px!important;
+  background:rgba(4,4,5,.78)!important;border-bottom:1px solid rgba(255,255,255,.12)!important;
+  backdrop-filter:blur(18px) saturate(120%);
+}
+body:has(.tedx-home) #root header>div{width:min(92%,1640px)!important;gap:clamp(12px,2vw,34px)!important}
+body:has(.tedx-home) #root header img{height:54px!important;max-width:240px!important}
+body:has(.tedx-home) #root header nav{gap:clamp(0px,.55vw,9px)!important}
+body:has(.tedx-home) #root header nav>div>a{position:relative;padding:11px 12px!important;color:rgba(248,244,245,.82)!important;background:transparent!important;font-size:13px!important}
+body:has(.tedx-home) #root header nav>div>a:hover{color:#fff!important;background:rgba(255,255,255,.045)!important}
+body:has(.tedx-home) #root header nav>div:first-child>a{color:var(--tedx-red)!important}
+body:has(.tedx-home) #root header nav>div:first-child>a:after{position:absolute;right:12px;bottom:3px;left:12px;height:2px;content:"";background:var(--tedx-red)}
+body:has(.tedx-home) #root header a[href="/register"].rounded-full{min-height:46px;padding:0 22px!important;border-color:rgba(235,0,40,.7)!important;border-radius:999px!important;background:rgba(235,0,40,.025)!important;font-size:13px!important}
+body:has(.tedx-home) #root header a[href="/register"].rounded-full:hover{background:rgba(235,0,40,.12)!important}
+body:has(.tedx-home) #root footer{background:#050506!important;border-color:rgba(255,255,255,.12)!important}
+body:has(.tedx-home) #root footer a:hover{color:var(--tedx-red)!important}
+
+/* Editorial introduction — replaces the old 300vh stacked card interaction. */
+.tedx-about{overflow:hidden;padding:clamp(80px,9vw,132px) max(6vw,calc((100vw - 1440px)/2));background:radial-gradient(ellipse at 84% 38%,rgba(115,0,25,.12),transparent 42%),linear-gradient(180deg,#070708,#09090b);border-bottom:1px solid rgba(255,255,255,.08)}
+.tedx-about__inner{display:grid;max-width:1440px;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);align-items:center;gap:clamp(42px,7vw,110px);margin:0 auto}
+.tedx-about__copy h2{max-width:620px;margin:0 0 22px;color:#f6f1f2;font-size:clamp(2.5rem,4.2vw,4.65rem);font-weight:580;letter-spacing:-.065em;line-height:.99}
+.tedx-about__copy h2 em{color:var(--tedx-red);font-family:Georgia,serif;font-weight:400}
+.tedx-about__copy p{max-width:610px;margin:0 0 15px;color:#aaa4a6;font-size:14px;line-height:1.85}
+.tedx-about__copy p.tedx-about__lead{color:#e4dcde;font-size:17px;line-height:1.7}
+.tedx-text-link{display:inline-flex;align-items:center;gap:10px;margin-top:14px;color:#fff;font-size:13px;font-weight:650;text-decoration:none;transition:color .2s,gap .2s}
+.tedx-text-link svg{color:var(--tedx-red)} .tedx-text-link:hover{gap:15px;color:var(--tedx-red)}
+.tedx-about__visual{position:relative;padding:0 18px 20px 0}
+.tedx-about__image-frame{position:relative;min-height:410px;aspect-ratio:1.38;overflow:hidden;border:1px solid rgba(255,255,255,.18);background:#101013}
+.tedx-about__image-frame:before{position:absolute;z-index:1;inset:12px -12px -12px 12px;border:1px solid rgba(235,0,40,.55);content:"";pointer-events:none}
+.tedx-about__image-frame img{width:100%;height:100%;min-height:410px;object-fit:cover;object-position:center;filter:saturate(.72) contrast(1.08)}
+.tedx-about__image-shade{position:absolute;inset:0;background:linear-gradient(180deg,transparent 38%,rgba(0,0,0,.75))}
+.tedx-about__image-caption{position:absolute;right:26px;bottom:24px;left:26px;display:flex;flex-direction:column;gap:7px}
+.tedx-about__image-caption span{color:#ff5268;font-size:9px;font-weight:700;letter-spacing:.2em}
+.tedx-about__image-caption strong{color:#fff;font:400 clamp(20px,2vw,29px) Georgia,serif}
+.tedx-about__side-note{position:absolute;top:20px;right:-9px;display:flex;align-items:center;gap:10px;color:#9f9699;font:9px Georgia,serif;letter-spacing:.2em;writing-mode:vertical-rl}
+.tedx-about__side-note i{width:1px;height:34px;background:var(--tedx-red)}
+.tedx-about__principles{display:grid;max-width:1440px;grid-template-columns:repeat(3,1fr);margin:clamp(58px,7vw,95px) auto 0;border-top:1px solid rgba(255,255,255,.14);border-bottom:1px solid rgba(255,255,255,.14)}
+.tedx-about__principles>div{display:flex;min-height:98px;flex-direction:column;justify-content:center;gap:9px;padding:18px 28px;border-right:1px solid rgba(255,255,255,.12)}
+.tedx-about__principles>div:first-child{padding-left:0}.tedx-about__principles>div:last-child{border-right:0}
+.tedx-about__principles span{color:var(--tedx-red);font-size:9px;font-weight:700;letter-spacing:.17em}
+.tedx-about__principles strong{color:#e6e0e1;font:400 16px Georgia,serif}
+
+/* Consistent surface, type scale, card edges and interaction states across homepage sections. */
+.tedx-home__featured #featured-speakers{background:#050506!important}
+.tedx-home__featured #featured-speakers h2{color:#f5f1f2!important;letter-spacing:-.045em}
+.tedx-home__featured #featured-speakers .rounded-2xl,.tedx-home__featured #featured-speakers .rounded-3xl{border-radius:0!important}
+.tedx-home__featured #featured-speakers button{border-radius:0!important}
+.tedx-home__discover section{padding-top:clamp(76px,8vw,112px)!important;padding-bottom:clamp(76px,8vw,112px)!important;background:#09090b!important}
+.tedx-home__discover h2{color:#f5f1f2;font-weight:570!important;letter-spacing:-.055em}
+.tedx-home__discover .grid>div>a{min-height:390px!important;border-radius:0!important;border-color:rgba(255,255,255,.13)!important;background:#101013!important}
+.tedx-home__discover .grid>div>a:hover{border-color:rgba(235,0,40,.7)!important}
+.tedx-home__discover .grid>div:nth-child(2)>a{transform:translateY(28px)}
+.tedx-home__discover .grid>div:nth-child(2)>a:hover{transform:translateY(22px)}
+.tedx-home__discover h3{font:400 1.65rem Georgia,serif!important;letter-spacing:-.02em}
+.tedx-home__value section{padding-top:clamp(82px,9vw,124px)!important;padding-bottom:clamp(82px,9vw,124px)!important;background:#050506!important}
+.tedx-home__value h2{max-width:900px;margin-right:auto;margin-left:auto;font-weight:570!important;letter-spacing:-.06em}
+.tedx-home__value .grid>div>div{border:1px solid rgba(255,255,255,.13)!important;background:#0c0c0e!important}
+.tedx-home__value .grid>div>div:hover{border-color:rgba(235,0,40,.65)!important}
+.tedx-home__value .rounded-lg{border-radius:0!important}
+.tedx-home__social section{padding-top:clamp(76px,8vw,112px)!important;padding-bottom:clamp(76px,8vw,112px)!important;background:#09090b!important}
+.tedx-home__social article{border-radius:0!important;border-color:rgba(255,255,255,.14)!important;background:#101013!important}
+.tedx-home__social article>div{border-radius:0!important}
+.tedx-home__social h2{font-weight:570!important;letter-spacing:-.06em}
+.tedx-home__partners section{background:#050506!important;border-color:rgba(255,255,255,.12)!important}
+.tedx-home__partners h2{font-weight:570!important;letter-spacing:-.055em}
+.tedx-home__partners a{border-radius:0!important;background:#0d0d10!important}
+.tedx-home__blog section{background:#09090b!important}
+.tedx-home__blog article{border-radius:0!important;background:#101013!important;border-color:rgba(255,255,255,.12)!important}
+.tedx-home__blog article:hover{border-color:rgba(235,0,40,.65)!important}
+.tedx-home__blog h2{font-weight:570!important;letter-spacing:-.055em}
+
+@media(max-width:1100px){
+  body:has(.tedx-home) #root header nav>div>a{padding-right:8px!important;padding-left:8px!important}
+  body:has(.tedx-home) #root header img{height:48px!important}
+  .tedx-about{padding-right:5vw;padding-left:5vw}.tedx-about__inner{gap:38px}
+  .tedx-about__image-frame,.tedx-about__image-frame img{min-height:330px}
+}
+@media(max-width:760px){
+  body:has(.tedx-home) #root header{min-height:68px;padding-top:8px!important;padding-bottom:8px!important}
+  body:has(.tedx-home) #root header>div{width:92%!important}
+  body:has(.tedx-home) #root header img{height:43px!important;max-width:190px!important}
+  body:has(.tedx-home) #root header a[href="/register"].rounded-full{min-height:34px;padding:0 12px!important;font-size:11px!important}
+  .tedx-about{padding:72px 6vw 74px}.tedx-about__inner{grid-template-columns:1fr;gap:34px}
+  .tedx-about__copy h2{max-width:520px;font-size:clamp(2.45rem,10vw,3.6rem)}
+  .tedx-about__copy p{font-size:13px}.tedx-about__copy p.tedx-about__lead{font-size:16px}
+  .tedx-about__image-frame,.tedx-about__image-frame img{min-height:245px}
+  .tedx-about__visual{margin-right:12px}.tedx-about__side-note{right:-20px}
+  .tedx-about__principles{grid-template-columns:1fr;margin-top:48px}
+  .tedx-about__principles>div{min-height:auto;padding:17px 0;border-right:0;border-bottom:1px solid rgba(255,255,255,.11)}
+  .tedx-about__principles>div:last-child{border-bottom:0}
+  .tedx-home__discover .grid>div:nth-child(2)>a{transform:none}
+  .tedx-home__featured #featured-speakers .grid{grid-template-columns:1fr!important}
+  .tedx-home__value .grid,.tedx-home__social .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:430px){
+  .tedx-home__value .grid,.tedx-home__social .grid{grid-template-columns:1fr!important}
+  .tedx-home__discover .grid>div>a{min-height:330px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .tedx-home *{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}
+}
