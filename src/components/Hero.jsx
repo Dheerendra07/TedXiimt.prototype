@@ -13,12 +13,6 @@ const formatEventDate = (edition) => {
   }).format(date);
 };
 
-const mosaicSquares = [
-  { className: 'tedx-mosaic__square--red', style: { gridArea: '1 / 2' } },
-  { className: 'tedx-mosaic__square--dark', style: { gridArea: '2 / 1' } },
-  { className: 'tedx-mosaic__square--crimson', style: { gridArea: '2 / 3' } },
-  { className: 'tedx-mosaic__square--red', style: { gridArea: '3 / 2' } },
-];
 
 const Hero = () => {
   const reduceMotion = useReducedMotion();
@@ -35,16 +29,6 @@ const Hero = () => {
     <section className="tedx-hero" aria-labelledby="tedx-hero-title">
       <div className="tedx-hero__ambient" aria-hidden="true" />
       <div className="tedx-hero__floor" aria-hidden="true" />
-      <div className="tedx-hero__mosaic tedx-hero__mosaic--upper" aria-hidden="true">
-        {mosaicSquares.map((square, index) => (
-          <span key={index} className={`tedx-mosaic__square ${square.className}`} style={square.style} />
-        ))}
-      </div>
-      <div className="tedx-hero__mosaic tedx-hero__mosaic--lower" aria-hidden="true">
-        <span className="tedx-mosaic__square tedx-mosaic__square--red" />
-        <span className="tedx-mosaic__square tedx-mosaic__square--dark" />
-        <span className="tedx-mosaic__square tedx-mosaic__square--crimson" />
-      </div>
 
       <Motion.figure
         className="tedx-hero__architecture"
