@@ -36,8 +36,29 @@ const Blog = () => {
     });
   };
 
-  if (loading || posts.length === 0) {
-    return null;
+  if (loading) return null;
+
+  if (posts.length === 0) {
+    return (
+      <section className="tedx-blog relative w-full overflow-hidden border-t border-white/10 bg-zinc-950 px-5 py-16 text-white sm:px-6 md:py-24">
+        <div className="relative mx-auto max-w-7xl">
+          <Motion.div
+            className="tedx-blog__empty"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: .6 }}
+          >
+            <div>
+              <div className="tedx-section-kicker"><span>EDITORIAL NOTES</span><i /> BEYOND THE STAGE</div>
+              <h2>Ideas deserve a life <em>beyond the stage.</em></h2>
+              <p>New stories will appear here as they are published. Until then, revisit the talks and moments from the 2025 edition.</p>
+            </div>
+            <a href="/library">Explore the 2025 edition <ArrowRight size={17} aria-hidden="true" /></a>
+          </Motion.div>
+        </div>
+      </section>
+    );
   }
 
   return (

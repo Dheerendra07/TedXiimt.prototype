@@ -382,3 +382,74 @@ body:has(.tedx-home) #root footer a:hover { color: var(--tedx-red-soft) !importa
 @media (prefers-reduced-motion: reduce) {
   .tedx-home *, .tedx-home *::before, .tedx-home *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+
+/* Honest fallbacks keep data-driven homepage areas composed when the API has no records. */
+.tedx-partners__fallback {
+  display: flex;
+  justify-content: center;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+.tedx-partners__fallback-card {
+  display: flex;
+  width: min(100%, 560px);
+  min-height: 182px;
+  flex-direction: column;
+  justify-content: center;
+  padding: 30px clamp(24px, 4vw, 48px);
+  border: 1px solid rgba(255,255,255,.14);
+  border-top: 2px solid var(--tedx-red);
+  background: linear-gradient(125deg, rgba(255,255,255,.035), transparent 52%), #0b0a0c;
+}
+.tedx-partners__fallback-card span {
+  color: var(--tedx-red-soft);
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: .22em;
+}
+.tedx-partners__fallback-card strong {
+  margin-top: 13px;
+  color: #f6f0f2;
+  font: 400 clamp(1.8rem, 3vw, 2.5rem) Georgia,serif;
+}
+.tedx-partners__fallback-card i { width: 34px; height: 1px; margin: 16px 0 12px; background: var(--tedx-red); }
+.tedx-partners__fallback-card small { color: #777074; font-size: 8px; font-weight: 650; letter-spacing: .16em; }
+.tedx-blog__empty {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 40px;
+  padding: 30px 0 12px;
+}
+.tedx-blog__empty h2 {
+  max-width: 720px;
+  margin: 0;
+  color: #f6f0f2;
+  font: 400 clamp(2.5rem, 5vw, 4.4rem)/1.02 Georgia,serif;
+  letter-spacing: -.05em;
+}
+.tedx-blog__empty h2 em { color: var(--tedx-red); font-style: italic; }
+.tedx-blog__empty p { max-width: 520px; margin: 18px 0 0; color: #9b9396; font-size: 12px; line-height: 1.8; }
+.tedx-blog__empty a {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 17px;
+  border: 1px solid rgba(235,0,40,.65);
+  color: #f4edef;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .2s ease, border-color .2s ease;
+}
+.tedx-blog__empty a svg { color: var(--tedx-red); }
+.tedx-blog__empty a:hover { border-color: var(--tedx-red); background: rgba(235,0,40,.1); }
+@media (max-width: 760px) {
+  .tedx-blog__empty { grid-template-columns: 1fr; gap: 22px; align-items: start; }
+  .tedx-blog__empty h2 { font-size: clamp(2.4rem, 10vw, 3.5rem); }
+  .tedx-blog__empty a { width: fit-content; }
+}

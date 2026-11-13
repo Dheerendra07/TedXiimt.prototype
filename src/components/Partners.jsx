@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion as Motion } from 'framer-motion';
 import { Handshake, Star, ExternalLink } from 'lucide-react';
 import api from '../services/api';
+import { LEGACY_SPONSORS_2025 } from '../data/TEDx2025';
 
 const Partners = () => {
   const [tiers, setTiers] = useState([]);
@@ -27,9 +28,43 @@ const Partners = () => {
     return () => { isMounted = false; };
   }, []);
 
-  if (loading || tiers.length === 0) {
-    return null; // Silent if no partners or loading
+  if (loading) return null;
+
+  if (tiers.length === 0 && LEGACY_SPONSORS_2025.length > 0) {
+    return (
+      <section className="tedx-partners py-20 bg-black/90 border-t border-zinc-900">
+        <div className="container mx-auto px-4 sm:px-6">
+          <Motion.div
+            className="mb-12 text-center"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: .6 }}
+          >
+            <div className="tedx-section-kicker justify-center"><span>THE PEOPLE BEHIND THE STAGE</span><i /> PARTNERSHIP</div>
+            <h2 className="mb-4 text-4xl font-black text-white sm:text-5xl">
+              Built with <span className="text-[#EB0028]">support.</span>
+            </h2>
+            <p className="mx-auto max-w-xl text-sm leading-7 text-zinc-400">
+              Recognising the institution listed as the 2025 edition's title partner.
+            </p>
+          </Motion.div>
+          <div className="tedx-partners__fallback" role="list" aria-label="2025 title partner">
+            {LEGACY_SPONSORS_2025.map((partner) => (
+              <div className="tedx-partners__fallback-card" key={partner.name} role="listitem">
+                <span>{partner.tier.toUpperCase()}</span>
+                <strong>{partner.name}</strong>
+                <i aria-hidden="true" />
+                <small>TEDxIIMT UNIVERSITY · 2025</small>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
   }
+
+  if (tiers.length === 0) return null;
 
   return (
     <section className="tedx-partners py-20 bg-black/90 border-t border-zinc-900">
