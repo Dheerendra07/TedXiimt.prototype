@@ -1,12 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, CalendarDays, MapPin, MoveDown, PlayCircle } from 'lucide-react';
 import { useEdition } from '../context/EditionContext';
 import './Hero.css';
 import '../pages/HomepageMosaic.css';
-
-const MOSAIC_COLUMNS = 18;
-const MOSAIC_ROWS = 17;
+import HeroMosaic from './HeroMosaic';
 
 const formatEventDate = (edition) => {
   if (!edition || edition.is_active !== true || !edition.date) return null;
@@ -18,16 +16,6 @@ const formatEventDate = (edition) => {
 const Hero = () => {
   const reduceMotion = useReducedMotion();
   const { activeEdition, loading } = useEdition();
-  const [focusedMosaicCell, setFocusedMosaicCell] = useState(-1);
-  const mosaicCells = useMemo(
-    () => Array.from({ length: MOSAIC_COLUMNS * MOSAIC_ROWS }, (_, index) => ({
-      index,
-      row: Math.floor(index / MOSAIC_COLUMNS),
-      column: index % MOSAIC_COLUMNS,
-    })),
-    [],
-  );
-
   const eventDate = useMemo(() => (!loading ? formatEventDate(activeEdition) : null), [activeEdition, loading]);
   const venueLabel = activeEdition?.is_active === true && activeEdition.venue
     ? activeEdition.venue
@@ -36,15 +24,6 @@ const Hero = () => {
   const themeAccent = themeWords.pop() || 'Flow';
   const themeLead = themeWords.join(' ');
 
-  const handleMosaicPointerMove = (event) => {
-    if (event.pointerType !== 'mouse') return;
-    const cell = event.target.closest('[data-mosaic-index]');
-    if (!cell) return;
-    const nextIndex = Number(cell.dataset.mosaicIndex);
-    setFocusedMosaicCell((current) => (current === nextIndex ? current : nextIndex));
-  };
-  const focusedRow = focusedMosaicCell >= 0 ? Math.floor(focusedMosaicCell / MOSAIC_COLUMNS) : -1;
-  const focusedColumn = focusedMosaicCell >= 0 ? focusedMosaicCell % MOSAIC_COLUMNS : -1;
 
   return (
     <section className="tedx-hero" aria-labelledby="tedx-hero-title" data-testid="tedx-home-hero">
@@ -58,32 +37,7 @@ const Hero = () => {
           fetchPriority="high"
           decoding="async"
         />
-        <div
-          className="tedx-hero__mosaic"
-          onPointerMove={handleMosaicPointerMove}
-          onPointerLeave={() => setFocusedMosaicCell(-1)}
-        >
-          {mosaicCells.map(({ index, row, column }) => {
-            const distance = focusedMosaicCell < 0
-              ? -1
-              : Math.abs(row - focusedRow) + Math.abs(column - focusedColumn);
-            const visualState = distance === 0
-              ? 'is-active'
-              : distance === 1
-                ? 'is-near'
-                : distance === 2
-                  ? 'is-wave'
-                  : '';
-            return (
-              <span
-                key={index}
-                className={'tedx-hero__mosaic-cell' + (visualState ? ' ' + visualState : '')}
-                data-mosaic-index={index}
-                style={{ '--mosaic-delay': String(Math.max(0, distance) * 28) + 'ms' }}
-              />
-            );
-          })}
-        </div>
+        <HeroMosaic />
         <span className="tedx-hero__stage-edge" />
       </div>
 
