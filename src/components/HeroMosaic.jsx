@@ -13,8 +13,17 @@ const FIRST_FRAME = new Map([
 const CLUSTERS = [
   ['0010', '1111', '1011', '1000'],
   ['0110', '1110', '0111', '0010'],
-  ['1110', '0010', '0111', '0100'],
+  ['0010', '1111', '1011', '1000'],
   ['1100', '1110', '0011', '0110'],
+];
+
+// Pattern placement in the main source-video cluster: checker pixels, bars,
+// stepped fragments and the little dot/zig-zag tiles in their original order.
+const PATTERN_LAYOUT = [
+  [4, 5, 0, 3],
+  [1, 2, 5, 4],
+  [3, 7, 4, 5],
+  [2, 6, 1, 0],
 ];
 
 // 12 × 12 bitmap textures based on the reference: staggered bands, pixel
@@ -134,7 +143,7 @@ const HeroMosaic = () => {
     if (localRow < 0 || localRow >= 4 || localColumn < 0 || localColumn >= 4) return null;
     if (shape[localRow][localColumn] !== '1') return null;
 
-    const pattern = (localRow * 3 + localColumn * 5 + shapeIndex) % PIXEL_PATTERNS.length;
+    const pattern = PATTERN_LAYOUT[localRow][localColumn];
     const tone = (localRow + localColumn + shapeIndex) % 6 === 0 ? 'is-lilac' : 'is-violet';
     const delay = (Math.abs(localRow - 1) + Math.abs(localColumn - 2)) * 18;
 
