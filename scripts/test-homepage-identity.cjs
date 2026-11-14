@@ -52,10 +52,35 @@ async function main() {
 
     const mosaicCells = desktop.locator('.tedx-hero__mosaic-cell');
     assert.equal(await mosaicCells.count(), 306, 'Desktop hero mosaic should contain an 18 x 17 square grid.');
+    const restingMosaicStyle = await mosaicCells.nth(152).evaluate((element) => {
+      const style = window.getComputedStyle(element);
+      return {
+        backgroundColor: style.backgroundColor,
+        borderColor: style.borderColor,
+        boxShadow: style.boxShadow,
+      };
+    });
     await mosaicCells.nth(152).hover();
     assert.equal(await desktop.locator('.tedx-hero__mosaic-cell.is-active').count(), 1);
     assert.ok(await desktop.locator('.tedx-hero__mosaic-cell.is-near').count() > 0);
     assert.ok(await desktop.locator('.tedx-hero__mosaic-cell.is-wave').count() > 0);
+    assert.ok(await desktop.locator('.tedx-hero__mosaic-pattern').count() >= 5, 'Hover should reveal the purple/white pixel patterns across the tile cluster.');
+
+    await desktop.mouse.move(4, 4);
+    await desktop.waitForTimeout(460);
+    assert.equal(await desktop.locator('.tedx-hero__mosaic-cell.is-active').count(), 0, 'Active tile must clear on pointer exit.');
+    assert.equal(await desktop.locator('.tedx-hero__mosaic-cell.is-near').count(), 0, 'Near tiles must clear on pointer exit.');
+    assert.equal(await desktop.locator('.tedx-hero__mosaic-cell.is-wave').count(), 0, 'Wave tiles must clear on pointer exit.');
+    assert.equal(await desktop.locator('.tedx-hero__mosaic-pattern').count(), 0, 'Pixel art must not remain after hover ends.');
+    const restoredMosaicStyle = await mosaicCells.nth(152).evaluate((element) => {
+      const style = window.getComputedStyle(element);
+      return {
+        backgroundColor: style.backgroundColor,
+        borderColor: style.borderColor,
+        boxShadow: style.boxShadow,
+      };
+    });
+    assert.deepEqual(restoredMosaicStyle, restingMosaicStyle, 'The mosaic cell must return to its exact resting style after hover.');
 
     await desktop.locator('#about').scrollIntoViewIfNeeded();
     await assertNoHorizontalOverflow(desktop, 'Desktop');
@@ -85,7 +110,7 @@ async function main() {
     await moveThroughSections(desktop);
     assert.equal(pageErrors.length, 0, 'Desktop runtime errors: ' + pageErrors.join(' | '));
     await desktop.screenshot({ path: 'artifacts/homepage/desktop.png', fullPage: true });
-    console.log('PASS desktop: hero, square ripple mosaic, Explore layout, speaker controls and overflow');
+    console.log('PASS desktop: hero, purple/white pixel mosaic and exact hover reset, Explore layout, speaker controls and overflow');
 
     const mobileContext = await browser.newContext({
       viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true,
