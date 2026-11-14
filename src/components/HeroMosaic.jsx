@@ -1,101 +1,111 @@
 import React, { useState } from 'react';
 
-const MOSAIC_COLUMNS = 8;
-const MOSAIC_ROWS = 6;
+const COLUMNS = 8;
+const ROWS = 6;
 
-// The resting layout is the first-frame composition from the supplied reference.
-// Pointer movement temporarily rebuilds the same compact cluster around the cursor.
-const DEFAULT_COMPOSITION = new Map([
-  [11, { state: 'is-near', pattern: 3 }],
-  [13, { state: 'is-active', pattern: 1 }],
-  [18, { state: 'is-near', pattern: 4 }],
-  [19, { state: 'is-active', pattern: 5 }],
-  [20, { state: 'is-near', pattern: 2 }],
-  [26, { state: 'is-wave', pattern: 0 }],
-  [27, { state: 'is-active', pattern: 6 }],
-  [28, { state: 'is-near', pattern: 7 }],
-  [34, { state: 'is-wave', pattern: 4 }],
+// The idle state mirrors the two purple tiles visible in the reference video's opening frame.
+const FIRST_FRAME = new Map([
+  [13, { pattern: 0, tone: 'is-violet' }],
+  [20, { pattern: 1, tone: 'is-lilac' }],
 ]);
 
+// Sparse 4 × 4 tile masks taken from the moving, irregular clusters in the video.
+// The empty cells are intentional: the full grid stays visible beneath the cluster.
+const CLUSTERS = [
+  ['0010', '1111', '1011', '1000'],
+  ['0110', '1110', '0111', '0010'],
+  ['1110', '0010', '0111', '0100'],
+  ['1100', '1110', '0011', '0110'],
+];
+
+// 12 × 12 low-resolution strips, steps and fragments. These are deliberately
+// abstract data-like patterns rather than icons, letters or repeated symbols.
 const PIXEL_PATTERNS = [
   [
-    '0000011000', '0000011000', '0000011000', '1111111111',
-    '1111111111', '0000011000', '0000011000', '0000011000',
-    '0000011000', '0000000000',
+    '000011000110', '000111001110', '000011000110', '001100011000',
+    '011000110000', '011000110000', '001100011000', '000111000110',
+    '000011001110', '000000000110', '000000001100', '000000000000',
   ],
   [
-    '0000000000', '0000000011', '0000001110', '0000111000',
-    '0011100000', '0110000000', '1100000000', '0000000000',
-    '0000000000', '0000000000',
+    '000000000000', '111111000000', '000000000000', '111111111000',
+    '000000000000', '111100000000', '000000000000', '111111111110',
+    '000000000000', '000000000000', '000000000000', '000000000000',
   ],
   [
-    '0000000000', '1111000011', '0000000000', '1111111111',
-    '0000000000', '0011111100', '0000000000', '1111000011',
-    '0000000000', '0000000000',
+    '000000000000', '111100000000', '111111000000', '001111111000',
+    '000011111110', '000001111110', '000000111100', '000000000000',
+    '000001100000', '000011110000', '000111111000', '001111111100',
   ],
   [
-    '0000000000', '0011001100', '0011001100', '0000000000',
-    '1111111111', '1111111111', '0000000000', '0011001100',
-    '0011001100', '0000000000',
+    '000000000000', '000000100000', '000001110000', '000011111000',
+    '000111011100', '001110001110', '011100000111', '111100000111',
+    '111111111111', '000000000000', '000000000000', '000000000000',
   ],
   [
-    '0000000000', '0000000000', '0011000000', '0011000000',
-    '0011000000', '0011111111', '0000000011', '0000000011',
-    '0000000011', '0000000000',
+    '000000000000', '111000000000', '000000000000', '111111000000',
+    '000000000000', '111111111000', '000000000000', '000111111111',
+    '000000000000', '111111000000', '000000000000', '000000000000',
   ],
   [
-    '0000000000', '0110000000', '0110000000', '0110000000',
-    '0111111000', '0000011000', '0000011000', '0000011000',
-    '0000011000', '0000000000',
+    '000000000000', '000011110000', '000111111000', '001111111100',
+    '001100001100', '011000000110', '011000000110', '001100001100',
+    '001111111100', '000111111000', '000011110000', '000000000000',
   ],
   [
-    '0000000000', '0011111100', '0111111110', '1110011011',
-    '1110011011', '0111111110', '0011111100', '0001100000',
-    '0011110000', '0000000000',
+    '000000000000', '111100000000', '111111100000', '000011111000',
+    '000000111100', '000000011110', '000000001111', '000000011110',
+    '000000111100', '000011111000', '111111100000', '111100000000',
   ],
   [
-    '0000000000', '1100000011', '0110000110', '0011001100',
-    '0001111000', '0001111000', '0011001100', '0110000110',
-    '1100000011', '0000000000',
+    '000000000000', '111111111000', '000000000000', '001111111111',
+    '000000000000', '111111100000', '000000000000', '000011111111',
+    '000000000000', '111111111000', '000000000000', '000000000000',
   ],
 ];
 
-const GRID_CELLS = Array.from({ length: MOSAIC_COLUMNS * MOSAIC_ROWS }, (_, index) => ({
+const GRID = Array.from({ length: COLUMNS * ROWS }, (_, index) => ({
   index,
-  row: Math.floor(index / MOSAIC_COLUMNS),
-  column: index % MOSAIC_COLUMNS,
+  row: Math.floor(index / COLUMNS),
+  column: index % COLUMNS,
 }));
 
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
 const PixelPattern = ({ patternIndex }) => {
-  const pixels = [];
+  const runs = [];
+
   PIXEL_PATTERNS[patternIndex].forEach((line, y) => {
-    line.split('').forEach((bit, x) => {
-      if (bit !== '1') return;
-      const tone = (x + y + patternIndex) % 11 === 0
-        ? 'soft'
-        : (x * 2 + y + patternIndex) % 13 === 0
-          ? 'dim'
-          : 'bright';
-      pixels.push({ x, y, tone });
-    });
+    let x = 0;
+    while (x < line.length) {
+      const tone = line[x];
+      if (tone === '0') {
+        x += 1;
+        continue;
+      }
+
+      let end = x + 1;
+      while (end < line.length && line[end] === tone) end += 1;
+      runs.push({ x, y, width: end - x, tone });
+      x = end;
+    }
   });
 
   return (
     <svg
       className="tedx-hero__mosaic-pattern"
-      viewBox="0 0 10 10"
+      viewBox="0 0 12 12"
       preserveAspectRatio="none"
       aria-hidden="true"
       focusable="false"
     >
-      {pixels.map(({ x, y, tone }) => (
+      {runs.map(({ x, y, width, tone }) => (
         <rect
           key={x + '-' + y}
           className={'tedx-hero__mosaic-pixel tedx-hero__mosaic-pixel--' + tone}
-          x={x + 0.08}
-          y={y + 0.08}
-          width="0.84"
-          height="0.84"
+          x={x}
+          y={y}
+          width={width}
+          height="1"
         />
       ))}
     </svg>
@@ -105,88 +115,68 @@ const PixelPattern = ({ patternIndex }) => {
 const HeroMosaic = () => {
   const [focusedCellIndex, setFocusedCellIndex] = useState(-1);
 
-  const focusCellFromEvent = (event) => {
-    const target = event.target;
-    const cell = target && typeof target.closest === 'function'
-      ? target.closest('[data-mosaic-index]')
-      : null;
-    if (!cell) return;
+  const getCellVisual = ({ index, row, column }) => {
+    if (focusedCellIndex < 0) {
+      const restingTile = FIRST_FRAME.get(index);
+      return restingTile
+        ? { state: 'is-active ' + restingTile.tone, pattern: restingTile.pattern, delay: 0 }
+        : null;
+    }
 
+    const pointerRow = Math.floor(focusedCellIndex / COLUMNS);
+    const pointerColumn = focusedCellIndex % COLUMNS;
+    const shapeIndex = (pointerRow + pointerColumn) % CLUSTERS.length;
+    const shape = CLUSTERS[shapeIndex];
+    const top = clamp(pointerRow - 1, 0, ROWS - 4);
+    const left = clamp(pointerColumn - 2, 0, COLUMNS - 4);
+    const localRow = row - top;
+    const localColumn = column - left;
+
+    if (localRow < 0 || localRow >= 4 || localColumn < 0 || localColumn >= 4) return null;
+    if (shape[localRow][localColumn] !== '1') return null;
+
+    const pattern = (localRow * 3 + localColumn * 5 + shapeIndex) % PIXEL_PATTERNS.length;
+    const tone = (localRow + localColumn + shapeIndex) % 6 === 0 ? 'is-lilac' : 'is-violet';
+    const delay = (Math.abs(localRow - 1) + Math.abs(localColumn - 2)) * 18;
+
+    return {
+      state: 'is-active ' + tone,
+      pattern,
+      delay: Math.min(delay, 72),
+    };
+  };
+
+  const cellFromEvent = (event) => {
+    if (event.pointerType === 'touch') return;
+    const cell = event.target?.closest?.('[data-mosaic-index]');
+    if (!cell) return;
     const nextIndex = Number(cell.dataset.mosaicIndex);
     setFocusedCellIndex((current) => (current === nextIndex ? current : nextIndex));
   };
 
-  const handlePointerMove = (event) => {
-    if (event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
-    focusCellFromEvent(event);
-  };
-
-  const handlePointerDown = (event) => {
-    if (event.pointerType === 'touch') focusCellFromEvent(event);
-  };
-
-  const handlePointerUp = (event) => {
-    if (event.pointerType === 'touch') setFocusedCellIndex(-1);
-  };
-
   const handlePointerLeave = () => setFocusedCellIndex(-1);
-
-  const focusedRow = focusedCellIndex >= 0
-    ? Math.floor(focusedCellIndex / MOSAIC_COLUMNS)
-    : -1;
-  const focusedColumn = focusedCellIndex >= 0
-    ? focusedCellIndex % MOSAIC_COLUMNS
-    : -1;
 
   return (
     <div
       className="tedx-hero__mosaic"
       data-testid="tedx-hero-mosaic"
       aria-hidden="true"
-      onPointerMove={handlePointerMove}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerLeave}
+      onPointerMove={cellFromEvent}
+      onPointerDown={cellFromEvent}
       onPointerLeave={handlePointerLeave}
+      onPointerCancel={handlePointerLeave}
     >
-      {GRID_CELLS.map(({ index, row, column }) => {
-        let visualState = '';
-        let patternIndex = 0;
-        let revealDelay = 0;
-
-        if (focusedCellIndex < 0) {
-          const restingCell = DEFAULT_COMPOSITION.get(index);
-          if (restingCell) {
-            visualState = restingCell.state;
-            patternIndex = restingCell.pattern;
-          }
-        } else {
-          const distance = Math.abs(row - focusedRow) + Math.abs(column - focusedColumn);
-          const isWave = distance === 2
-            && (row + column + focusedRow + focusedColumn) % 2 === 0;
-
-          visualState = distance === 0
-            ? 'is-active'
-            : distance === 1
-              ? 'is-near'
-              : isWave
-                ? 'is-wave'
-                : '';
-
-          if (visualState) {
-            patternIndex = (index * 3 + focusedCellIndex * 5 + distance) % PIXEL_PATTERNS.length;
-            revealDelay = Math.min(distance * 24, 72);
-          }
-        }
+      {GRID.map((cell) => {
+        const visual = getCellVisual(cell);
 
         return (
           <span
-            key={index}
-            className={'tedx-hero__mosaic-cell' + (visualState ? ' ' + visualState : '')}
-            data-mosaic-index={index}
-            style={{ '--mosaic-delay': revealDelay + 'ms' }}
+            key={cell.index}
+            className={'tedx-hero__mosaic-cell' + (visual ? ' ' + visual.state : '')}
+            data-mosaic-index={cell.index}
+            style={{ '--mosaic-delay': (visual?.delay ?? 0) + 'ms' }}
           >
-            {visualState && <PixelPattern patternIndex={patternIndex} />}
+            {visual && <PixelPattern patternIndex={visual.pattern} />}
           </span>
         );
       })}
