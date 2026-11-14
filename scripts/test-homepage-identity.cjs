@@ -50,39 +50,58 @@ async function main() {
     assert.equal(await desktop.locator('.tedx-hero__primary').getAttribute('href'), '/register');
     assert.equal(await desktop.locator('.tedx-hero__secondary').getAttribute('href'), '/gallery');
 
+    const mosaicGrid = desktop.locator('.tedx-hero__mosaic');
     const mosaicCells = desktop.locator('.tedx-hero__mosaic-cell');
-    assert.equal(await mosaicCells.count(), 306, 'Desktop hero mosaic should contain an 18 x 17 square grid.');
-    const restingMosaicStyle = await mosaicCells.nth(152).evaluate((element) => {
+    assert.equal(await mosaicCells.count(), 48, 'The hero mosaic should use a compact 8 x 6 grid.');
+    const mosaicBounds = await mosaicGrid.boundingBox();
+    assert.ok(mosaicBounds, 'The desktop mosaic matrix should be visible.');
+    assert.ok(mosaicBounds.x > 1440 * 0.52, 'The mosaic should stay on the middle-right side of the X artwork.');
+    assert.ok(mosaicBounds.width < 1440 * 0.5, 'The mosaic should not cover the full hero artwork.');
+    assert.ok(Math.abs(mosaicBounds.width / mosaicBounds.height - 4 / 3) < 0.03, 'The 8 x 6 mosaic matrix should preserve square cells.');
+    const firstTileBounds = await mosaicCells.first().boundingBox();
+    assert.ok(Math.abs(firstTileBounds.width / firstTileBounds.height - 1) < 0.05, 'Every matrix cell should be square.');
+
+    const readRestingComposition = async () => mosaicCells.evaluateAll((elements) => elements.map((element) => {
       const style = window.getComputedStyle(element);
+      const pattern = element.querySelector('.tedx-hero__mosaic-pattern');
       return {
+        className: element.className,
         backgroundColor: style.backgroundColor,
+        backgroundImage: style.backgroundImage,
         borderColor: style.borderColor,
         boxShadow: style.boxShadow,
+        pixelPattern: pattern ? pattern.innerHTML : null,
       };
-    });
-    await mosaicCells.nth(152).hover();
-    assert.equal(await desktop.locator('.tedx-hero__mosaic-cell.is-active').count(), 1);
-    assert.ok(await desktop.locator('.tedx-hero__mosaic-cell.is-near').count() > 0);
-    assert.ok(await desktop.locator('.tedx-hero__mosaic-cell.is-wave').count() > 0);
-    assert.ok(await desktop.locator('.tedx-hero__mosaic-pattern').count() >= 5, 'Hover should reveal the purple/white pixel patterns across the tile cluster.');
+    }));
+    await desktop.waitForTimeout(420);
+    const firstFrameComposition = await readRestingComposition();
+    assert.equal(firstFrameComposition.filter((cell) => cell.pixelPattern !== null).length, 9,
+      'The initial first-frame composition should show its nine purple/pixel tiles.');
+    await desktop.screenshot({ path: 'artifacts/homepage/mosaic-first-frame.png' });
+
+    await mosaicCells.nth(27).hover();
+    assert.equal(await desktop.locator('.tedx-hero__mosaic-cell.is-active').count(), 1,
+      'Pointer movement should focus one active tile.');
+    assert.ok(await desktop.locator('.tedx-hero__mosaic-cell.is-near').count() > 0,
+      'Pointer movement should reveal the surrounding purple tiles.');
+    assert.ok(await desktop.locator('.tedx-hero__mosaic-cell.is-wave').count() > 0,
+      'Pointer movement should create the moving outer wave.');
+    assert.ok(await desktop.locator('.tedx-hero__mosaic-pattern').count() >= 7,
+      'Hover should reveal white pixel patterns across the compact cluster.');
+    const hoveredComposition = await readRestingComposition();
+    assert.notDeepEqual(hoveredComposition, firstFrameComposition,
+      'Hover should move the pixel composition instead of leaving the first frame static.');
     await desktop.waitForTimeout(420);
     await desktop.screenshot({ path: 'artifacts/homepage/mosaic-hover.png' });
 
     await desktop.mouse.move(4, 4);
-    await desktop.waitForTimeout(460);
-    assert.equal(await desktop.locator('.tedx-hero__mosaic-cell.is-active').count(), 0, 'Active tile must clear on pointer exit.');
-    assert.equal(await desktop.locator('.tedx-hero__mosaic-cell.is-near').count(), 0, 'Near tiles must clear on pointer exit.');
-    assert.equal(await desktop.locator('.tedx-hero__mosaic-cell.is-wave').count(), 0, 'Wave tiles must clear on pointer exit.');
-    assert.equal(await desktop.locator('.tedx-hero__mosaic-pattern').count(), 0, 'Pixel art must not remain after hover ends.');
-    const restoredMosaicStyle = await mosaicCells.nth(152).evaluate((element) => {
-      const style = window.getComputedStyle(element);
-      return {
-        backgroundColor: style.backgroundColor,
-        borderColor: style.borderColor,
-        boxShadow: style.boxShadow,
-      };
-    });
-    assert.deepEqual(restoredMosaicStyle, restingMosaicStyle, 'The mosaic cell must return to its exact resting style after hover.');
+    await desktop.waitForTimeout(500);
+    const restoredComposition = await readRestingComposition();
+    assert.deepEqual(restoredComposition, firstFrameComposition,
+      'Pointer exit must restore the exact first-frame composition, tile styles and pixel patterns.');
+    assert.equal(await desktop.locator('.tedx-hero__mosaic-pattern').count(), 9,
+      'The nine first-frame pixel tiles must return after hover ends.');
+    await desktop.screenshot({ path: 'artifacts/homepage/mosaic-restored.png' });
 
     await desktop.locator('#about').scrollIntoViewIfNeeded();
     await assertNoHorizontalOverflow(desktop, 'Desktop');
