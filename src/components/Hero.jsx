@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, CalendarDays, MapPin } from 'lucide-react';
 import { useEdition } from '../context/EditionContext';
 
@@ -955,7 +955,7 @@ const Hero = () => {
           const monument = MONUMENT_REGIONS.find((item) => item.id === monumentId);
           if (!monument) return null;
           return (
-            <motion.div
+            <Motion.div
               key={monumentId}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -981,19 +981,19 @@ const Hero = () => {
                   SOURCE
                 </a>
               </div>
-            </motion.div>
+            </Motion.div>
           );
         })}
       </div>
 
       <div className="relative z-20 mx-auto flex w-[88%] max-w-[1660px] items-center px-0 py-24 sm:py-28 lg:py-0">
-        <motion.div
+        <Motion.div
           variants={containerVariants}
           initial={prefersReducedMotion ? false : 'hidden'}
           animate="visible"
           className="flex min-h-[540px] w-full max-w-[740px] flex-col justify-center lg:min-h-[560px] lg:pl-8 xl:pl-12"
         >
-          <motion.div variants={itemVariants} data-mosaic-exclusion>
+          <Motion.div variants={itemVariants} data-mosaic-exclusion>
             <h1 className="leading-[0.9] tracking-[-0.065em]">
               <span className="block whitespace-nowrap text-[clamp(3.1rem,5.35vw,5.8rem)] font-black">
                 <span className="text-[#EB0028]">TED</span><span className="text-white">x</span><span className="ml-2 text-white sm:ml-3">IIMT</span>
@@ -1002,9 +1002,9 @@ const Hero = () => {
                 IIMT UNIVERSITY
               </span>
             </h1>
-          </motion.div>
+          </Motion.div>
 
-          <motion.div variants={itemVariants} className="mt-8 sm:mt-9" data-mosaic-exclusion>
+          <Motion.div variants={itemVariants} className="mt-8 sm:mt-9" data-mosaic-exclusion>
             <h2 className="whitespace-nowrap text-[clamp(2.5rem,4.35vw,4.55rem)] font-semibold leading-[0.98] tracking-[-0.05em]">
               Break the <span className="font-bold italic text-[#EB0028]">Flow.</span>
             </h2>
@@ -1015,9 +1015,9 @@ const Hero = () => {
             <p className="mt-4 max-w-[490px] text-sm leading-6 text-zinc-300 sm:text-base sm:leading-7">
               A platform to share ideas that challenge, inspire and create change.
             </p>
-          </motion.div>
+          </Motion.div>
 
-          <motion.div
+          <Motion.div
             variants={itemVariants}
             className="mt-6 flex flex-col gap-2.5 text-sm text-zinc-100 sm:mt-7 sm:flex-row sm:items-center sm:gap-8"
             data-mosaic-exclusion
@@ -1032,10 +1032,10 @@ const Hero = () => {
               <MapPin className="h-[18px] w-[18px] text-[#EB0028]" aria-hidden="true" />
               {venueLabel}
             </span>
-          </motion.div>
+          </Motion.div>
 
           {countdown && (
-            <motion.div
+            <Motion.div
               variants={itemVariants}
               className="mt-6 flex max-w-[560px] items-center border-y border-white/20 py-3 sm:mt-7 sm:py-3.5"
               aria-label="Event countdown"
@@ -1059,10 +1059,10 @@ const Hero = () => {
                   </div>
                 </div>
               ))}
-            </motion.div>
+            </Motion.div>
           )}
 
-          <motion.div
+          <Motion.div
             variants={itemVariants}
             className="mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row sm:items-center"
             data-mosaic-exclusion
@@ -1081,8 +1081,8 @@ const Hero = () => {
             >
               Meet Our Speakers
             </a>
-          </motion.div>
-        </motion.div>
+          </Motion.div>
+        </Motion.div>
       </div>
 
 
