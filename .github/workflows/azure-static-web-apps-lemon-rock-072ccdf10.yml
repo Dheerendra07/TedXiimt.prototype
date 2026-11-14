@@ -43,18 +43,24 @@ jobs:
           done
           cat /tmp/tedx-vite-preview.log
           exit 1
+      - name: Install Playwright runtime for homepage verification
+        if: github.event_name == 'pull_request'
+        run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.0
+      - name: Verify homepage on desktop and mobile
+        if: github.event_name == 'pull_request'
+        run: node scripts/test-homepage-identity.cjs
       - name: Capture desktop and mobile browser screenshots
         if: github.event_name == 'pull_request'
         run: |
-          mkdir -p artifacts/hero
-          npx --yes playwright@1.56.0 screenshot --browser chromium --viewport-size="1440,900" --wait-for-timeout=1800 http://127.0.0.1:4173/ artifacts/hero/desktop.png
-          npx --yes playwright@1.56.0 screenshot --browser chromium --viewport-size="390,844" --wait-for-timeout=1800 http://127.0.0.1:4173/ artifacts/hero/mobile.png
+          mkdir -p artifacts/homepage
+          npx --yes playwright@1.56.0 screenshot --browser chromium --viewport-size="1440,960" --wait-for-timeout=1200 http://127.0.0.1:4173/ artifacts/homepage/desktop-viewport.png
+          npx --yes playwright@1.56.0 screenshot --browser chromium --viewport-size="390,844" --wait-for-timeout=1200 http://127.0.0.1:4173/ artifacts/homepage/mobile-viewport.png
       - name: Upload hero browser screenshots
         if: always() && github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: hero-browser-screenshots
-          path: artifacts/hero/*.png
+          name: tedx-homepage-visual-checks
+          path: artifacts/homepage/*.png
           if-no-files-found: warn
       - name: Upload build artifact for PRs
         if: github.event_name == 'pull_request'

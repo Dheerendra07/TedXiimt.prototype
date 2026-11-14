@@ -1,46 +1,28 @@
 import React from 'react';
 import Hero from '../components/Hero';
+import HomepageAbout from '../components/HomepageAbout';
 import FeaturedSpeakers from '../components/FeaturedSpeakers';
-import WhatIsTEDx from '../components/WhatIsTEDx';
-import ValueProposition from '../components/ValueProposition';
 import EventHighlights from '../components/EventHighlights';
+import ValueProposition from '../components/ValueProposition';
 import SocialMedia from '../components/SocialMedia';
 import Partners from '../components/Partners';
 import Blog from '../components/Blog';
 import FloatingCTA from '../components/FloatingCTA';
+import './HomepageIdentity.css';
 
 const HomePage = () => {
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-clip">
+    <div className="tedx-home min-h-screen overflow-x-clip bg-[#050506] text-white">
       <main id="main-content">
-        {/* 1. Hero Section */}
         <Hero />
-
-        {/* 2. Featured Speakers */}
+        <HomepageAbout />
         <FeaturedSpeakers />
-        
-        {/* 3. What is TEDx */}
-        <WhatIsTEDx />
-
-       
-        
-        {/* 5. Event Highlights */}
         <EventHighlights />
-
-        {/* 6. Community & Social */}
-        <SocialMedia />
-
-         {/* 4. Value Proposition */}
         <ValueProposition />
-
-        {/* 6. Strategic Partners */}
+        <SocialMedia />
         <Partners />
-
-        {/* 7. Latest Editorial Stories */}
         <Blog />
       </main>
-
-      {/* Floating CTA */}
       <FloatingCTA />
     </div>
   );
