@@ -1,4 +1,4 @@
-/* Sparse pixel-grid interaction, matching the supplied reference video. */
+/* Sparse pixel-grid interaction, matched to the supplied reference video. */
 .tedx-hero__stage { isolation: isolate; }
 .tedx-hero__artwork { image-rendering: auto; backface-visibility: hidden; transform: translateZ(0); }
 
@@ -13,9 +13,10 @@
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
   grid-template-rows: repeat(6, minmax(0, 1fr));
-  gap: 1px;
   overflow: hidden;
-  background: rgba(217, 220, 242, 0.26);
+  border-top: 1px solid rgba(217, 225, 255, 0.28);
+  border-left: 1px solid rgba(217, 225, 255, 0.28);
+  background: transparent;
   pointer-events: auto;
   cursor: crosshair;
   user-select: none;
@@ -28,7 +29,9 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  background: rgba(4, 5, 14, 0.025);
+  border-right: 1px solid rgba(217, 225, 255, 0.28);
+  border-bottom: 1px solid rgba(217, 225, 255, 0.28);
+  background: transparent;
   transition: background-color 190ms ease;
   transition-delay: var(--mosaic-delay, 0ms);
 }
