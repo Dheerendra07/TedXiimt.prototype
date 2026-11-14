@@ -65,6 +65,8 @@ async function main() {
     assert.ok(await desktop.locator('.tedx-hero__mosaic-cell.is-near').count() > 0);
     assert.ok(await desktop.locator('.tedx-hero__mosaic-cell.is-wave').count() > 0);
     assert.ok(await desktop.locator('.tedx-hero__mosaic-pattern').count() >= 5, 'Hover should reveal the purple/white pixel patterns across the tile cluster.');
+    await desktop.waitForTimeout(420);
+    await desktop.screenshot({ path: 'artifacts/homepage/mosaic-hover.png' });
 
     await desktop.mouse.move(4, 4);
     await desktop.waitForTimeout(460);
