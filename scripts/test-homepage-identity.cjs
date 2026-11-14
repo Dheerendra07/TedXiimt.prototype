@@ -52,55 +52,54 @@ async function main() {
 
     const mosaicGrid = desktop.locator('.tedx-hero__mosaic');
     const mosaicCells = desktop.locator('.tedx-hero__mosaic-cell');
-    assert.equal(await mosaicCells.count(), 48, 'The hero mosaic should use a compact 8 x 6 grid.');
+    assert.equal(await mosaicCells.count(), 48, 'The reference grid should contain 8 columns and 6 rows.');
     const mosaicBounds = await mosaicGrid.boundingBox();
-    assert.ok(mosaicBounds, 'The desktop mosaic matrix should be visible.');
-    assert.ok(mosaicBounds.x > 1440 * 0.52, 'The mosaic should stay on the middle-right side of the X artwork.');
-    assert.ok(mosaicBounds.width < 1440 * 0.5, 'The mosaic should not cover the full hero artwork.');
-    assert.ok(Math.abs(mosaicBounds.width / mosaicBounds.height - 4 / 3) < 0.03, 'The 8 x 6 mosaic matrix should preserve square cells.');
+    assert.ok(mosaicBounds, 'The desktop mosaic grid should be visible.');
+    assert.ok(mosaicBounds.x > 1440 * 0.58, 'The grid should stay on the right side of the X artwork.');
+    assert.ok(mosaicBounds.width < 1440 * 0.38, 'The grid should remain a focused area, not cover the full X.');
+    assert.ok(Math.abs(mosaicBounds.width / mosaicBounds.height - 4 / 3) < 0.03,
+      'The reference grid should preserve its 4:3 arrangement and square cells.');
     const firstTileBounds = await mosaicCells.first().boundingBox();
-    assert.ok(Math.abs(firstTileBounds.width / firstTileBounds.height - 1) < 0.05, 'Every matrix cell should be square.');
+    assert.ok(Math.abs(firstTileBounds.width / firstTileBounds.height - 1) < 0.05,
+      'Each reference grid cell should be square.');
 
-    const readRestingComposition = async () => mosaicCells.evaluateAll((elements) => elements.map((element) => {
+    const readComposition = async () => mosaicCells.evaluateAll((elements) => elements.map((element) => {
       const style = window.getComputedStyle(element);
       const pattern = element.querySelector('.tedx-hero__mosaic-pattern');
       return {
         className: element.className,
         backgroundColor: style.backgroundColor,
-        backgroundImage: style.backgroundImage,
-        borderColor: style.borderColor,
-        boxShadow: style.boxShadow,
         pixelPattern: pattern ? pattern.innerHTML : null,
       };
     }));
-    await desktop.waitForTimeout(420);
-    const firstFrameComposition = await readRestingComposition();
-    assert.equal(firstFrameComposition.filter((cell) => cell.pixelPattern !== null).length, 9,
-      'The initial first-frame composition should show its nine purple/pixel tiles.');
+    await desktop.waitForTimeout(350);
+    const firstFrameComposition = await readComposition();
+    assert.equal(firstFrameComposition.filter((cell) => cell.pixelPattern !== null).length, 2,
+      'The opening frame should show the two reference tiles, not a pre-filled tile cluster.');
     await desktop.screenshot({ path: 'artifacts/homepage/mosaic-first-frame.png' });
 
     await mosaicCells.nth(27).hover();
-    assert.equal(await desktop.locator('.tedx-hero__mosaic-cell.is-active').count(), 1,
-      'Pointer movement should focus one active tile.');
-    assert.ok(await desktop.locator('.tedx-hero__mosaic-cell.is-near').count() > 0,
-      'Pointer movement should reveal the surrounding purple tiles.');
-    assert.ok(await desktop.locator('.tedx-hero__mosaic-cell.is-wave').count() > 0,
-      'Pointer movement should create the moving outer wave.');
-    assert.ok(await desktop.locator('.tedx-hero__mosaic-pattern').count() >= 7,
-      'Hover should reveal white pixel patterns across the compact cluster.');
-    const hoveredComposition = await readRestingComposition();
+    const hoveredComposition = await readComposition();
+    assert.ok(hoveredComposition.filter((cell) => cell.pixelPattern !== null).length >= 7,
+      'Pointer movement should reveal a compact, irregular cluster of connected tiles.');
     assert.notDeepEqual(hoveredComposition, firstFrameComposition,
-      'Hover should move the pixel composition instead of leaving the first frame static.');
-    await desktop.waitForTimeout(420);
+      'The active pixel cluster should move away from its opening-frame position.');
+    assert.ok(await desktop.locator('.tedx-hero__mosaic-cell.is-violet').count() > 0,
+      'The moving cluster should use the reference violet tile fill.');
+    assert.ok(await desktop.locator('.tedx-hero__mosaic-cell.is-lilac').count() > 0,
+      'The moving cluster should include lighter lilac tiles.');
+    assert.ok(await desktop.locator('.tedx-hero__mosaic-pattern').count() >= 7,
+      'The moving cluster should contain multiple fine pixel and stripe patterns.');
+    await desktop.waitForTimeout(350);
     await desktop.screenshot({ path: 'artifacts/homepage/mosaic-hover.png' });
 
     await desktop.mouse.move(4, 4);
-    await desktop.waitForTimeout(500);
-    const restoredComposition = await readRestingComposition();
+    await desktop.waitForTimeout(450);
+    const restoredComposition = await readComposition();
     assert.deepEqual(restoredComposition, firstFrameComposition,
-      'Pointer exit must restore the exact first-frame composition, tile styles and pixel patterns.');
-    assert.equal(await desktop.locator('.tedx-hero__mosaic-pattern').count(), 9,
-      'The nine first-frame pixel tiles must return after hover ends.');
+      'When hover ends, the exact two-tile opening frame must return.');
+    assert.equal(await desktop.locator('.tedx-hero__mosaic-pattern').count(), 2,
+      'Only the two opening-frame tiles should remain after pointer exit.');
     await desktop.screenshot({ path: 'artifacts/homepage/mosaic-restored.png' });
 
     await desktop.locator('#about').scrollIntoViewIfNeeded();
