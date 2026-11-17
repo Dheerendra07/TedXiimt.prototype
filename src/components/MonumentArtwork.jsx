@@ -3,27 +3,32 @@ import { useReducedMotion } from 'framer-motion';
 
 const ARTWORK_MASK = '/transparent-hero-bg.PNG?v=monument-art-20261118';
 const NIGHT_ARTWORK = '/hero-bg.png?v=monument-art-20261118';
+const COMPOSITION = { width: 1680, height: 1500 };
 
-// Coordinates are tied to the original transparent artwork, not guessed DOM positions.
+// Source bounds reference the supplied transparent artwork. Target positions create
+// one balanced composition from only the three requested landmarks.
 const MONUMENTS = [
   {
     id: 'lotus',
     name: 'LOTUS TEMPLE',
-    bounds: { left: 0, top: 0.61, right: 0.275, bottom: 1 },
+    source: { left: 0, top: 0.61, right: 0.275, bottom: 1 },
+    target: { centerX: 0.18, maxWidth: 0.32, maxHeight: 0.52, bottom: 0.83 },
     palette: ['#D5E0E5', '#BCCACD', '#788B98'],
     highlight: '#EDF3F2',
   },
   {
     id: 'qutub',
     name: 'QUTUB MINAR',
-    bounds: { left: 0.275, top: 0.29, right: 0.35, bottom: 1 },
+    source: { left: 0.275, top: 0.29, right: 0.35, bottom: 1 },
+    target: { centerX: 0.5, maxWidth: 0.16, maxHeight: 0.73, bottom: 0.83 },
     palette: ['#C27A52', '#A85C3C', '#623A2A'],
     highlight: '#FFD1A6',
   },
   {
     id: 'india-gate',
     name: 'INDIA GATE',
-    bounds: { left: 0.48, top: 0.42, right: 0.68, bottom: 1 },
+    source: { left: 0.48, top: 0.42, right: 0.68, bottom: 1 },
+    target: { centerX: 0.82, maxWidth: 0.31, maxHeight: 0.53, bottom: 0.83 },
     palette: ['#CFA17B', '#AA7452', '#674B3A'],
     highlight: '#F2C9A3',
   },
@@ -33,6 +38,7 @@ const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
 
 export default function MonumentArtwork() {
   const frameRef = useRef(null);
+  const baseCanvasRef = useRef(null);
   const colourCanvasRef = useRef(null);
   const trailCanvasRef = useRef(null);
   const [activeMonument, setActiveMonument] = useState(null);
@@ -40,15 +46,17 @@ export default function MonumentArtwork() {
 
   useEffect(() => {
     const frame = frameRef.current;
+    const baseCanvas = baseCanvasRef.current;
     const revealCanvas = colourCanvasRef.current;
     const trailCanvas = trailCanvasRef.current;
-    if (!frame || !revealCanvas || !trailCanvas) return undefined;
+    if (!frame || !baseCanvas || !revealCanvas || !trailCanvas) return undefined;
 
+    const baseContext = baseCanvas.getContext('2d');
     const revealContext = revealCanvas.getContext('2d');
     const trailContext = trailCanvas.getContext('2d');
-    const colourCanvas = document.createElement('canvas');
-    const colourContext = colourCanvas.getContext('2d');
-    if (!revealContext || !trailContext || !colourContext) return undefined;
+    const compositionCanvas = document.createElement('canvas');
+    const compositionContext = compositionCanvas.getContext('2d');
+    if (!baseContext || !revealContext || !trailContext || !compositionContext) return undefined;
 
     let width = 0;
     let height = 0;
@@ -58,13 +66,11 @@ export default function MonumentArtwork() {
     let imageTop = 0;
     let imageWidth = 0;
     let imageHeight = 0;
-    let artworkWidth = 0;
-    let artworkHeight = 0;
-    let colourReady = false;
     let activeRegion = null;
     let revealStartedAt = 0;
     let revealFrame = 0;
     let trailFrame = 0;
+    let leaveTimer = 0;
     let disposed = false;
     let previousPoint = null;
     const trailCells = new Map();
@@ -72,8 +78,9 @@ export default function MonumentArtwork() {
     const INSET = 4;
     const HOLD = 430;
     const FADE = 260;
+    let compositionReady = false;
 
-    const resizeCanvas = (canvas, context) => {
+    const setCanvasSize = (canvas, context) => {
       canvas.width = Math.max(1, Math.round(width * dpr));
       canvas.height = Math.max(1, Math.round(height * dpr));
       canvas.style.width = width + 'px';
@@ -84,11 +91,11 @@ export default function MonumentArtwork() {
     const drawReveal = (now) => {
       revealFrame = 0;
       revealContext.clearRect(0, 0, width, height);
-      if (!colourReady || !activeRegion) return;
+      if (!compositionReady || !activeRegion) return;
 
-      const progress = reduceMotion ? 1 : Math.min(1, Math.max(0, (now - revealStartedAt) / 520));
+      const progress = reduceMotion ? 1 : Math.min(1, Math.max(0, (now - revealStartedAt) / 540));
       const alpha = easeOutCubic(progress);
-      const bounds = activeRegion.bounds;
+      const bounds = activeRegion.displayBounds;
       const left = imageLeft + bounds.left * imageWidth;
       const top = imageTop + bounds.top * imageHeight;
       const right = imageLeft + bounds.right * imageWidth;
@@ -99,56 +106,96 @@ export default function MonumentArtwork() {
       revealContext.rect(left, top, right - left, bottom - top);
       revealContext.clip();
       revealContext.globalAlpha = alpha;
-      revealContext.drawImage(colourCanvas, imageLeft, imageTop, imageWidth, imageHeight);
+      revealContext.drawImage(compositionCanvas, imageLeft, imageTop, imageWidth, imageHeight);
       revealContext.restore();
 
       if (progress < 1) revealFrame = window.requestAnimationFrame(drawReveal);
     };
 
-    const buildColourArtwork = (maskImage, nightImage) => {
-      artworkWidth = maskImage.naturalWidth;
-      artworkHeight = maskImage.naturalHeight;
-      if (!artworkWidth || !artworkHeight) return;
+    const buildComposition = (maskImage, nightImage) => {
+      compositionCanvas.width = COMPOSITION.width;
+      compositionCanvas.height = COMPOSITION.height;
+      compositionContext.clearRect(0, 0, COMPOSITION.width, COMPOSITION.height);
+      compositionContext.fillStyle = '#080709';
+      compositionContext.fillRect(0, 0, COMPOSITION.width, COMPOSITION.height);
 
-      colourCanvas.width = artworkWidth;
-      colourCanvas.height = artworkHeight;
-      colourContext.clearRect(0, 0, artworkWidth, artworkHeight);
-      colourContext.drawImage(nightImage, 0, 0, artworkWidth, artworkHeight);
+      const ambient = compositionContext.createRadialGradient(
+        COMPOSITION.width * 0.5, COMPOSITION.height * 0.56, 30,
+        COMPOSITION.width * 0.5, COMPOSITION.height * 0.56, COMPOSITION.width * 0.68
+      );
+      ambient.addColorStop(0, 'rgba(94, 5, 27, .22)');
+      ambient.addColorStop(0.58, 'rgba(37, 5, 15, .1)');
+      ambient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      compositionContext.fillStyle = ambient;
+      compositionContext.fillRect(0, 0, COMPOSITION.width, COMPOSITION.height);
 
       MONUMENTS.forEach((monument) => {
-        const { left, top, right, bottom } = monument.bounds;
-        const x = left * artworkWidth;
-        const y = top * artworkHeight;
-        const w = (right - left) * artworkWidth;
-        const h = (bottom - top) * artworkHeight;
-        colourContext.save();
-        colourContext.beginPath();
-        colourContext.rect(x, y, w, h);
-        colourContext.clip();
+        const source = monument.source;
+        const sx = source.left * maskImage.naturalWidth;
+        const sy = source.top * maskImage.naturalHeight;
+        const sw = (source.right - source.left) * maskImage.naturalWidth;
+        const sh = (source.bottom - source.top) * maskImage.naturalHeight;
+        const cutout = document.createElement('canvas');
+        cutout.width = Math.max(1, Math.round(sw));
+        cutout.height = Math.max(1, Math.round(sh));
+        const cutoutContext = cutout.getContext('2d');
+        if (!cutoutContext) return;
 
-        const material = colourContext.createLinearGradient(0, y, 0, y + h);
+        cutoutContext.drawImage(nightImage, sx, sy, sw, sh, 0, 0, cutout.width, cutout.height);
+        cutoutContext.globalCompositeOperation = 'destination-in';
+        cutoutContext.drawImage(maskImage, sx, sy, sw, sh, 0, 0, cutout.width, cutout.height);
+        cutoutContext.globalCompositeOperation = 'source-over';
+
+        const material = cutoutContext.createLinearGradient(0, 0, 0, cutout.height);
         monument.palette.forEach((tone, index) => material.addColorStop(index / (monument.palette.length - 1), tone));
-        colourContext.globalCompositeOperation = 'color';
-        colourContext.fillStyle = material;
-        colourContext.fillRect(x, y, w, h);
+        cutoutContext.globalCompositeOperation = 'color';
+        cutoutContext.fillStyle = material;
+        cutoutContext.fillRect(0, 0, cutout.width, cutout.height);
 
-        const light = colourContext.createLinearGradient(0, y, 0, y + h);
+        const light = cutoutContext.createLinearGradient(0, 0, 0, cutout.height);
         light.addColorStop(0, monument.highlight);
         light.addColorStop(0.42, 'rgba(0,0,0,.04)');
         light.addColorStop(1, 'rgba(0,0,0,0)');
-        colourContext.globalCompositeOperation = 'screen';
-        colourContext.globalAlpha = 0.32;
-        colourContext.fillStyle = light;
-        colourContext.fillRect(x, y, w, h);
-        colourContext.restore();
+        cutoutContext.globalCompositeOperation = 'screen';
+        cutoutContext.globalAlpha = 0.28;
+        cutoutContext.fillStyle = light;
+        cutoutContext.fillRect(0, 0, cutout.width, cutout.height);
+        cutoutContext.globalAlpha = 1;
+        cutoutContext.globalCompositeOperation = 'destination-in';
+        cutoutContext.drawImage(maskImage, sx, sy, sw, sh, 0, 0, cutout.width, cutout.height);
+        cutoutContext.globalCompositeOperation = 'source-over';
+
+        const target = monument.target;
+        const maxW = target.maxWidth * COMPOSITION.width;
+        const maxH = target.maxHeight * COMPOSITION.height;
+        const scale = Math.min(maxW / cutout.width, maxH / cutout.height);
+        const drawWidth = cutout.width * scale;
+        const drawHeight = cutout.height * scale;
+        const drawX = target.centerX * COMPOSITION.width - drawWidth / 2;
+        const drawY = target.bottom * COMPOSITION.height - drawHeight;
+
+        compositionContext.save();
+        compositionContext.shadowColor = 'rgba(0,0,0,.5)';
+        compositionContext.shadowBlur = 30;
+        compositionContext.drawImage(cutout, drawX, drawY, drawWidth, drawHeight);
+        compositionContext.restore();
+
+        monument.displayBounds = {
+          left: drawX / COMPOSITION.width,
+          top: drawY / COMPOSITION.height,
+          right: (drawX + drawWidth) / COMPOSITION.width,
+          bottom: (drawY + drawHeight) / COMPOSITION.height,
+        };
       });
 
-      colourContext.globalAlpha = 1;
-      colourContext.globalCompositeOperation = 'destination-in';
-      colourContext.drawImage(maskImage, 0, 0, artworkWidth, artworkHeight);
-      colourContext.globalCompositeOperation = 'source-over';
-      colourReady = true;
-      drawReveal(performance.now());
+      compositionReady = true;
+      updateGeometry();
+    };
+
+    const drawStaticColour = () => {
+      if (!compositionReady) return;
+      revealContext.clearRect(0, 0, width, height);
+      revealContext.drawImage(compositionCanvas, imageLeft, imageTop, imageWidth, imageHeight);
     };
 
     const updateGeometry = () => {
@@ -156,50 +203,38 @@ export default function MonumentArtwork() {
       width = rect.width;
       height = rect.height;
       dpr = Math.min(window.devicePixelRatio || 1, 2);
-      resizeCanvas(revealCanvas, revealContext);
-      resizeCanvas(trailCanvas, trailContext);
+      setCanvasSize(baseCanvas, baseContext);
+      setCanvasSize(revealCanvas, revealContext);
+      setCanvasSize(trailCanvas, trailContext);
 
-      if (!artworkWidth || !artworkHeight) return;
-      imageScale = Math.max(width / artworkWidth, height / artworkHeight);
-      imageWidth = artworkWidth * imageScale;
-      imageHeight = artworkHeight * imageScale;
+      imageScale = Math.max(width / COMPOSITION.width, height / COMPOSITION.height);
+      imageWidth = COMPOSITION.width * imageScale;
+      imageHeight = COMPOSITION.height * imageScale;
       imageLeft = (width - imageWidth) * 0.5;
-      imageTop = (height - imageHeight) * 0.58;
-      if (activeRegion) {
-        revealStartedAt = performance.now() - (reduceMotion ? 520 : 0);
-        if (!revealFrame) revealFrame = window.requestAnimationFrame(drawReveal);
+      imageTop = (height - imageHeight) * 0.5;
+
+      if (compositionReady) {
+        baseContext.clearRect(0, 0, width, height);
+        baseContext.filter = 'grayscale(1) brightness(.58) contrast(1.12)';
+        baseContext.drawImage(compositionCanvas, imageLeft, imageTop, imageWidth, imageHeight);
+        baseContext.filter = 'none';
+        if (window.matchMedia('(hover: none)').matches || reduceMotion) {
+          drawStaticColour();
+        } else {
+          drawReveal(performance.now());
+        }
       }
     };
-
-    const maskImage = new Image();
-    const nightImage = new Image();
-    let maskLoaded = false;
-    let nightLoaded = false;
-
-    const initialize = () => {
-      if (disposed || !maskLoaded || !nightLoaded) return;
-      buildColourArtwork(maskImage, nightImage);
-      updateGeometry();
-    };
-
-    maskImage.onload = () => { maskLoaded = true; initialize(); };
-    nightImage.onload = () => { nightLoaded = true; initialize(); };
-    maskImage.onerror = () => { frame.dataset.artworkStatus = 'mask-error'; };
-    nightImage.onerror = () => { frame.dataset.artworkStatus = 'image-error'; };
-    maskImage.decoding = 'async';
-    nightImage.decoding = 'async';
-    maskImage.src = ARTWORK_MASK;
-    nightImage.src = NIGHT_ARTWORK;
 
     const drawTrail = (now) => {
       trailFrame = 0;
       trailContext.clearRect(0, 0, width, height);
       let hasCells = false;
-      trailCells.forEach((cell, key) => {
+      trailCells.forEach((cell) => {
         const age = now - cell.startedAt;
         const fade = Math.max(0, 1 - Math.max(0, age - HOLD) / FADE);
         if (fade <= 0) {
-          trailCells.delete(key);
+          trailCells.delete(cell.key);
           return;
         }
         hasCells = true;
@@ -208,9 +243,9 @@ export default function MonumentArtwork() {
         const x = cell.column * CELL + INSET;
         const y = cell.row * CELL + INSET;
         trailContext.save();
-        trailContext.globalAlpha = fade * reveal * 0.72;
+        trailContext.globalAlpha = fade * reveal * 0.7;
         trailContext.fillStyle = cell.tone;
-        trailContext.shadowColor = 'rgba(235,0,40,.36)';
+        trailContext.shadowColor = 'rgba(235,0,40,.34)';
         trailContext.shadowBlur = 10;
         trailContext.fillRect(x, y, size, size);
         trailContext.restore();
@@ -222,28 +257,30 @@ export default function MonumentArtwork() {
       const key = column + ':' + row;
       trailCells.delete(key);
       trailCells.set(key, {
-        column,
-        row,
-        startedAt: now,
+        key, column, row, startedAt: now,
         tone: ['#EB0028', '#B80C32', '#711329'][(column * 7 + row * 3) % 3],
       });
       while (trailCells.size > 120) trailCells.delete(trailCells.keys().next().value);
     };
 
     const handlePointerMove = (event) => {
-      if (event.pointerType === 'touch' || !colourReady) return;
+      if (event.pointerType === 'touch' || !compositionReady) return;
       const rect = frame.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
       if (x < 0 || y < 0 || x > width || y > height) return;
 
+      if (leaveTimer) window.clearTimeout(leaveTimer);
+      revealCanvas.style.opacity = '1';
       frame.style.setProperty('--pointer-x', x + 'px');
       frame.style.setProperty('--pointer-y', y + 'px');
+
       const sourceX = (x - imageLeft) / imageWidth;
       const sourceY = (y - imageTop) / imageHeight;
-      const nextRegion = MONUMENTS.find(({ bounds }) => (
-        sourceX >= bounds.left && sourceX <= bounds.right &&
-        sourceY >= bounds.top && sourceY <= bounds.bottom
+      const nextRegion = MONUMENTS.find(({ displayBounds }) => (
+        displayBounds &&
+        sourceX >= displayBounds.left && sourceX <= displayBounds.right &&
+        sourceY >= displayBounds.top && sourceY <= displayBounds.bottom
       )) || null;
 
       if (nextRegion !== activeRegion) {
@@ -281,21 +318,39 @@ export default function MonumentArtwork() {
 
     const handlePointerLeave = () => {
       previousPoint = null;
-      activeRegion = null;
-      setActiveMonument(null);
+      revealCanvas.style.opacity = '0';
       frame.style.setProperty('--pointer-x', '-1000px');
       frame.style.setProperty('--pointer-y', '-1000px');
-      revealStartedAt = performance.now();
-      if (revealFrame) window.cancelAnimationFrame(revealFrame);
-      revealFrame = window.requestAnimationFrame(drawReveal);
+      if (leaveTimer) window.clearTimeout(leaveTimer);
+      leaveTimer = window.setTimeout(() => {
+        activeRegion = null;
+        setActiveMonument(null);
+        revealContext.clearRect(0, 0, width, height);
+      }, reduceMotion ? 0 : 360);
     };
+
+    const maskImage = new Image();
+    const nightImage = new Image();
+    let maskLoaded = false;
+    let nightLoaded = false;
+    const initialize = () => {
+      if (disposed || !maskLoaded || !nightLoaded) return;
+      buildComposition(maskImage, nightImage);
+    };
+    maskImage.onload = () => { maskLoaded = true; initialize(); };
+    nightImage.onload = () => { nightLoaded = true; initialize(); };
+    maskImage.onerror = () => { frame.dataset.artworkStatus = 'mask-error'; };
+    nightImage.onerror = () => { frame.dataset.artworkStatus = 'image-error'; };
+    maskImage.decoding = 'async';
+    nightImage.decoding = 'async';
+    maskImage.src = ARTWORK_MASK;
+    nightImage.src = NIGHT_ARTWORK;
 
     const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(updateGeometry) : null;
     observer?.observe(frame);
     window.addEventListener('resize', updateGeometry, { passive: true });
     frame.addEventListener('pointermove', handlePointerMove, { passive: true });
     frame.addEventListener('pointerleave', handlePointerLeave, { passive: true });
-
     updateGeometry();
 
     return () => {
@@ -304,6 +359,7 @@ export default function MonumentArtwork() {
       window.removeEventListener('resize', updateGeometry);
       frame.removeEventListener('pointermove', handlePointerMove);
       frame.removeEventListener('pointerleave', handlePointerLeave);
+      if (leaveTimer) window.clearTimeout(leaveTimer);
       if (revealFrame) window.cancelAnimationFrame(revealFrame);
       if (trailFrame) window.cancelAnimationFrame(trailFrame);
       trailCells.clear();
@@ -318,7 +374,7 @@ export default function MonumentArtwork() {
       aria-label="Interactive artwork featuring the Lotus Temple, Qutub Minar and India Gate"
       role="img"
     >
-      <img className="tedx-hero__monument-base" src={NIGHT_ARTWORK} alt="" draggable="false" />
+      <canvas ref={baseCanvasRef} className="tedx-hero__monument-base" aria-hidden="true" />
       <canvas ref={colourCanvasRef} className="tedx-hero__monument-colour" aria-hidden="true" />
       <canvas ref={trailCanvasRef} className="tedx-hero__monument-trail" aria-hidden="true" />
       <div className="tedx-hero__monument-vignette" aria-hidden="true" />
