@@ -403,12 +403,9 @@
 }
 .tedx-hero__monument-base {
   z-index: 0;
-  object-fit: cover;
-  object-position: center 58%;
-  filter: brightness(.78) contrast(1.12) saturate(.72);
   user-select: none;
 }
-.tedx-hero__monument-colour { z-index: 2; }
+.tedx-hero__monument-colour { z-index: 2; opacity: 1; transition: opacity .36s cubic-bezier(.22,1,.36,1); }
 .tedx-hero__monument-trail { z-index: 3; }
 .tedx-hero__monument-vignette {
   z-index: 4;
