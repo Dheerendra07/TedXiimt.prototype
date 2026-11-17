@@ -70,6 +70,9 @@ export default function MonumentArtwork() {
     let revealStartedAt = 0;
     let revealFrame = 0;
     let trailFrame = 0;
+    let pointerFrame = 0;
+    let pointerTarget = { x: -1000, y: -1000 };
+    let pointerCurrent = { x: -1000, y: -1000 };
     let leaveTimer = 0;
     let disposed = false;
     let previousPoint = null;
@@ -263,6 +266,18 @@ export default function MonumentArtwork() {
       while (trailCells.size > 120) trailCells.delete(trailCells.keys().next().value);
     };
 
+    const animatePointer = () => {
+      pointerCurrent.x += (pointerTarget.x - pointerCurrent.x) * 0.22;
+      pointerCurrent.y += (pointerTarget.y - pointerCurrent.y) * 0.22;
+      frame.style.setProperty('--pointer-x', pointerCurrent.x + 'px');
+      frame.style.setProperty('--pointer-y', pointerCurrent.y + 'px');
+      if (Math.abs(pointerTarget.x - pointerCurrent.x) > 0.5 || Math.abs(pointerTarget.y - pointerCurrent.y) > 0.5) {
+        pointerFrame = window.requestAnimationFrame(animatePointer);
+      } else {
+        pointerFrame = 0;
+      }
+    };
+
     const handlePointerMove = (event) => {
       if (event.pointerType === 'touch' || !compositionReady) return;
       const rect = frame.getBoundingClientRect();
@@ -272,8 +287,8 @@ export default function MonumentArtwork() {
 
       if (leaveTimer) window.clearTimeout(leaveTimer);
       revealCanvas.style.opacity = '1';
-      frame.style.setProperty('--pointer-x', x + 'px');
-      frame.style.setProperty('--pointer-y', y + 'px');
+      pointerTarget = { x, y };
+      if (!pointerFrame) pointerFrame = window.requestAnimationFrame(animatePointer);
 
       const sourceX = (x - imageLeft) / imageWidth;
       const sourceY = (y - imageTop) / imageHeight;
@@ -329,8 +344,7 @@ export default function MonumentArtwork() {
     const handlePointerLeave = () => {
       previousPoint = null;
       revealCanvas.style.opacity = '0';
-      frame.style.setProperty('--pointer-x', '-1000px');
-      frame.style.setProperty('--pointer-y', '-1000px');
+      pointerTarget = { x: -1000, y: -1000 };
       if (leaveTimer) window.clearTimeout(leaveTimer);
       leaveTimer = window.setTimeout(() => {
         activeRegion = null;
@@ -372,6 +386,7 @@ export default function MonumentArtwork() {
       if (leaveTimer) window.clearTimeout(leaveTimer);
       if (revealFrame) window.cancelAnimationFrame(revealFrame);
       if (trailFrame) window.cancelAnimationFrame(trailFrame);
+      if (pointerFrame) window.cancelAnimationFrame(pointerFrame);
       trailCells.clear();
     };
   }, [reduceMotion]);
@@ -382,7 +397,8 @@ export default function MonumentArtwork() {
       className="tedx-hero__monument-art"
       data-active-monument={activeMonument || ''}
       aria-label="Interactive artwork featuring the Lotus Temple, Qutub Minar and India Gate"
-      role="img"
+      role="group"
+      tabIndex={0}
     >
       <canvas ref={baseCanvasRef} className="tedx-hero__monument-base" aria-hidden="true" />
       <canvas ref={colourCanvasRef} className="tedx-hero__monument-colour" aria-hidden="true" />
