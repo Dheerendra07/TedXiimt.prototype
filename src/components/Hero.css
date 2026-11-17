@@ -372,3 +372,107 @@
   .tedx-hero__tile, .tedx-hero__tile::after { transition: none !important; }
   .tedx-hero__carousel-progress span { animation: none; transform: scaleX(1); }
 }
+
+
+/* Interactive monument artwork — contained entirely inside the existing TEDx frame. */
+.tedx-hero__monument-art {
+  --pointer-x: -1000px;
+  --pointer-y: -1000px;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  aspect-ratio: 1.12 / 1;
+  overflow: hidden;
+  isolation: isolate;
+  background: #070608;
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.42), 0 18px 58px rgba(0,0,0,.42);
+  cursor: crosshair;
+}
+.tedx-hero__monument-base,
+.tedx-hero__monument-colour,
+.tedx-hero__monument-trail,
+.tedx-hero__monument-vignette,
+.tedx-hero__monument-pointer {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.tedx-hero__monument-base {
+  z-index: 0;
+  object-fit: cover;
+  object-position: center 58%;
+  filter: brightness(.78) contrast(1.12) saturate(.72);
+  user-select: none;
+}
+.tedx-hero__monument-colour { z-index: 2; }
+.tedx-hero__monument-trail { z-index: 3; }
+.tedx-hero__monument-vignette {
+  z-index: 4;
+  background:
+    radial-gradient(ellipse at 50% 48%, transparent 48%, rgba(3,3,5,.22) 100%),
+    linear-gradient(180deg, rgba(5,5,6,.08), transparent 22%, transparent 78%, rgba(5,5,6,.48));
+}
+.tedx-hero__monument-pointer {
+  z-index: 5;
+  opacity: 0;
+  background: radial-gradient(circle 145px at var(--pointer-x) var(--pointer-y), rgba(235,0,40,.18), rgba(235,0,40,.055) 42%, transparent 72%);
+  transition: opacity .24s ease;
+}
+.tedx-hero__monument-art:hover .tedx-hero__monument-pointer { opacity: 1; }
+.tedx-hero__monument-labels {
+  position: absolute;
+  z-index: 6;
+  right: 14px;
+  bottom: 13px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+}
+.tedx-hero__monument-labels span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(5,5,6,.62);
+  color: rgba(255,255,255,.68);
+  font: 700 8px/1 Inter, Arial, sans-serif;
+  letter-spacing: .13em;
+  backdrop-filter: blur(8px);
+  transition: border-color .28s ease, color .28s ease, background .28s ease, transform .28s ease;
+}
+.tedx-hero__monument-labels i {
+  color: #eb0028;
+  font: 500 9px/1 Georgia, serif;
+  font-style: normal;
+}
+.tedx-hero__monument-labels span.is-active {
+  transform: translateY(-2px);
+  border-color: rgba(235,0,40,.68);
+  background: rgba(75,4,20,.78);
+  color: #fff;
+}
+.tedx-hero__artwork-index {
+  color: rgba(255,255,255,.46);
+  font: 500 9px/1 Inter, Arial, sans-serif;
+  letter-spacing: .18em;
+}
+@media (max-width: 760px) {
+  .tedx-hero__monument-art { aspect-ratio: 1.34 / 1; cursor: default; }
+  .tedx-hero__monument-base { object-position: center 58%; }
+  .tedx-hero__monument-labels { right: 6px; bottom: 6px; left: 6px; gap: 4px; }
+  .tedx-hero__monument-labels span { gap: 4px; padding: 5px 5px; font-size: 6px; letter-spacing: .08em; }
+  .tedx-hero__monument-labels i { font-size: 7px; }
+  .tedx-hero__monument-pointer { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tedx-hero__monument-labels span,
+  .tedx-hero__monument-pointer { transition: none; }
+}
