@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { AnimatePresence, motion as Motion, useReducedMotion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { ArrowDownRight, ArrowRight } from 'lucide-react';
 import MonumentArtwork from './MonumentArtwork';
 import { ARCHIVE_EDITIONS } from '../data/archiveData';
@@ -10,8 +9,6 @@ const edition = ARCHIVE_EDITIONS[0];
 const slide = { label: 'LANDMARKS OF INDIA', note: 'Architecture, memory and meaning' };
 
 const Hero = () => {
-  const reduceMotion = useReducedMotion();
-
   const formattedDate = edition?.date
     ? new Intl.DateTimeFormat('en-IN', {
         day: '2-digit',
@@ -26,7 +23,7 @@ const Hero = () => {
       <div className="tedx-hero__backdrop" aria-hidden="true" />
       <div className="tedx-hero__ambient" aria-hidden="true" />
 
-      <figure className="tedx-hero__visual" aria-roledescription="carousel" aria-label="TEDxIIMT campus and event photography">
+      <figure className="tedx-hero__visual" aria-label="TEDxIIMT interactive Indian landmark artwork">
         <div className="tedx-hero__art-wrap">
           <div className="tedx-hero__art-frame" aria-hidden="true">
             <div className="tedx-hero__art-corner tedx-hero__art-corner--tl" />
