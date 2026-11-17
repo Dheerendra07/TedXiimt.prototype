@@ -283,12 +283,22 @@ export default function MonumentArtwork() {
         sourceY >= displayBounds.top && sourceY <= displayBounds.bottom
       )) || null;
 
-      if (nextRegion !== activeRegion) {
+      if (nextRegion && nextRegion !== activeRegion) {
+        if (leaveTimer) window.clearTimeout(leaveTimer);
+        revealCanvas.style.opacity = '1';
         activeRegion = nextRegion;
-        setActiveMonument(nextRegion?.id || null);
+        setActiveMonument(nextRegion.id);
         revealStartedAt = performance.now();
         if (revealFrame) window.cancelAnimationFrame(revealFrame);
         revealFrame = window.requestAnimationFrame(drawReveal);
+      } else if (!nextRegion && activeRegion) {
+        revealCanvas.style.opacity = '0';
+        setActiveMonument(null);
+        if (leaveTimer) window.clearTimeout(leaveTimer);
+        leaveTimer = window.setTimeout(() => {
+          activeRegion = null;
+          revealContext.clearRect(0, 0, width, height);
+        }, reduceMotion ? 0 : 360);
       }
 
       if (!nextRegion) {
