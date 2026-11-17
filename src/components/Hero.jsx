@@ -9,7 +9,7 @@ const edition = ARCHIVE_EDITIONS[0];
 const slides = [
   {
     id: 'campus',
-    src: '/tedxiimt-hero-campus.webp',
+    src: '/tedxiimt-hero-campus.webp?v=hero-20261117',
     alt: 'IIMT University campus framed by a dramatic red architectural X',
     columns: 5,
     rows: 5,
@@ -18,7 +18,7 @@ const slides = [
   },
   {
     id: 'stage',
-    src: '/tedxiimt-hero-stage.webp',
+    src: '/tedxiimt-hero-stage.webp?v=hero-20261117',
     alt: 'The TEDxIIMT University stage and audience at the 2025 event',
     columns: 6,
     rows: 4,
@@ -77,7 +77,6 @@ const Hero = () => {
                 '--mosaic-columns': slide.columns,
                 '--mosaic-rows': slide.rows,
                 aspectRatio: `${slide.columns} / ${slide.rows}`,
-                '--mosaic-background-size': `${slide.columns * 100}% ${slide.rows * 100}%`,
               }}
               initial={reduceMotion ? false : { opacity: 0, scale: 0.985, filter: 'brightness(.72)' }}
               animate={{ opacity: 1, scale: 1, filter: 'brightness(1)' }}
@@ -89,18 +88,11 @@ const Hero = () => {
                 const column = index % slide.columns;
                 const row = Math.floor(index / slide.columns);
                 const distance = getTileDistance(column, row, slide.columns, slide.rows);
-                const positionX = slide.columns === 1 ? 50 : (column / (slide.columns - 1)) * 100;
-                const positionY = slide.rows === 1 ? 50 : (row / (slide.rows - 1)) * 100;
 
                 return (
                   <Motion.span
                     key={`${slide.id}-${index}`}
                     className="tedx-hero__tile"
-                    style={{
-                      backgroundImage: `url("${slide.src}")`,
-                      backgroundPosition: `${positionX}% ${positionY}%`,
-                      backgroundSize: 'var(--mosaic-background-size)',
-                    }}
                     initial={reduceMotion ? false : { opacity: 0, scale: 0.86, y: 13 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: -7 }}
@@ -109,7 +101,29 @@ const Hero = () => {
                       delay: reduceMotion ? 0 : distance * 0.026,
                       ease: [0.2, 0.78, 0.25, 1],
                     }}
-                  />
+                  >
+                    <img
+                      className="tedx-hero__tile-image"
+                      src={slide.src}
+                      alt=""
+                      aria-hidden="true"
+                      draggable="false"
+                      loading="eager"
+                      decoding="async"
+                      fetchPriority={index === 0 ? 'high' : 'auto'}
+                      style={{
+                        position: 'absolute',
+                        top: `${-row * 100}%`,
+                        left: `${-column * 100}%`,
+                        width: `${slide.columns * 100}%`,
+                        height: `${slide.rows * 100}%`,
+                        maxWidth: 'none',
+                        maxHeight: 'none',
+                        objectFit: 'fill',
+                        display: 'block',
+                      }}
+                    />
+                  </Motion.span>
                 );
               })}
             </Motion.div>
