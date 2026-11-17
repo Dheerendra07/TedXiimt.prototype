@@ -398,7 +398,6 @@ export default function MonumentArtwork() {
       data-active-monument={activeMonument || ''}
       aria-label="Interactive artwork featuring the Lotus Temple, Qutub Minar and India Gate"
       role="group"
-      tabIndex={0}
     >
       <canvas ref={baseCanvasRef} className="tedx-hero__monument-base" aria-hidden="true" />
       <canvas ref={colourCanvasRef} className="tedx-hero__monument-colour" aria-hidden="true" />
