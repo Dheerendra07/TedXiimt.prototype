@@ -9,7 +9,7 @@ const edition = ARCHIVE_EDITIONS[0];
 const slides = [
   {
     id: 'campus',
-    src: '/tedxiimt-hero-campus.webp?v=hero-20261117',
+    src: '/tedxiimt-hero-campus.webp?v=hero-20261118-restored',
     alt: 'IIMT University campus framed by a dramatic red architectural X',
     columns: 5,
     rows: 5,
@@ -18,7 +18,7 @@ const slides = [
   },
   {
     id: 'stage',
-    src: '/tedxiimt-hero-stage.webp?v=hero-20261117',
+    src: '/tedxiimt-hero-stage.webp?v=hero-20261118-restored',
     alt: 'The TEDxIIMT University stage and audience at the 2025 event',
     columns: 6,
     rows: 4,
