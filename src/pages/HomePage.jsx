@@ -36,8 +36,9 @@ const takeaways = [
   { index: '04 / POSSIBILITY', title: 'Make it matter.', description: 'Carry an idea into your studies, work, community or next project.' },
 ];
 
-const Reveal = ({ children, className = '', delay = 0 }) => (
+const Reveal = ({ children, className = '', delay = 0, ...props }) => (
   <Motion.div
+    {...props}
     className={className}
     initial={{ opacity: 0, y: 26 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -80,7 +81,7 @@ const HomePage = () => (
           </Reveal>
           <div className="ted-home-pillar-grid">
             {pillars.map(({ number, label, title, description, Icon, className }, index) => (
-              <Reveal key={number} className={'ted-home-pillar ' + className} delay={index * 0.1}>
+              <Reveal key={number} data-number={number} className={'ted-home-pillar ' + className} delay={index * 0.1}>
                 <div className="ted-home-pillar-top">
                   <span className="ted-home-pillar-label">{number} / {label}</span>
                   <span className="ted-home-pillar-symbol"><Icon aria-hidden="true" /></span>
