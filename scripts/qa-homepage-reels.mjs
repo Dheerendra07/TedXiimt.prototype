@@ -138,6 +138,7 @@ try {
     }, null, { timeout: 10000 });
 
     assert(await firstVideo.evaluate((video) => !video.paused), viewport.name + ': first reel did not start');
+    await page.waitForFunction(() => document.querySelector('.ted-reel-card:nth-child(1) .ted-reel-toggle')?.getAttribute('aria-pressed') === 'true');
     assert(await firstCard.locator('.ted-reel-toggle').getAttribute('aria-pressed') === 'true', viewport.name + ': first reel play state was not announced');
 
     await secondPlay.click();
@@ -152,6 +153,7 @@ try {
 
     await page.getByRole('button', { name: 'Mute reel 02' }).click();
     assert(await secondVideo.evaluate((video) => video.muted), viewport.name + ': sound toggle did not mute the active reel');
+    await page.waitForFunction(() => document.querySelector('.ted-reel-card:nth-child(2) .ted-reel-sound-toggle')?.getAttribute('aria-label') === 'Turn sound on for reel 02');
     assert(await page.getByRole('button', { name: 'Turn sound on for reel 02' }).count() === 1, viewport.name + ': sound toggle label did not update');
 
     const secondToggle = secondCard.locator('.ted-reel-toggle');
