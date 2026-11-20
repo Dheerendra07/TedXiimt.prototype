@@ -18,9 +18,24 @@ const pillars = [
 ];
 
 const discovery = [
-  { index: '01', label: 'THE VOICES', title: 'Ideas have a voice.', description: 'Meet the speakers and explore the perspectives brought to the TEDxIIMT stage.', href: '/speakers', action: 'MEET THE SPEAKERS', Icon: Mic2 },
-  { index: '02', label: 'THE PEOPLE', title: 'Made possible together.', description: 'Get to know the team building the experience behind every idea.', href: '/team', action: 'MEET THE TEAM', Icon: Users },
-  { index: '03', label: 'THE ECOSYSTEM', title: 'Good ideas need allies.', description: 'Discover the partners who help create room for meaningful conversations.', href: '/partners', action: 'VIEW PARTNERS', Icon: Handshake },
+  {
+    index: '01', label: 'THE VOICES', title: 'Ideas have a voice.',
+    description: 'Meet the speakers and explore the perspectives brought to the TEDxIIMT stage.',
+    href: '/speakers', action: 'MEET THE SPEAKERS', Icon: Mic2,
+    image: 'https://iimtu.edu.in/uploads/images/17630369861.jpg', imagePosition: 'center 46%',
+  },
+  {
+    index: '02', label: 'THE PEOPLE', title: 'Made possible together.',
+    description: 'Get to know the team building the experience behind every idea.',
+    href: '/team', action: 'MEET THE TEAM', Icon: Users,
+    image: 'https://iimtu.edu.in/uploads/images/17630370831.jpg', imagePosition: 'center center',
+  },
+  {
+    index: '03', label: 'THE ECOSYSTEM', title: 'Good ideas need allies.',
+    description: 'Discover the partners who help create room for meaningful conversations.',
+    href: '/partners', action: 'VIEW PARTNERS', Icon: Handshake,
+    image: 'https://iimtu.edu.in/uploads/images/17630370541.jpg', imagePosition: 'center 48%',
+  },
 ];
 
 const takeaways = [
@@ -251,13 +266,24 @@ const HomePage = () => {
               <p>A great event is built by many voices, many hands and a community that believes in sharing what matters.</p>
             </Reveal>
             <div className="ted-home-discover-grid">
-              {discovery.map(({ index, label, title, description, href, action, Icon }, cardIndex) => (
+              {discovery.map(({ index, label, title, description, href, action, Icon, image, imagePosition }, cardIndex) => (
                 <Reveal key={index} delay={cardIndex * 0.1}>
                   <a className="ted-home-discover-card" data-index={index} href={href}>
+                    <img
+                      className="ted-home-discover-photo"
+                      src={image}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                      draggable="false"
+                      style={{ objectPosition: imagePosition }}
+                    />
+                    <span className="ted-home-discover-shade" aria-hidden="true" />
                     <div className="ted-home-discover-top">
                       <span>{index} / {label}</span><span className="ted-home-discover-icon"><Icon aria-hidden="true" /></span>
                     </div>
-                    <div><h3>{title}</h3><p>{description}</p></div>
+                    <div className="ted-home-discover-content"><h3>{title}</h3><p>{description}</p></div>
                     <div className="ted-home-discover-bottom"><span>{action}</span><ArrowUpRight aria-hidden="true" /></div>
                   </a>
                 </Reveal>

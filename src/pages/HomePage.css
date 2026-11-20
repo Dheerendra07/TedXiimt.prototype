@@ -1295,3 +1295,91 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
     animation: none !important;
   }
 }
+
+/* Homepage discovery cards: official photography, complete numerals and restrained motion */
+.ted-home-discover-card {
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.ted-home-discover-photo {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .56;
+  filter: grayscale(.18) saturate(.88) contrast(1.06) brightness(.72);
+  transform: scale(1.015);
+  transition:
+    opacity .55s ease,
+    filter .65s ease,
+    transform .9s cubic-bezier(.2,.7,.2,1);
+  pointer-events: none;
+}
+
+.ted-home-discover-shade {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background:
+    linear-gradient(105deg, rgba(5,5,7,.84) 0%, rgba(5,5,7,.66) 48%, rgba(5,5,7,.3) 100%),
+    linear-gradient(0deg, rgba(5,5,7,.96) 0%, rgba(5,5,7,.12) 78%);
+  pointer-events: none;
+}
+
+.ted-home-discover-card::before {
+  z-index: 2 !important;
+  right: 18px !important;
+  bottom: 12px !important;
+  color: rgba(255,255,255,.12) !important;
+  font-size: clamp(8rem, 15vw, 13rem) !important;
+  letter-spacing: -.145em !important;
+  line-height: .86 !important;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.ted-home-discover-top,
+.ted-home-discover-content,
+.ted-home-discover-bottom {
+  position: relative;
+  z-index: 3;
+}
+
+.ted-home-discover-card:hover::before,
+.ted-home-discover-card:focus-visible::before {
+  color: rgba(235,0,40,.2) !important;
+  transform: translateY(-6px);
+}
+
+@media (hover: hover) {
+  .ted-home-discover-card:hover .ted-home-discover-photo,
+  .ted-home-discover-card:focus-visible .ted-home-discover-photo {
+    opacity: .72;
+    filter: grayscale(0) saturate(1.02) contrast(1.08) brightness(.78);
+    transform: scale(1.075);
+  }
+}
+
+@media (max-width: 600px) {
+  .ted-home-discover-card::before {
+    right: 12px !important;
+    bottom: 12px !important;
+    font-size: clamp(7rem, 24vw, 9rem) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-home-discover-photo {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .ted-home-discover-card:hover::before,
+  .ted-home-discover-card:focus-visible::before {
+    transform: none;
+  }
+}
