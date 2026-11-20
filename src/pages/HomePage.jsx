@@ -267,7 +267,7 @@ const HomePage = () => {
                   <span className="ted-home-pillar-shade" aria-hidden="true" />
                   <div className="ted-home-pillar-top">
                     <span className="ted-home-pillar-label">{number} / {label}</span>
-                    <span className="ted-home-pillar-symbol"><Icon aria-hidden="true" /></span>
+                    <span className="ted-home-pillar-symbol">{React.createElement(Icon, { "aria-hidden": true })}</span>
                   </div>
                   <h3>{title}</h3>
                   <div className="ted-home-pillar-bottom">
@@ -382,7 +382,7 @@ const HomePage = () => {
                     />
                     <span className="ted-home-discover-shade" aria-hidden="true" />
                     <div className="ted-home-discover-top">
-                      <span>{index} / {label}</span><span className="ted-home-discover-icon"><Icon aria-hidden="true" /></span>
+                      <span>{index} / {label}</span><span className="ted-home-discover-icon">{React.createElement(Icon, { "aria-hidden": true })}</span>
                     </div>
                     <div className="ted-home-discover-content"><h3>{title}</h3><p>{description}</p></div>
                     <div className="ted-home-discover-bottom"><span>{action}</span><ArrowUpRight aria-hidden="true" /></div>
