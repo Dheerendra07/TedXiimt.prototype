@@ -47,9 +47,15 @@ try {
     assert(pageWidth <= viewport.width, viewport.name + ': homepage has horizontal overflow');
     assert(pageErrors.length === 0, viewport.name + ': browser runtime errors: ' + pageErrors.join('; '));
 
-    await page.locator('.ted-home-discover').scrollIntoViewIfNeeded();
-    await page.waitForTimeout(500);
-    await page.locator('.ted-home-discover').screenshot({ path: outputDir + '/discovery-' + viewport.name + '.png', animations: 'disabled' });
+    const discoverySection = page.locator('.ted-home-discover');
+    const discoveryCards = page.locator('.ted-home-discover-card');
+    for (let index = 0; index < await discoveryCards.count(); index += 1) {
+      await discoveryCards.nth(index).scrollIntoViewIfNeeded();
+      await page.waitForTimeout(100);
+    }
+    await discoverySection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(260);
+    await discoverySection.screenshot({ path: outputDir + '/discovery-' + viewport.name + '.png', animations: 'disabled' });
     console.log(JSON.stringify({ viewport: viewport.name, cards, pageWidth, viewportWidth: viewport.width }));
     await page.close();
   }
