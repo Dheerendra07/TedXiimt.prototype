@@ -117,8 +117,8 @@ const Hero = () => {
   const { activeEdition, loading } = useEdition();
   const [countdown, setCountdown] = useState(null);
   const [monumentCards, setMonumentCards] = useState({});
-  const eventDate = useMemo(() => {
-    if (loading || activeEdition?.is_active !== true || !activeEdition?.date) return null;
+  const editionDate = useMemo(() => {
+    if (loading || !activeEdition?.date) return null;
 
     const rawDate = String(activeEdition.date);
     const localDate = /^\d{4}-\d{2}-\d{2}$/.test(rawDate)
@@ -126,12 +126,15 @@ const Hero = () => {
       : rawDate;
     const date = new Date(localDate);
 
-    if (Number.isNaN(date.getTime()) || date.getTime() <= Date.now()) return null;
-    return date;
+    return Number.isNaN(date.getTime()) ? null : date;
   }, [activeEdition, loading]);
-  const venueLabel = activeEdition?.is_active === true && activeEdition.venue
-    ? activeEdition.venue
-    : 'IIMT University, Meerut';
+
+  const eventDate = useMemo(() => {
+    if (activeEdition?.is_active !== true || !editionDate || editionDate.getTime() <= Date.now()) return null;
+    return editionDate;
+  }, [activeEdition, editionDate]);
+
+  const venueLabel = activeEdition?.venue || 'IIMT University, Meerut';
 
   // The tile lattice is intentionally fixed to the supplied reference.
   // The square-cell trail stays on open hero space; hovering artwork reveals its full monument.
@@ -864,12 +867,12 @@ const Hero = () => {
     return () => window.clearInterval(timer);
   }, [eventDate]);
 
-  const formattedEventDate = eventDate
+  const formattedEventDate = editionDate
     ? new Intl.DateTimeFormat('en-IN', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
-    }).format(eventDate)
+    }).format(editionDate)
     : null;
 
   const containerVariants = {
