@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { Play } from 'lucide-react';
 
 const reelVideos = ['/1.mp4', '/2.mp4', '/3.mp4', '/4.mp4'];
@@ -39,7 +39,7 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
   };
 
   return (
-    <motion.article
+    <Motion.article
       initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
@@ -99,7 +99,7 @@ const SocialMedia = () => {
       <div className="pointer-events-none absolute -right-32 bottom-0 h-80 w-80 rounded-full bg-[#EB0028]/5 blur-3xl" />
 
       <div className="relative mx-auto max-w-7xl">
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -111,7 +111,7 @@ const SocialMedia = () => {
               Highlights
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-400 sm:text-base">
-              Explore our latest stories and features across social media.
+              Revisit selected moments from TEDxIIMT University 2025.
             </p>
           </div>
         </motion.div>
