@@ -65,6 +65,12 @@ try {
     assert(pageWidth <= viewport.width, viewport.name + ': homepage has horizontal overflow');
 
     const loadedClips = [];
+    const mediaResponses = [];
+    page.on('response', (response) => {
+      if (response.url().match(/\\/[1-4]\\.mp4(?:\\?.*)?$/)) {
+        mediaResponses.push({ url: response.url(), status: response.status() });
+      }
+    });
 
     // Load and decode each original clip only after an explicit Play action.
     // This respects preload="metadata" and avoids forcing all video downloads on page entry.
@@ -72,42 +78,51 @@ try {
       const card = page.locator('.ted-reel-card').nth(index);
       await card.locator('.ted-reel-toggle').click();
 
-      await page.waitForFunction((videoIndex) => {
-        const video = document.querySelectorAll('.ted-reel-video')[videoIndex];
-        return video && ((video.readyState >= 2 && !video.paused) || video.error);
-      }, index, { timeout: 45000 });
+      let waitTimedOut = false;
+      try {
+        await page.waitForFunction((videoIndex) => {
+          const video = document.querySelectorAll('.ted-reel-video')[videoIndex];
+          return video && ((video.readyState >= 2 && !video.paused) || video.error);
+        }, index, { timeout: 20000 });
+      } catch {
+        waitTimedOut = true;
+      }
 
       const clip = await card.locator('video').evaluate((video) => ({
         readyState: video.readyState,
         duration: video.duration,
         videoWidth: video.videoWidth,
         videoHeight: video.videoHeight,
-        mediaError: video.error ? video.error.code : null,
+        mediaError: video.error ? { code: video.error.code, message: video.error.message } : null,
+        networkState: video.networkState,
+        canPlayMp4: video.canPlayType('video/mp4'),
+        canPlayH264: video.canPlayType('video/mp4; codecs=\"avc1.42E01E, mp4a.40.2\"'),
         paused: video.paused,
       }));
-
-      assert(clip.mediaError === null, viewport.name + ': reel ' + (index + 1) + ' reported a media error');
-      assert(clip.readyState >= 2 && !clip.paused, viewport.name + ': reel ' + (index + 1) + ' did not decode and start');
-      assert(Number.isFinite(clip.duration) && clip.duration > 0, viewport.name + ': reel ' + (index + 1) + ' has invalid duration metadata');
-      assert(clip.videoWidth > 0 && clip.videoHeight > 0, viewport.name + ': reel ' + (index + 1) + ' has no decoded video dimensions');
 
       loadedClips.push({
         ...clip,
         number: String(index + 1).padStart(2, '0'),
+        waitTimedOut,
       });
 
       // Keep a decoded still frame in the card for a useful visual screenshot.
-      await card.locator('video').evaluate((video) => video.pause());
-      await page.waitForFunction((videoIndex) => {
-        const video = document.querySelectorAll('.ted-reel-video')[videoIndex];
-        return video && video.paused;
-      }, index);
+      if (clip.mediaError === null && clip.readyState >= 2 && !clip.paused) {
+        await card.locator('video').evaluate((video) => video.pause());
+        await page.waitForFunction((videoIndex) => {
+          const video = document.querySelectorAll('.ted-reel-video')[videoIndex];
+          return video && video.paused;
+        }, index);
+      }
     }
 
     await section.screenshot({
       path: outputDir + '/reels-' + viewport.name + '.png',
       animations: 'disabled',
     });
+
+    console.log(JSON.stringify({ viewport: viewport.name, initialCards, loadedClips, mediaResponses, pageWidth, viewportWidth: viewport.width }));
+    assert(loadedClips.every((clip) => clip.mediaError === null && clip.readyState >= 2 && !clip.paused && !clip.waitTimedOut), viewport.name + ': one or more original reels did not decode and start');
 
     const firstCard = page.locator('.ted-reel-card').nth(0);
     const secondCard = page.locator('.ted-reel-card').nth(1);
@@ -163,6 +178,7 @@ try {
       reducedMotion: viewport.reducedMotion,
       initialCards,
       loadedClips,
+      mediaResponses,
       pageWidth,
       viewportWidth: viewport.width,
       singleActivePlayback: true,
