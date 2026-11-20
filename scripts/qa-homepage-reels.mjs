@@ -67,7 +67,7 @@ try {
     const loadedClips = [];
     const mediaResponses = [];
     page.on('response', (response) => {
-      if (response.url().match(/\\/[1-4]\\.mp4(?:\\?.*)?$/)) {
+      if (['/1.mp4', '/2.mp4', '/3.mp4', '/4.mp4'].some((suffix) => response.url().endsWith(suffix))) {
         mediaResponses.push({ url: response.url(), status: response.status() });
       }
     });
