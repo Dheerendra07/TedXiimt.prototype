@@ -196,7 +196,7 @@ const ReelCard = ({ src, index, onPlaybackStart, onPlaybackStop }) => {
         </div>
       </div>
       <h3 className="ted-reel-card-title">TEDxIIMT reel {reelNumber}</h3>
-    </motion.article>
+    </Motion.article>
   );
 };
 
