@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { Pause, Play, Volume2, VolumeX } from 'lucide-react';
 
 const reelVideos = ['/1.mp4', '/2.mp4', '/3.mp4', '/4.mp4'];
@@ -93,7 +93,7 @@ const ReelCard = ({ src, index, onPlaybackStart, onPlaybackStop }) => {
   };
 
   return (
-    <motion.article
+    <Motion.article
       initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
       whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.18 }}
