@@ -28,9 +28,9 @@ jobs:
         run: npx eslint src/components/Hero.jsx src/components/Header.jsx src/components/FeaturedSpeakers.jsx src/components/SocialMedia.jsx
       - name: Build (Vite)
         run: npm run build         # ensure "build": "vite build" in package.json
-      - name: Install Google Chrome for video codec QA
+      - name: Install Playwright Chromium and Google Chrome
         if: github.event_name == 'pull_request'
-        run: npx --yes playwright@1.56.0 install chrome
+        run: npx --yes playwright@1.56.0 install chromium chrome
       - name: Start Vite production preview
         if: github.event_name == 'pull_request'
         run: |
