@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint changed hero components (ESLint)
-        run: npx eslint src/components/Hero.jsx src/components/Header.jsx src/components/FeaturedSpeakers.jsx
+        run: npx eslint src/components/Hero.jsx src/components/Header.jsx src/components/FeaturedSpeakers.jsx src/components/SocialMedia.jsx
       - name: Build (Vite)
         run: npm run build         # ensure "build": "vite build" in package.json
       - name: Install Playwright Chromium
@@ -43,12 +43,13 @@ jobs:
           done
           cat /tmp/tedx-vite-preview.log
           exit 1
-      - name: Capture homepage discovery and gallery browser QA
+      - name: Capture homepage discovery, gallery and reels browser QA
         if: github.event_name == 'pull_request'
         run: |
           npm exec --yes --package=playwright@1.56.0 -- sh -c '
             PLAYWRIGHT_MODULE="$(dirname "$(readlink -f "$(command -v playwright)")")/index.mjs" node scripts/qa-homepage-discovery.mjs
             PLAYWRIGHT_MODULE="$(dirname "$(readlink -f "$(command -v playwright)")")/index.mjs" node scripts/qa-homepage-gallery.mjs
+            PLAYWRIGHT_MODULE="$(dirname "$(readlink -f "$(command -v playwright)")")/index.mjs" node scripts/qa-homepage-reels.mjs
           '
       - name: Upload homepage visual QA screenshots
         if: always() && github.event_name == 'pull_request'
