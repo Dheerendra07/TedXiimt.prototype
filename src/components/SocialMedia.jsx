@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { motion as Motion } from 'framer-motion';
 import { Play } from 'lucide-react';
 
+// Keep the four original local TEDxIIMT event clips; do not introduce additional media.
 const reelVideos = ['/1.mp4', '/2.mp4', '/3.mp4', '/4.mp4'];
 
 const ReelCard = ({ post, index, onPlaybackStart }) => {
