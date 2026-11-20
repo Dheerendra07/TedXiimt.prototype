@@ -1244,3 +1244,54 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
     will-change: auto;
   }
 }
+
+
+/* Homepage dynamic sponsor tiles: give each partner tile its own reveal and hover response */
+@keyframes ted-home-partner-arrive {
+  from { opacity: 0; filter: blur(3px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+.ted-home-dynamic > section:first-child .flex.flex-wrap > a {
+  animation: ted-home-partner-arrive .62s cubic-bezier(.22,1,.36,1) both;
+  transition:
+    transform .42s cubic-bezier(.2,.75,.25,1),
+    border-color .32s ease,
+    background-color .32s ease,
+    box-shadow .42s ease;
+}
+
+.ted-home-dynamic > section:first-child .flex.flex-wrap > a:nth-child(2) { animation-delay: .07s; }
+.ted-home-dynamic > section:first-child .flex.flex-wrap > a:nth-child(3) { animation-delay: .14s; }
+.ted-home-dynamic > section:first-child .flex.flex-wrap > a:nth-child(4) { animation-delay: .21s; }
+.ted-home-dynamic > section:first-child .flex.flex-wrap > a:nth-child(5) { animation-delay: .28s; }
+.ted-home-dynamic > section:first-child .flex.flex-wrap > a:nth-child(6) { animation-delay: .35s; }
+
+.ted-home-dynamic > section:first-child .flex.flex-wrap > a:hover,
+.ted-home-dynamic > section:first-child .flex.flex-wrap > a:focus-visible {
+  transform: translateY(-5px) scale(1.015);
+  border-color: rgba(235,0,40,.78) !important;
+  background-color: rgba(235,0,40,.055) !important;
+  box-shadow: 0 18px 42px rgba(0,0,0,.32), 0 0 0 1px rgba(235,0,40,.08);
+}
+
+.ted-home-dynamic > section:first-child .flex.flex-wrap > a img {
+  transition: transform .55s cubic-bezier(.2,.7,.2,1), filter .38s ease;
+}
+
+.ted-home-dynamic > section:first-child .flex.flex-wrap > a:hover img,
+.ted-home-dynamic > section:first-child .flex.flex-wrap > a:focus-visible img {
+  transform: scale(1.055);
+  filter: grayscale(0) brightness(1.06);
+}
+
+.ted-home-dynamic > section:first-child .flex.flex-wrap > a:focus-visible {
+  outline: 2px solid var(--home-red);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-home-dynamic > section:first-child .flex.flex-wrap > a {
+    animation: none !important;
+  }
+}
