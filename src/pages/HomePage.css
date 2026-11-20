@@ -294,3 +294,683 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
     padding-top: 48px !important;
   }
 }
+
+
+/* 2026-11 homepage polish: complete watermark numerals, image flow and real card actions */
+.ted-home-pillar::before {
+  right: 22px !important;
+  bottom: 14px !important;
+  color: rgba(255,255,255,.075) !important;
+  font-size: clamp(10rem, 18vw, 17rem) !important;
+  letter-spacing: -.145em !important;
+  line-height: .86 !important;
+  white-space: nowrap;
+  transform: none;
+}
+
+.ted-home-pillar--education::before {
+  right: 22px !important;
+  bottom: 16px !important;
+  font-size: clamp(14rem, 24vw, 22rem) !important;
+}
+
+.ted-home-pillar:hover::before {
+  color: rgba(235,0,40,.18) !important;
+  transform: translateY(-7px);
+}
+
+.ted-home-pillar-hit,
+.ted-home-origin-hit,
+.ted-home-benefit-hit {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: block;
+  border-radius: inherit;
+  background: transparent;
+  text-decoration: none;
+}
+
+.ted-home-pillar:focus-within,
+.ted-home-origin-mark:focus-within,
+.ted-home-benefit:focus-within {
+  outline: 2px solid var(--home-red);
+  outline-offset: 3px;
+}
+
+.ted-home-pillar-action {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  color: #E6E6E8;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .09em;
+  line-height: 1.4;
+  text-align: right;
+  text-transform: uppercase;
+  transition: color .25s ease;
+}
+
+.ted-home-pillar-action svg {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  color: var(--home-red);
+  transition: transform .25s ease;
+}
+
+.ted-home-pillar:hover .ted-home-pillar-action,
+.ted-home-pillar:focus-within .ted-home-pillar-action {
+  color: #fff;
+}
+
+.ted-home-pillar:hover .ted-home-pillar-action svg,
+.ted-home-pillar:focus-within .ted-home-pillar-action svg {
+  transform: translate(3px, -3px);
+}
+
+.ted-home-origin-mark {
+  cursor: pointer;
+}
+
+.ted-home-origin-hit {
+  border-radius: inherit;
+}
+
+.ted-home-origin-mark:focus-within {
+  outline-offset: 4px;
+}
+
+/* Real campus + event photography, presented as one connected editorial sequence */
+.ted-home-gallery {
+  position: relative;
+  padding: clamp(88px, 10vw, 142px) 0;
+  border-top: 1px solid rgba(255,255,255,.08);
+  background:
+    radial-gradient(ellipse at 10% 50%, rgba(235,0,40,.075), transparent 38%),
+    #080809;
+}
+
+.ted-home-gallery-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 34px;
+  margin-bottom: 42px;
+}
+
+.ted-home-gallery-intro {
+  max-width: 365px;
+  padding-left: 22px;
+  border-left: 1px solid rgba(235,0,40,.65);
+}
+
+.ted-home-gallery-intro p {
+  margin: 0;
+  color: #A1A1AA;
+  font-size: 13px;
+  line-height: 1.85;
+}
+
+.ted-home-gallery-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 17px;
+  color: #F0526A;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .12em;
+  text-decoration: none;
+  transition: color .2s ease;
+}
+
+.ted-home-gallery-all svg {
+  width: 15px;
+  height: 15px;
+  transition: transform .2s ease;
+}
+
+.ted-home-gallery-all:hover {
+  color: #fff;
+}
+
+.ted-home-gallery-all:hover svg {
+  transform: translate(3px, -3px);
+}
+
+.ted-home-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-auto-rows: 208px;
+  gap: 13px;
+}
+
+.ted-home-gallery-slot {
+  min-width: 0;
+  min-height: 0;
+}
+
+.ted-home-gallery-card--stage {
+  grid-column: span 7;
+  grid-row: span 2;
+}
+
+.ted-home-gallery-card--campus {
+  grid-column: span 5;
+  grid-row: span 1;
+}
+
+.ted-home-gallery-card--opening {
+  grid-column: span 5;
+  grid-row: span 1;
+}
+
+.ted-home-gallery-card--community,
+.ted-home-gallery-card--audience {
+  grid-column: span 6;
+  grid-row: span 1;
+}
+
+.ted-home-gallery-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 2px;
+  background: #111113;
+  color: #fff;
+  cursor: zoom-in;
+  isolation: isolate;
+  text-align: left;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color .35s ease, transform .35s ease, box-shadow .35s ease;
+}
+
+.ted-home-gallery-card img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(.86) contrast(1.04) brightness(.82);
+  transform: scale(1.001);
+  transition: filter .55s ease, transform .8s cubic-bezier(.2,.7,.2,1);
+}
+
+.ted-home-gallery-card--stage img {
+  object-position: left center;
+}
+
+.ted-home-gallery-shade {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.14) 0%, transparent 32%, rgba(0,0,0,.78) 100%),
+    linear-gradient(90deg, rgba(0,0,0,.2), transparent 65%);
+  pointer-events: none;
+}
+
+.ted-home-gallery-count {
+  position: absolute;
+  z-index: 2;
+  top: 18px;
+  left: 20px;
+  color: rgba(255,255,255,.9);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .18em;
+  text-shadow: 0 1px 12px rgba(0,0,0,.55);
+}
+
+.ted-home-gallery-copy {
+  position: absolute;
+  z-index: 2;
+  right: 55px;
+  bottom: 22px;
+  left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.ted-home-gallery-copy > span {
+  color: #FF5870;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .18em;
+  line-height: 1.3;
+}
+
+.ted-home-gallery-copy strong {
+  max-width: 570px;
+  color: #fff;
+  font-size: clamp(1.1rem, 2.1vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -.045em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.ted-home-gallery-card--stage .ted-home-gallery-copy strong {
+  max-width: 540px;
+  font-size: clamp(1.75rem, 3.1vw, 3.15rem);
+}
+
+.ted-home-gallery-open {
+  position: absolute;
+  z-index: 2;
+  right: 18px;
+  bottom: 18px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.4);
+  background: rgba(0,0,0,.35);
+  color: #fff;
+  transition: border-color .3s ease, background .3s ease, transform .3s ease;
+  pointer-events: none;
+}
+
+.ted-home-gallery-open svg {
+  width: 15px;
+  height: 15px;
+}
+
+.ted-home-gallery-card:hover,
+.ted-home-gallery-card:focus-visible {
+  z-index: 1;
+  border-color: rgba(235,0,40,.85);
+  box-shadow: 0 18px 54px rgba(0,0,0,.35);
+}
+
+.ted-home-gallery-card:hover img,
+.ted-home-gallery-card:focus-visible img {
+  filter: saturate(1) contrast(1.06) brightness(.96);
+  transform: scale(1.055);
+}
+
+.ted-home-gallery-card:hover .ted-home-gallery-open,
+.ted-home-gallery-card:focus-visible .ted-home-gallery-open {
+  border-color: var(--home-red);
+  background: var(--home-red);
+  transform: translateY(-2px);
+}
+
+.ted-home-gallery-credit {
+  margin: 19px 0 0;
+  color: #686870;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .18em;
+  text-align: right;
+}
+
+/* Accessible photo viewer with keyboard navigation and source attribution */
+.ted-home-lightbox {
+  position: fixed;
+  z-index: 120;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 76px 32px;
+  background: rgba(0,0,0,.94);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+
+.ted-home-lightbox-panel {
+  display: flex;
+  width: min(1050px, 100%);
+  max-height: calc(100vh - 92px);
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.16);
+  background: #0A0A0C;
+  box-shadow: 0 35px 120px rgba(0,0,0,.7);
+}
+
+.ted-home-lightbox-image {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #050505;
+}
+
+.ted-home-lightbox-image img {
+  display: block;
+  width: 100%;
+  max-height: min(66vh, 760px);
+  object-fit: contain;
+}
+
+.ted-home-lightbox-caption {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 25px;
+  padding: 22px 25px;
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+
+.ted-home-lightbox-caption > div > span {
+  color: #F0526A;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .16em;
+}
+
+.ted-home-lightbox-caption h3 {
+  margin: 8px 0 6px;
+  color: #fff;
+  font-size: clamp(1.35rem, 2.3vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -.05em;
+  line-height: 1.08;
+}
+
+.ted-home-lightbox-caption p {
+  max-width: 620px;
+  margin: 0;
+  color: #A1A1AA;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.ted-home-lightbox-caption a {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  color: #F0526A;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .13em;
+  text-decoration: none;
+}
+
+.ted-home-lightbox-caption a:hover {
+  color: #fff;
+}
+
+.ted-home-lightbox-caption a svg {
+  width: 14px;
+  height: 14px;
+}
+
+.ted-home-lightbox-close,
+.ted-home-lightbox-nav {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 50%;
+  background: rgba(12,12,14,.8);
+  color: #fff;
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.ted-home-lightbox-close {
+  top: 18px;
+  right: 22px;
+}
+
+.ted-home-lightbox-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.ted-home-lightbox-nav svg {
+  width: 21px;
+  height: 21px;
+}
+
+.ted-home-lightbox-prev {
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.ted-home-lightbox-next {
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.ted-home-lightbox-close:hover,
+.ted-home-lightbox-nav:hover {
+  border-color: var(--home-red);
+  background: var(--home-red);
+}
+
+.ted-home-lightbox-prev:hover,
+.ted-home-lightbox-next:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+/* Turn every takeaway panel into a real, keyboard-accessible destination */
+.ted-home-benefit {
+  position: relative;
+  cursor: pointer;
+}
+
+.ted-home-benefit-action {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  color: #F0526A;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .1em;
+  line-height: 1.5;
+}
+
+.ted-home-benefit-action svg {
+  width: 14px;
+  height: 14px;
+  transition: transform .25s ease;
+}
+
+.ted-home-benefit:hover .ted-home-benefit-action svg,
+.ted-home-benefit:focus-within .ted-home-benefit-action svg {
+  transform: translate(3px, -3px);
+}
+
+.ted-home-benefit:hover h3 {
+  color: #fff;
+}
+
+.ted-home-benefit-hit {
+  border-radius: 0;
+}
+
+#home-highlights {
+  scroll-margin-top: 88px;
+}
+
+@media (max-width: 900px) {
+  .ted-home-gallery-head {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .ted-home-gallery-intro {
+    max-width: 520px;
+  }
+
+  .ted-home-gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 210px;
+  }
+
+  .ted-home-gallery-card--stage {
+    grid-column: span 2;
+    grid-row: span 1;
+    min-height: 300px;
+  }
+
+  .ted-home-gallery-card--campus,
+  .ted-home-gallery-card--opening,
+  .ted-home-gallery-card--community,
+  .ted-home-gallery-card--audience {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .ted-home-pillar::before {
+    right: 16px !important;
+    bottom: 13px !important;
+    font-size: clamp(7.5rem, 25vw, 10rem) !important;
+    line-height: .86 !important;
+  }
+
+  .ted-home-pillar--education::before {
+    right: 14px !important;
+    bottom: 13px !important;
+    font-size: clamp(11rem, 37vw, 13.5rem) !important;
+  }
+
+  .ted-home-pillar-action {
+    gap: 5px;
+    font-size: 8px;
+    letter-spacing: .04em;
+  }
+
+  .ted-home-gallery {
+    padding-top: 78px;
+    padding-bottom: 78px;
+  }
+
+  .ted-home-gallery-intro {
+    padding-left: 15px;
+  }
+
+  .ted-home-gallery-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 235px;
+    gap: 10px;
+  }
+
+  .ted-home-gallery-card--stage,
+  .ted-home-gallery-card--campus,
+  .ted-home-gallery-card--opening,
+  .ted-home-gallery-card--community,
+  .ted-home-gallery-card--audience {
+    grid-column: 1;
+    grid-row: auto;
+    min-height: 235px;
+  }
+
+  .ted-home-gallery-card--stage {
+    min-height: 260px;
+  }
+
+  .ted-home-gallery-copy {
+    right: 52px;
+    bottom: 18px;
+    left: 17px;
+  }
+
+  .ted-home-gallery-copy strong {
+    font-size: 1.25rem;
+  }
+
+  .ted-home-gallery-card--stage .ted-home-gallery-copy strong {
+    font-size: 1.7rem;
+  }
+
+  .ted-home-gallery-count {
+    top: 15px;
+    left: 17px;
+  }
+
+  .ted-home-gallery-open {
+    right: 13px;
+    bottom: 13px;
+  }
+
+  .ted-home-gallery-credit {
+    font-size: 7px;
+    line-height: 1.6;
+    text-align: left;
+  }
+
+  .ted-home-lightbox {
+    padding: 68px 12px 16px;
+  }
+
+  .ted-home-lightbox-panel {
+    width: 100%;
+    max-height: calc(100vh - 90px);
+  }
+
+  .ted-home-lightbox-image img {
+    max-height: 58vh;
+  }
+
+  .ted-home-lightbox-caption {
+    align-items: start;
+    flex-direction: column;
+    gap: 14px;
+    padding: 17px;
+  }
+
+  .ted-home-lightbox-caption p {
+    font-size: 11px;
+  }
+
+  .ted-home-lightbox-close {
+    top: 13px;
+    right: 13px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .ted-home-lightbox-prev {
+    left: 9px;
+  }
+
+  .ted-home-lightbox-next {
+    right: 9px;
+  }
+
+  .ted-home-lightbox-nav {
+    width: 36px;
+    height: 36px;
+    background: rgba(0,0,0,.82);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-home-gallery-card,
+  .ted-home-gallery-card img,
+  .ted-home-gallery-open,
+  .ted-home-benefit-action svg {
+    transition-duration: .01ms !important;
+  }
+}
