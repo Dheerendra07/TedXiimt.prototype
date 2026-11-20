@@ -4,6 +4,7 @@ import SkipToContent from './components/SkipToContent';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Breadcrumbs from './components/Breadcrumbs';
+import PageScrollProgress from './components/PageScrollProgress';
 import { useAuth } from './context/AuthContext';
 import { getArchiveEdition } from './data/archiveData';
 
@@ -318,11 +319,23 @@ const Router = () => {
 
   useEffect(() => {
     document.title = routeData.title;
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', routeData.description);
+
+    const updateMeta = (selector, attribute, value) => {
+      document.querySelector(selector)?.setAttribute(attribute, value);
+    };
+
+    updateMeta('meta[name="description"]', 'content', routeData.description);
+    updateMeta('meta[property="og:title"]', 'content', routeData.title);
+    updateMeta('meta[property="og:description"]', 'content', routeData.description);
+    updateMeta('meta[property="og:url"]', 'content', window.location.href.split('#')[0]);
+    updateMeta('meta[name="twitter:title"]', 'content', routeData.title);
+    updateMeta('meta[name="twitter:description"]', 'content', routeData.description);
+
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) {
+      canonical.setAttribute('href', window.location.origin + currentPath.split('#')[0]);
     }
-  }, [routeData.title, routeData.description]);
+  }, [routeData.title, routeData.description, currentPath]);
 
   const LoadingScreen = () => (
     <div className="min-h-screen bg-black flex items-center justify-center">
@@ -336,6 +349,7 @@ const Router = () => {
   return (
     <RouterContext.Provider value={{ currentPath, navigate }}>
       <div className="min-h-screen bg-black text-white selection:bg-[#EB0028] selection:text-white flex flex-col justify-between">
+        <PageScrollProgress />
         <SkipToContent />
         <Header />
 

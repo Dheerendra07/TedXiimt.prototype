@@ -1,0 +1,173 @@
+/* TEDxIIMT premium navigation shell */
+.ted-site-header {
+  isolation: isolate;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16);
+}
+
+.ted-site-header::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(235, 0, 40, 0.42) 22%, rgba(255, 255, 255, 0.12) 52%, rgba(235, 0, 40, 0.42) 78%, transparent 100%);
+  content: "";
+  pointer-events: none;
+}
+
+.ted-site-header .ted-nav-link {
+  position: relative;
+  min-height: 40px;
+  isolation: isolate;
+}
+
+.ted-site-header .ted-nav-link::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  content: "";
+  transition: border-color 220ms ease, background-color 220ms ease;
+}
+
+.ted-site-header .ted-nav-link::after {
+  position: absolute;
+  right: 12px;
+  bottom: 3px;
+  left: 12px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #EB0028, transparent);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 260ms cubic-bezier(.2,.75,.25,1);
+}
+
+.ted-site-header .ted-nav-link:hover::before,
+.ted-site-header .ted-nav-link:focus-visible::before,
+.ted-site-header .ted-nav-link[aria-expanded="true"]::before,
+.ted-site-header .ted-nav-link[aria-current="page"]::before {
+  border-color: rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.ted-site-header .ted-nav-link:hover::after,
+.ted-site-header .ted-nav-link:focus-visible::after,
+.ted-site-header .ted-nav-link[aria-expanded="true"]::after,
+.ted-site-header .ted-nav-link[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+.ted-mobile-menu-toggle {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.13);
+  background: rgba(255,255,255,.035);
+  transition: border-color 220ms ease, background-color 220ms ease, color 220ms ease;
+}
+
+.ted-mobile-menu-toggle:hover,
+.ted-mobile-menu-toggle:focus-visible {
+  border-color: rgba(235,0,40,.55);
+  background: rgba(235,0,40,.1);
+}
+
+.ted-mobile-ticket-link {
+  min-height: 38px;
+  padding-inline: 16px;
+  box-shadow: 0 7px 22px rgba(235,0,40,.22);
+}
+
+.ted-mobile-nav-backdrop {
+  position: fixed;
+  z-index: 0;
+  inset: 74px 0 0;
+  width: 100%;
+  border: 0;
+  background: rgba(0,0,0,.64);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  cursor: default;
+}
+
+.ted-mobile-nav-panel {
+  position: relative;
+  z-index: 1;
+  max-height: calc(100svh - 74px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-top: 1px solid rgba(255,255,255,.075);
+  background:
+    radial-gradient(ellipse at 90% 0%, rgba(235,0,40,.11), transparent 48%),
+    linear-gradient(180deg, rgba(12,12,14,.99), rgba(5,5,6,.99));
+  box-shadow: 0 30px 70px rgba(0,0,0,.5);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(235,0,40,.55) transparent;
+}
+
+.ted-mobile-nav-panel .ted-mobile-nav-link {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 6px;
+  padding: 7px 10px;
+  letter-spacing: -.01em;
+  transition: color 180ms ease, background-color 180ms ease, padding-left 180ms ease;
+}
+
+.ted-mobile-nav-panel .ted-mobile-nav-link:hover,
+.ted-mobile-nav-panel .ted-mobile-nav-link:focus-visible {
+  padding-left: 14px;
+  background: rgba(255,255,255,.045);
+}
+
+.ted-mobile-nav-panel .ted-mobile-nav-sublink {
+  width: 100%;
+  min-height: 34px;
+  padding: 7px 10px;
+  border-left: 1px solid rgba(235,0,40,.34);
+  transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease;
+}
+
+.ted-mobile-nav-panel .ted-mobile-nav-sublink:hover,
+.ted-mobile-nav-panel .ted-mobile-nav-sublink:focus-visible {
+  border-color: #EB0028;
+  background: rgba(235,0,40,.06);
+}
+
+.ted-mobile-nav-panel a:focus-visible,
+.ted-mobile-nav-panel button:focus-visible {
+  outline: 2px solid #EB0028;
+  outline-offset: 2px;
+}
+
+@media (max-width: 420px) {
+  .ted-mobile-nav-backdrop {
+    top: 72px;
+  }
+
+  .ted-mobile-nav-panel {
+    max-height: calc(100svh - 72px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-site-header .ted-nav-link::before,
+  .ted-site-header .ted-nav-link::after,
+  .ted-mobile-menu-toggle,
+  .ted-mobile-nav-panel .ted-mobile-nav-link,
+  .ted-mobile-nav-panel .ted-mobile-nav-sublink {
+    transition: none !important;
+  }
+
+  .ted-mobile-nav-panel .ted-mobile-nav-link:hover,
+  .ted-mobile-nav-panel .ted-mobile-nav-link:focus-visible {
+    padding-left: 10px;
+  }
+}

@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint changed hero components (ESLint)
-        run: npx eslint src/components/Hero.jsx src/components/Header.jsx src/components/FeaturedSpeakers.jsx src/components/SocialMedia.jsx src/components/Footer.jsx src/pages/HomePage.jsx
+        run: npx eslint src/components/Hero.jsx src/components/Header.jsx src/components/PageScrollProgress.jsx src/components/FeaturedSpeakers.jsx src/components/SocialMedia.jsx src/components/Footer.jsx src/pages/HomePage.jsx
       - name: Build (Vite)
         run: npm run build         # ensure "build": "vite build" in package.json
       - name: Install Playwright Chromium and Google Chrome
@@ -51,6 +51,7 @@ jobs:
             PLAYWRIGHT_MODULE="$(dirname "$(readlink -f "$(command -v playwright)")")/index.mjs" node scripts/qa-homepage-gallery.mjs
             PLAYWRIGHT_MODULE="$(dirname "$(readlink -f "$(command -v playwright)")")/index.mjs" node scripts/qa-homepage-reels.mjs
             PLAYWRIGHT_MODULE="$(dirname "$(readlink -f "$(command -v playwright)")")/index.mjs" node scripts/qa-homepage-surfaces.mjs
+            PLAYWRIGHT_MODULE="$(dirname "$(readlink -f "$(command -v playwright)")")/index.mjs" node scripts/qa-homepage-shell.mjs
           '
       - name: Upload homepage visual QA screenshots
         if: always() && github.event_name == 'pull_request'
