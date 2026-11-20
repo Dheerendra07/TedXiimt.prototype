@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useEdition } from '../context/EditionContext';
+import { ARCHIVE_EDITIONS } from '../data/archiveData';
 import { AnimatePresence, motion as Motion } from 'framer-motion';
 import {
-  ArrowRight, ArrowUpRight, BookOpen, Camera, ChevronLeft, ChevronRight,
-  Handshake, Lightbulb, Mic2, Sparkles, Users, X,
+  ArrowRight, ArrowUpRight, CalendarDays, Camera, ChevronLeft, ChevronRight,
+  Lightbulb, MapPin, Mic2, Users, X,
 } from 'lucide-react';
 import Hero from '../components/Hero';
 import SocialMedia from '../components/SocialMedia';
@@ -11,84 +13,49 @@ import Blog from '../components/Blog';
 import FloatingCTA from '../components/FloatingCTA';
 import './HomePage.css';
 
-const pillars = [
-  {
-    number: '01', label: 'EDUCATION', title: <>LEARN TO <em>QUESTION.</em></>,
-    description: 'A new perspective begins when a familiar answer is challenged.',
-    action: 'EXPLORE PAST TALKS', href: '/library', Icon: BookOpen,
-    className: 'ted-home-pillar--education',
-    image: 'https://iimtu.edu.in/uploads/images/17630369861.jpg',
-    imagePosition: 'center 44%',
-  },
-  {
-    number: '02', label: 'ENTERTAINMENT', title: <>MAKE EVERY <em>MOMENT MATTER.</em></>,
-    description: 'Stories and expression that make an idea stay with you.',
-    action: 'WATCH EVENT MOMENTS', href: '#home-highlights', Icon: Sparkles,
-    className: '',
-    image: 'https://iimtu.edu.in/uploads/images/17630370541.jpg',
-    imagePosition: 'center 50%',
-  },
-  {
-    number: '03', label: 'ENTREPRENEURSHIP', title: <>TURN IDEAS <em>INTO ACTION.</em></>,
-    description: 'The curiosity to imagine something better—and the courage to begin.',
-    action: 'SHARE AN IDEA', href: '/speaker-apply', Icon: Lightbulb,
-    className: '',
-    image: 'https://iimtu.edu.in/uploads/images/17630370091.jpg',
-    imagePosition: 'center 46%',
-  },
-];
-
 const discovery = [
   {
-    index: '01', label: 'THE VOICES', title: 'Ideas have a voice.',
-    description: 'Meet the speakers and explore the perspectives brought to the TEDxIIMT stage.',
-    href: '/speakers', action: 'MEET THE SPEAKERS', Icon: Mic2,
-    image: 'https://iimtu.edu.in/uploads/images/17630369861.jpg', imagePosition: 'center 46%',
+    index: '01', label: 'THE SPEAKERS', title: 'Eight voices. One stage.',
+    description: 'Meet the eight speakers featured in IIMT University’s official Break the Flow event recap.',
+    href: '/speakers', action: 'EXPLORE THE SPEAKERS', Icon: Mic2,
   },
   {
-    index: '02', label: 'THE PEOPLE', title: 'Made possible together.',
-    description: 'Get to know the team building the experience behind every idea.',
+    index: '02', label: 'EVENT CURATION', title: 'Faculty-led. Community-shaped.',
+    description: 'The 2025 event was curated by Dr. Vaibhav Sharma, Dr. Akshay Raj, Dr. Vatsala Tomar and Ms. Zeba Tyagi.',
     href: '/team', action: 'MEET THE TEAM', Icon: Users,
-    image: 'https://iimtu.edu.in/uploads/images/17630370831.jpg', imagePosition: 'center center',
   },
   {
-    index: '03', label: 'THE ECOSYSTEM', title: 'Good ideas need allies.',
-    description: 'Discover the partners who help create room for meaningful conversations.',
-    href: '/partners', action: 'VIEW PARTNERS', Icon: Handshake,
-    image: 'https://iimtu.edu.in/uploads/images/17630370541.jpg', imagePosition: 'center 48%',
+    index: '03', label: 'THE ARCHIVE', title: 'The day, documented.',
+    description: 'Revisit official TEDxIIMT stage, audience and campus moments from the 2025 edition.',
+    href: '/gallery', action: 'VIEW EVENT GALLERY', Icon: Camera,
   },
 ];
 
-const takeaways = [
-  {
-    index: '01 / PERSPECTIVE', title: 'See differently.',
-    description: 'Encounter ideas that invite you to look beyond the familiar.',
-    action: 'EXPLORE THE ARCHIVE', href: '/library',
-    image: 'https://iimtu.edu.in/uploads/images/17630369961.jpg',
-    imagePosition: 'center 52%',
-  },
-  {
-    index: '02 / CONNECTION', title: 'Meet through ideas.',
-    description: 'Find common ground with people who are curious about what comes next.',
-    action: 'MEET THE COMMUNITY', href: '/team',
-    image: 'https://iimtu.edu.in/uploads/images/17630370831.jpg',
-    imagePosition: 'center 50%',
-  },
-  {
-    index: '03 / CURIOSITY', title: 'Keep asking.',
-    description: 'Leave with new questions, fresh context and a wider point of view.',
-    action: 'READ MORE STORIES', href: '/blog',
-    image: 'https://iimtu.edu.in/uploads/images/17630370661.jpg',
-    imagePosition: 'center 52%',
-  },
-  {
-    index: '04 / POSSIBILITY', title: 'Make it matter.',
-    description: 'Carry an idea into your studies, work, community or next project.',
-    action: 'SHARE YOUR IDEA', href: '/speaker-apply',
-    image: 'https://iimtu.edu.in/uploads/images/17630370971.jpg',
-    imagePosition: 'center 48%',
-  },
+const featuredSpeakers2025 = [
+  { id: '2025-yogesh-mohanji-gupta', index: '01', name: 'Yogesh Mohanji Gupta', role: 'Chancellor, IIMT University' },
+  { id: '2025-deepa-sharma', index: '02', name: 'Dr. Deepa Sharma', role: 'Vice-Chancellor, IIMT University' },
+  { id: '2025-siddharth-sagar', index: '03', name: 'Siddharth Sagar', role: 'Comedian and performer' },
+  { id: '2025-alka-tomar', index: '04', name: 'Alka Tomar', role: 'Arjuna Award-winning wrestler' },
+  { id: '2025-miriam-chandy-menacherry', index: '05', name: 'Miriam Chandy Menacherry', role: 'Documentary filmmaker and founder, Filament Pictures' },
+  { id: '2025-piyush-sharma', index: '06', name: 'Piyush Sharma', role: 'Education influencer and founder, Tricky Man' },
+  { id: '2025-nishtha-mishra', index: '07', name: 'Nishtha Mishra', role: 'Founder, FirstShot Technologies' },
+  { id: '2025-sparsh-agarwal', index: '08', name: 'Sparsh Agarwal', role: 'CEO, AP Mobility India Pvt. Ltd.' },
 ];
+
+const formatEditionDate = (value) => {
+  if (!value) return 'Date to be announced';
+  const rawDate = String(value);
+  const normalizedDate = /^\d{4}-\d{2}-\d{2}$/.test(rawDate)
+    ? rawDate + 'T09:00:00'
+    : rawDate;
+  const date = new Date(normalizedDate);
+  if (Number.isNaN(date.getTime())) return rawDate;
+  return new Intl.DateTimeFormat('en-IN', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
+};
 
 const galleryItems = [
   {
@@ -147,6 +114,23 @@ const Reveal = ({ children, className = '', delay = 0, ...props }) => (
 );
 
 const HomePage = () => {
+  const { activeEdition } = useEdition();
+  const homepageEdition = activeEdition?.is_active === true ? activeEdition : ARCHIVE_EDITIONS[0];
+  const editionYear = Number(homepageEdition?.year) || 2025;
+  const editionDateLabel = formatEditionDate(homepageEdition?.date);
+  const editionFacts = [
+    { index: '01', label: 'THE THEME', value: homepageEdition?.theme || 'To be announced', detail: homepageEdition?.tagline || 'Ideas worth spreading.', Icon: Lightbulb, className: '' },
+    { index: '02', label: 'THE DATE', value: editionDateLabel, detail: 'Official event date', Icon: CalendarDays, className: '' },
+    { index: '03', label: 'THE VENUE', value: homepageEdition?.venue || 'IIMT University, Meerut', detail: homepageEdition?.city || 'Meerut, Uttar Pradesh', Icon: MapPin, className: 'ted-home-edition-card--venue' },
+  ];
+  const homepageSpeakers = editionYear === 2025
+    ? featuredSpeakers2025
+    : (Array.isArray(homepageEdition?.speakers) ? homepageEdition.speakers.map((speaker, index) => ({
+      id: speaker.id || 'edition-speaker-' + index,
+      index: String(index + 1).padStart(2, '0'),
+      name: speaker.name || 'Featured speaker',
+      role: speaker.title || speaker.designation || speaker.organization || 'TEDxIIMT speaker',
+    })) : []);
   const [activePhoto, setActivePhoto] = useState(null);
   const selectedPhoto = activePhoto === null ? null : galleryItems[activePhoto];
   const isLightboxOpen = activePhoto !== null;
@@ -246,38 +230,30 @@ const HomePage = () => {
           <div className="ted-home-shell">
             <Reveal className="ted-home-pillars-head">
               <div>
-                <span className="ted-home-kicker">THE THEME / THREE LENSES</span>
-                <h2 id="home-pillars-heading" className="ted-home-section-heading">A wider way to <em>see the world.</em></h2>
+                <span className="ted-home-kicker">THE EDITION / OFFICIAL EVENT RECORD</span>
+                <h2 id="home-pillars-heading" className="ted-home-section-heading">{homepageEdition?.title || 'TEDxIIMT University'}.</h2>
               </div>
-              <p>Education, Entertainment and Entrepreneurship are more than categories. They are different ways to question, connect and create.</p>
+              <p>{homepageEdition?.tagline || homepageEdition?.description || 'Ideas worth spreading from IIMT University, Meerut.'}</p>
             </Reveal>
-            <div className="ted-home-pillar-grid">
-              {pillars.map(({ number, label, title, description, action, href, Icon, className, image, imagePosition }, index) => (
-                <Reveal key={number} data-number={number} className={'ted-home-pillar ' + className} delay={index * 0.1}>
-                  <img
-                    className="ted-home-pillar-photo"
-                    src={image}
-                    alt=""
-                    aria-hidden="true"
-                    loading="lazy"
-                    decoding="async"
-                    draggable="false"
-                    style={{ objectPosition: imagePosition }}
-                  />
-                  <span className="ted-home-pillar-shade" aria-hidden="true" />
-                  <div className="ted-home-pillar-top">
-                    <span className="ted-home-pillar-label">{number} / {label}</span>
-                    <span className="ted-home-pillar-symbol">{React.createElement(Icon, { "aria-hidden": true })}</span>
+            <div className="ted-home-edition-grid">
+              {editionFacts.map((fact) => (
+                <Reveal key={fact.index} className={'ted-home-edition-card ' + fact.className}>
+                  <div className="ted-home-edition-card-top">
+                    <span>{fact.index} / {fact.label}</span>
+                    <span className="ted-home-edition-icon">{React.createElement(fact.Icon, { "aria-hidden": true })}</span>
                   </div>
-                  <h3>{title}</h3>
-                  <div className="ted-home-pillar-bottom">
-                    <span>{description}</span>
-                    <span className="ted-home-pillar-action">{action}<ArrowUpRight aria-hidden="true" /></span>
+                  <div>
+                    <h3>{fact.value}</h3>
+                    <p>{fact.detail}</p>
                   </div>
-                  <a className="ted-home-pillar-hit" href={href} aria-label={label + ': ' + action} />
                 </Reveal>
               ))}
             </div>
+            {editionYear === 2025 && (
+              <a className="ted-home-edition-source" href="https://iimtu.edu.in/news-event-details/tedx-iimt-university-break-the-flow" target="_blank" rel="noreferrer">
+                VIEW THE OFFICIAL IIMT EVENT RECORD <ArrowUpRight aria-hidden="true" />
+              </a>
+            )}
           </div>
         </section>
 
@@ -361,31 +337,27 @@ const HomePage = () => {
           <div className="ted-home-shell">
             <Reveal className="ted-home-discover-head">
               <div>
-                <span className="ted-home-kicker">EXPLORE / TEDxIIMT UNIVERSITY</span>
-                <h2 id="home-discover-heading" className="ted-home-section-heading">The people behind <em>the ideas.</em></h2>
+                <span className="ted-home-kicker">THE EVENT / PEOPLE AND PROGRAMME</span>
+                <h2 id="home-discover-heading" className="ted-home-section-heading">The people behind <em>Break the Flow.</em></h2>
               </div>
-              <p>A great event is built by many voices, many hands and a community that believes in sharing what matters.</p>
+              <p>On 11 November 2025, IIMT University brought speakers, faculty, students and creative performers together in Meerut.</p>
             </Reveal>
             <div className="ted-home-discover-grid">
-              {discovery.map(({ index, label, title, description, href, action, Icon, image, imagePosition }, cardIndex) => (
-                <Reveal key={index} delay={cardIndex * 0.1}>
+              {discovery.map(({ index, label, title, description, href, action, Icon }, cardIndex) => (
+                <Reveal key={index} delay={cardIndex * 0.08}>
                   <a className="ted-home-discover-card" data-index={index} href={href}>
-                    <img
-                      className="ted-home-discover-photo"
-                      src={image}
-                      alt=""
-                      aria-hidden="true"
-                      loading="lazy"
-                      decoding="async"
-                      draggable="false"
-                      style={{ objectPosition: imagePosition }}
-                    />
-                    <span className="ted-home-discover-shade" aria-hidden="true" />
                     <div className="ted-home-discover-top">
-                      <span>{index} / {label}</span><span className="ted-home-discover-icon">{React.createElement(Icon, { "aria-hidden": true })}</span>
+                      <span>{index} / {label}</span>
+                      <span className="ted-home-discover-icon">{React.createElement(Icon, { "aria-hidden": true })}</span>
                     </div>
-                    <div className="ted-home-discover-content"><h3>{title}</h3><p>{description}</p></div>
-                    <div className="ted-home-discover-bottom"><span>{action}</span><ArrowUpRight aria-hidden="true" /></div>
+                    <div className="ted-home-discover-content">
+                      <h3>{title}</h3>
+                      <p>{description}</p>
+                    </div>
+                    <div className="ted-home-discover-bottom">
+                      <span>{action}</span>
+                      <ArrowUpRight aria-hidden="true" />
+                    </div>
                   </a>
                 </Reveal>
               ))}
@@ -393,41 +365,42 @@ const HomePage = () => {
           </div>
         </section>
 
-        <div className="ted-home-reels" id="home-highlights">
+        <div id="home-highlights">
           <SocialMedia />
         </div>
 
-        <section className="ted-home-benefits ted-home-grid-surface" aria-labelledby="home-benefits-heading">
+        <section className="ted-home-speakers ted-home-grid-surface" aria-labelledby="home-speakers-heading">
           <div className="ted-home-shell">
             <Reveal className="ted-home-benefits-head">
               <div>
-                <span className="ted-home-kicker">BEYOND THE ROOM / THE EXPERIENCE</span>
-                <h2 id="home-benefits-heading" className="ted-home-section-heading">Take home more than <em>a memory.</em></h2>
+                <span className="ted-home-kicker">THE STAGE / {homepageSpeakers.length} SPEAKERS</span>
+                <h2 id="home-speakers-heading" className="ted-home-section-heading">{editionYear === 2025 ? 'Eight voices.' : 'The voices.'} <em>Different worlds.</em></h2>
               </div>
-              <p>The best part of an idea is what it makes possible next: a new question, a conversation, a connection or a first step.</p>
+              <p>The speakers documented in IIMT University’s official recap of TEDxIIMT University {editionYear}.</p>
             </Reveal>
-            <div className="ted-home-benefits-grid">
-              {takeaways.map((item, index) => (
-                <Reveal key={item.index} className="ted-home-benefit" delay={index * 0.08}>
-                  <img
-                    className="ted-home-benefit-photo"
-                    src={item.image}
-                    alt=""
-                    aria-hidden="true"
-                    loading="lazy"
-                    decoding="async"
-                    draggable="false"
-                    style={{ objectPosition: item.imagePosition }}
-                  />
-                  <span className="ted-home-benefit-shade" aria-hidden="true" />
-                  <span className="ted-home-benefit-index">{item.index}</span>
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
-                  <span className="ted-home-benefit-action">{item.action}<ArrowUpRight aria-hidden="true" /></span>
-                  <a className="ted-home-benefit-hit" href={item.href} aria-label={item.title + ' ' + item.action} />
+            <div className="ted-home-speaker-grid">
+              {homepageSpeakers.map((speaker) => (
+                <Reveal key={speaker.id} className="ted-home-speaker-card">
+                  <span className="ted-home-speaker-index">{speaker.index} / SPEAKER</span>
+                  <div>
+                    <h3>{speaker.name}</h3>
+                    <p>{speaker.role}</p>
+                  </div>
+                  <span className="ted-home-speaker-rule" aria-hidden="true" />
                 </Reveal>
               ))}
             </div>
+            {editionYear === 2025 && (
+              <div className="ted-home-speaker-context">
+                <p><strong>CREATIVE PERFORMANCES</strong><span>Kapil Dinkar and IIMT student artists brought music and dance to the programme.</span></p>
+                <p><strong>EVENT CURATION</strong><span>Dr. Vaibhav Sharma, Dr. Akshay Raj, Dr. Vatsala Tomar and Ms. Zeba Tyagi.</span></p>
+              </div>
+            )}
+            {editionYear === 2025 && (
+              <a className="ted-home-speaker-source" href="https://iimtu.edu.in/blog/ideas-that-ignited-the-stage-highlights-from-tedx-iimt-university-2025/" target="_blank" rel="noreferrer">
+                READ THE OFFICIAL IIMT UNIVERSITY RECAP <ArrowUpRight aria-hidden="true" />
+              </a>
+            )}
           </div>
         </section>
 
