@@ -91,9 +91,9 @@ try {
       await section.screenshot({ path: outputDir + '/factual-' + name + '-' + viewport.name + '.png', animations: 'disabled' });
     }
 
-    const mobileTicketControls = await page.locator('.ted-home > div[class~="fixed"][class~="bottom-6"][class~="right-6"]').count();
+    const mobileTicketControl = page.locator('.ted-home > div[class~="fixed"][class~="bottom-6"][class~="right-6"]');
     if (viewport.name === 'mobile') {
-      assert(mobileTicketControls === 0, 'mobile: duplicate floating ticket action should not cover homepage cards');
+      assert(!(await mobileTicketControl.isVisible()), 'mobile: duplicate floating ticket action should not cover homepage cards');
     }
 
     assert(pageErrors.length === 0, viewport.name + ': browser runtime errors: ' + pageErrors.join('; '));
