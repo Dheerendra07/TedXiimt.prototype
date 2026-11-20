@@ -974,3 +974,273 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
     transition-duration: .01ms !important;
   }
 }
+
+
+/* 2026-11 homepage card motion pass: interactions only, no layout or content changes */
+.ted-home-pillar,
+.ted-home-discover-card,
+.ted-home-benefit,
+.ted-home-origin-mark,
+.ted-home-gallery-card,
+.ted-home-reels article,
+.ted-home-dynamic article {
+  transform-origin: center;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+.ted-home-pillar {
+  transition:
+    transform .48s cubic-bezier(.2,.75,.25,1),
+    border-color .38s ease,
+    background .45s ease,
+    box-shadow .48s ease;
+}
+
+.ted-home-pillar:hover,
+.ted-home-pillar:focus-within {
+  box-shadow: 0 22px 58px rgba(0,0,0,.28), 0 0 0 1px rgba(235,0,40,.08);
+}
+
+.ted-home-pillar-symbol {
+  transition:
+    transform .42s cubic-bezier(.2,.75,.25,1),
+    color .3s ease,
+    border-color .3s ease,
+    background .3s ease;
+}
+
+.ted-home-pillar:hover .ted-home-pillar-symbol,
+.ted-home-pillar:focus-within .ted-home-pillar-symbol {
+  transform: translateY(-3px) rotate(-4deg) scale(1.08);
+  border-color: rgba(235,0,40,.8);
+  background: rgba(235,0,40,.1);
+}
+
+.ted-home-pillar h3 {
+  transition: transform .42s cubic-bezier(.2,.75,.25,1), text-shadow .35s ease;
+}
+
+.ted-home-pillar:hover h3,
+.ted-home-pillar:focus-within h3 {
+  transform: translateY(-3px);
+  text-shadow: 0 8px 28px rgba(0,0,0,.24);
+}
+
+.ted-home-discover-card {
+  transition:
+    transform .48s cubic-bezier(.2,.75,.25,1),
+    border-color .38s ease,
+    background .38s ease,
+    box-shadow .48s ease;
+}
+
+.ted-home-discover-card:hover,
+.ted-home-discover-card:focus-visible {
+  box-shadow: 0 22px 58px rgba(0,0,0,.3), 0 0 0 1px rgba(235,0,40,.08);
+  transform: translateY(-7px);
+}
+
+.ted-home-discover-icon {
+  transition:
+    transform .45s cubic-bezier(.2,.75,.25,1),
+    background .32s ease,
+    color .32s ease,
+    border-color .32s ease;
+}
+
+.ted-home-discover-card:hover .ted-home-discover-icon,
+.ted-home-discover-card:focus-visible .ted-home-discover-icon {
+  transform: translateY(-3px) rotate(5deg) scale(1.07);
+  border-color: var(--home-red);
+  background: rgba(235,0,40,.12);
+}
+
+.ted-home-discover-card h3,
+.ted-home-discover-card p,
+.ted-home-discover-bottom {
+  transition: transform .42s cubic-bezier(.2,.75,.25,1), color .32s ease, border-color .32s ease;
+}
+
+.ted-home-discover-card:hover h3,
+.ted-home-discover-card:focus-visible h3 {
+  transform: translateY(-3px);
+}
+
+.ted-home-gallery-card {
+  transition:
+    transform .48s cubic-bezier(.2,.75,.25,1),
+    border-color .36s ease,
+    box-shadow .48s ease;
+}
+
+.ted-home-gallery-card:hover,
+.ted-home-gallery-card:focus-visible {
+  transform: translateY(-5px);
+  box-shadow: 0 22px 58px rgba(0,0,0,.42);
+}
+
+.ted-home-gallery-copy {
+  transition: transform .48s cubic-bezier(.2,.75,.25,1);
+}
+
+.ted-home-gallery-card:hover .ted-home-gallery-copy,
+.ted-home-gallery-card:focus-visible .ted-home-gallery-copy {
+  transform: translateY(-4px);
+}
+
+.ted-home-gallery-count {
+  transition: letter-spacing .35s ease, color .35s ease;
+}
+
+.ted-home-gallery-card:hover .ted-home-gallery-count,
+.ted-home-gallery-card:focus-visible .ted-home-gallery-count {
+  color: #fff;
+  letter-spacing: .24em;
+}
+
+.ted-home-benefit {
+  z-index: 0;
+  transition:
+    transform .42s cubic-bezier(.2,.75,.25,1),
+    background .36s ease,
+    box-shadow .42s ease;
+}
+
+.ted-home-benefit::before {
+  position: absolute;
+  top: 0;
+  right: 24px;
+  left: 24px;
+  height: 2px;
+  background: var(--home-red);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .42s cubic-bezier(.2,.75,.25,1);
+  pointer-events: none;
+}
+
+.ted-home-benefit:hover,
+.ted-home-benefit:focus-within {
+  z-index: 1;
+  transform: translateY(-5px);
+  box-shadow: 0 16px 38px rgba(0,0,0,.22);
+}
+
+.ted-home-benefit:hover::before,
+.ted-home-benefit:focus-within::before {
+  transform: scaleX(1);
+}
+
+.ted-home-benefit h3,
+.ted-home-benefit p,
+.ted-home-benefit-index,
+.ted-home-benefit-action {
+  transition: transform .4s cubic-bezier(.2,.75,.25,1), color .3s ease;
+}
+
+.ted-home-benefit:hover h3,
+.ted-home-benefit:focus-within h3 {
+  transform: translateX(3px);
+}
+
+.ted-home-origin-mark {
+  transition:
+    transform .48s cubic-bezier(.2,.75,.25,1),
+    border-color .36s ease,
+    box-shadow .48s ease;
+}
+
+.ted-home-origin-mark .ted-home-origin-logo {
+  transition: transform .48s cubic-bezier(.2,.75,.25,1), filter .36s ease;
+}
+
+.ted-home-origin-mark:hover,
+.ted-home-origin-mark:focus-within {
+  transform: translateY(-5px);
+  border-color: rgba(235,0,40,.6);
+  box-shadow: 0 22px 54px rgba(0,0,0,.32);
+}
+
+.ted-home-origin-mark:hover .ted-home-origin-logo,
+.ted-home-origin-mark:focus-within .ted-home-origin-logo {
+  transform: scale(1.035);
+  filter: drop-shadow(0 8px 24px rgba(235,0,40,.16));
+}
+
+.ted-home-reels article,
+.ted-home-dynamic article {
+  transition:
+    transform .46s cubic-bezier(.2,.75,.25,1),
+    border-color .36s ease,
+    box-shadow .46s ease,
+    background .36s ease !important;
+}
+
+.ted-home-reels article:hover,
+.ted-home-reels article:focus-within,
+.ted-home-dynamic article:hover,
+.ted-home-dynamic article:focus-within {
+  transform: translateY(-6px);
+  border-color: rgba(235,0,40,.62) !important;
+  box-shadow: 0 20px 52px rgba(0,0,0,.32) !important;
+}
+
+.ted-home-dynamic article img {
+  transition: transform .7s cubic-bezier(.2,.7,.2,1), filter .5s ease;
+}
+
+.ted-home-dynamic article:hover img,
+.ted-home-dynamic article:focus-within img {
+  transform: scale(1.035);
+}
+
+.ted-home-reels article button,
+.ted-home-dynamic article a,
+.ted-home-dynamic article button {
+  transition: color .28s ease, background-color .28s ease, border-color .28s ease, transform .35s ease;
+}
+
+@media (hover: none) {
+  .ted-home-pillar:hover,
+  .ted-home-discover-card:hover,
+  .ted-home-gallery-card:hover,
+  .ted-home-benefit:hover,
+  .ted-home-origin-mark:hover,
+  .ted-home-reels article:hover,
+  .ted-home-dynamic article:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-home-pillar,
+  .ted-home-pillar-symbol,
+  .ted-home-pillar h3,
+  .ted-home-discover-card,
+  .ted-home-discover-icon,
+  .ted-home-discover-card h3,
+  .ted-home-discover-card p,
+  .ted-home-discover-bottom,
+  .ted-home-gallery-card,
+  .ted-home-gallery-copy,
+  .ted-home-gallery-count,
+  .ted-home-benefit,
+  .ted-home-benefit::before,
+  .ted-home-benefit h3,
+  .ted-home-benefit p,
+  .ted-home-benefit-index,
+  .ted-home-benefit-action,
+  .ted-home-origin-mark,
+  .ted-home-origin-mark .ted-home-origin-logo,
+  .ted-home-reels article,
+  .ted-home-dynamic article,
+  .ted-home-dynamic article img {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    scroll-behavior: auto !important;
+    will-change: auto;
+  }
+}
