@@ -61,7 +61,7 @@ try {
     await page.waitForFunction(() => {
       const fill = document.querySelector('.ted-page-progress__fill');
       return Number(fill?.style.getPropertyValue('--page-progress') || 0) > 0.97;
-    }, { timeout: 10000 });
+    }, undefined, { timeout: 10000 });
     const endProgress = await progressFill.evaluate((element) =>
       Number(element.style.getPropertyValue('--page-progress') || 0)
     );
@@ -71,13 +71,14 @@ try {
 
     if (viewport.name === 'mobile') {
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
-      const toggle = page.getByRole('button', { name: 'Open navigation menu' });
+      const toggle = page.locator('.ted-mobile-menu-toggle');
+      assert(await toggle.getAttribute('aria-label') === 'Open navigation menu', 'mobile: navigation toggle label is incorrect before opening');
       await toggle.click();
 
       await page.waitForFunction(() => {
         const menu = document.getElementById('mobile-navigation');
         return menu && document.body.style.overflow === 'hidden' && menu.contains(document.activeElement);
-      }, { timeout: 10000 });
+      }, undefined, { timeout: 10000 });
 
       const expandedWhileOpen = await toggle.getAttribute('aria-expanded');
       const focusInsideMenu = await page.locator('#mobile-navigation').evaluate((menu) => menu.contains(document.activeElement));
@@ -90,7 +91,7 @@ try {
         return document.body.style.overflow !== 'hidden'
           && toggleButton?.getAttribute('aria-expanded') === 'false'
           && document.activeElement === toggleButton;
-      }, { timeout: 10000 });
+      }, undefined, { timeout: 10000 });
 
       const expandedAfterClose = await toggle.getAttribute('aria-expanded');
       assert(expandedAfterClose === 'false', 'mobile: Escape did not close the navigation drawer');
