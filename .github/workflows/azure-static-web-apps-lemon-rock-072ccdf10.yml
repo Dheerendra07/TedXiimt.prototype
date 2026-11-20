@@ -24,6 +24,17 @@ jobs:
           node-version: '22.23.4'
       - name: Install dependencies
         run: npm ci
+      - name: Inspect original TEDx reel media streams
+        if: github.event_name == 'pull_request'
+        run: |
+          if ! command -v ffprobe >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+          for video in public/1.mp4 public/2.mp4 public/3.mp4 public/4.mp4; do
+            echo "===== $video ====="
+            ffprobe -v error -show_entries stream=index,codec_type,codec_name,profile,pix_fmt,width,height,sample_rate,channels -show_entries format=format_name,duration,size -of json "$video"
+          done
       - name: Lint changed hero components (ESLint)
         run: npx eslint src/components/Hero.jsx src/components/Header.jsx src/components/FeaturedSpeakers.jsx src/components/SocialMedia.jsx
       - name: Build (Vite)
