@@ -170,3 +170,127 @@
 @media(prefers-reduced-motion:reduce){
  .ted-home *,.ted-home *:before,.ted-home *:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+/* Homepage-only global chrome: keep the shared header/footer unchanged on every other route. */
+body:has(.ted-home) header {
+  padding-block: 11px !important;
+  border-bottom: 1px solid rgba(255,255,255,.1) !important;
+  background: rgba(5,5,5,.82) !important;
+  box-shadow: 0 14px 44px rgba(0,0,0,.22) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(130%) !important;
+  backdrop-filter: blur(22px) saturate(130%) !important;
+}
+
+body:has(.ted-home) header > div {
+  width: min(1480px, calc(100% - 64px)) !important;
+}
+
+body:has(.ted-home) header img[alt*="TEDxIIMT"] {
+  height: 44px !important;
+  max-width: 250px !important;
+}
+
+body:has(.ted-home) header nav > div > a {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px !important;
+  padding: 10px 11px !important;
+  color: #D4D4D8 !important;
+  font-size: 10px !important;
+  font-weight: 750 !important;
+  letter-spacing: .085em !important;
+  text-transform: uppercase;
+}
+
+body:has(.ted-home) header nav > div > a::after {
+  position: absolute;
+  right: 11px;
+  bottom: 5px;
+  left: 11px;
+  height: 1px;
+  background: var(--home-red);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .28s ease;
+}
+
+body:has(.ted-home) header nav > div > a:hover,
+body:has(.ted-home) header nav > div > a:focus-visible {
+  background: rgba(235,0,40,.08) !important;
+  color: #fff !important;
+}
+
+body:has(.ted-home) header nav > div > a:hover::after,
+body:has(.ted-home) header nav > div > a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+body:has(.ted-home) header nav > div > div[class*="absolute"] {
+  border: 1px solid rgba(255,255,255,.14) !important;
+  border-top: 1px solid rgba(235,0,40,.7) !important;
+  border-radius: 3px !important;
+  background: rgba(8,8,9,.97) !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,.55) !important;
+}
+
+body:has(.ted-home) header a[href="/register"] {
+  border-radius: 2px !important;
+  font-size: 10px !important;
+  font-weight: 850 !important;
+  letter-spacing: .09em !important;
+  text-transform: uppercase;
+}
+
+body:has(.ted-home) header #mobile-navigation {
+  border-top: 1px solid rgba(235,0,40,.28) !important;
+  background: rgba(5,5,5,.98) !important;
+}
+
+body:has(.ted-home) footer {
+  border-top: 1px solid rgba(235,0,40,.35) !important;
+  background:
+    radial-gradient(ellipse at 85% 0%, rgba(235,0,40,.08), transparent 36%),
+    #050505 !important;
+}
+
+body:has(.ted-home) footer h3 {
+  color: #F5F5F5 !important;
+  font-size: 10px !important;
+  font-weight: 850 !important;
+  letter-spacing: .19em !important;
+}
+
+body:has(.ted-home) footer a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+body:has(.ted-home) footer a:hover {
+  color: #fff !important;
+}
+
+body:has(.ted-home) footer .max-w-7xl > div:last-child {
+  border-top-color: rgba(255,255,255,.13) !important;
+}
+
+@media (max-width: 1023px) {
+  body:has(.ted-home) header > div {
+    width: calc(100% - 40px) !important;
+  }
+
+  body:has(.ted-home) header img[alt*="TEDxIIMT"] {
+    height: 40px !important;
+    max-width: 210px !important;
+  }
+
+  body:has(.ted-home) header a[href="/register"] {
+    border-radius: 2px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  body:has(.ted-home) footer {
+    padding-top: 48px !important;
+  }
+}
