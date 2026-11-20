@@ -25,12 +25,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint changed hero components (ESLint)
-        run: npx eslint src/components/Hero.jsx src/components/Header.jsx src/components/FeaturedSpeakers.jsx
+        run: npx eslint src/components/Hero.jsx src/components/Header.jsx src/components/PageScrollProgress.jsx src/components/FeaturedSpeakers.jsx src/components/SocialMedia.jsx src/components/Footer.jsx src/pages/HomePage.jsx
       - name: Build (Vite)
         run: npm run build         # ensure "build": "vite build" in package.json
-      - name: Install Playwright Chromium
+      - name: Install Playwright Chromium and Google Chrome
         if: github.event_name == 'pull_request'
-        run: npx --yes playwright@1.56.0 install chromium
+        run: npx --yes playwright@1.56.0 install chromium chrome
       - name: Start Vite production preview
         if: github.event_name == 'pull_request'
         run: |
@@ -43,18 +43,22 @@ jobs:
           done
           cat /tmp/tedx-vite-preview.log
           exit 1
-      - name: Capture desktop and mobile browser screenshots
+      - name: Capture homepage discovery, gallery and reels browser QA
         if: github.event_name == 'pull_request'
         run: |
-          mkdir -p artifacts/hero
-          npx --yes playwright@1.56.0 screenshot --browser chromium --viewport-size="1440,900" --wait-for-timeout=1800 http://127.0.0.1:4173/ artifacts/hero/desktop.png
-          npx --yes playwright@1.56.0 screenshot --browser chromium --viewport-size="390,844" --wait-for-timeout=1800 http://127.0.0.1:4173/ artifacts/hero/mobile.png
-      - name: Upload hero browser screenshots
+          npm exec --yes --package=playwright@1.56.0 -- sh -c '
+            PLAYWRIGHT_MODULE="$(dirname "$(readlink -f "$(command -v playwright)")")/index.mjs" node scripts/qa-homepage-discovery.mjs
+            PLAYWRIGHT_MODULE="$(dirname "$(readlink -f "$(command -v playwright)")")/index.mjs" node scripts/qa-homepage-gallery.mjs
+            PLAYWRIGHT_MODULE="$(dirname "$(readlink -f "$(command -v playwright)")")/index.mjs" node scripts/qa-homepage-reels.mjs
+            PLAYWRIGHT_MODULE="$(dirname "$(readlink -f "$(command -v playwright)")")/index.mjs" node scripts/qa-homepage-surfaces.mjs
+            PLAYWRIGHT_MODULE="$(dirname "$(readlink -f "$(command -v playwright)")")/index.mjs" node scripts/qa-homepage-shell.mjs
+          '
+      - name: Upload homepage visual QA screenshots
         if: always() && github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: hero-browser-screenshots
-          path: artifacts/hero/*.png
+          name: homepage-visual-qa-screenshots
+          path: artifacts/homepage/*.png
           if-no-files-found: warn
       - name: Upload build artifact for PRs
         if: github.event_name == 'pull_request'

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logo from './logo-white.png';
+import './Header.css';
 
 const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -17,6 +18,8 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const navRef = useRef(null);
+  const mobileToggleRef = useRef(null);
+  const previousMenuOpenRef = useRef(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,6 +28,64 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Keep the mobile drawer predictable for keyboard and touch users.
+  useEffect(() => {
+    if (!isMenuOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const focusFirstItem = () => {
+      const firstItem = document.querySelector(
+        '#mobile-navigation a[href], #mobile-navigation button:not([disabled])'
+      );
+      firstItem?.focus({ preventScroll: true });
+    };
+
+    const handleMenuKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setIsMenuOpen(false);
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const menu = document.getElementById('mobile-navigation');
+      const focusable = menu?.querySelectorAll(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (!menu || !focusable?.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const focusIsOutside = !menu.contains(document.activeElement);
+
+      if (event.shiftKey && (document.activeElement === first || focusIsOutside)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || focusIsOutside)) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.requestAnimationFrame(focusFirstItem);
+    window.addEventListener('keydown', handleMenuKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleMenuKeyDown);
+    };
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    if (previousMenuOpenRef.current && !isMenuOpen) {
+      mobileToggleRef.current?.focus({ preventScroll: true });
+    }
+    previousMenuOpenRef.current = isMenuOpen;
+  }, [isMenuOpen]);
 
   const getPortalPath = () => {
     if (!user) return '/login';
@@ -76,7 +137,7 @@ const Header = () => {
   ];
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    <header data-scrolled={isScrolled ? 'true' : 'false'} className={`ted-site-header fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled ? 'bg-black/95 backdrop-blur-2xl border-b border-[#EB0028]/20 shadow-[0_12px_36px_rgba(0,0,0,0.34)] py-2.5' : 'bg-black/55 backdrop-blur-lg border-b border-[#651125]/45 py-3.5'
     }`}>
       <div className="mx-auto flex w-[92%] max-w-[1780px] items-center justify-between gap-5">
@@ -103,7 +164,10 @@ const Header = () => {
             >
               <a
                 href={item.href}
-                className={`flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors rounded-md ${
+                aria-current={window.location.pathname === item.href || (item.href === '/' && window.location.pathname === '/home') ? 'page' : undefined}
+                aria-haspopup={item.submenu ? 'true' : undefined}
+                aria-expanded={item.submenu ? activeDropdown === idx : undefined}
+                className={`ted-nav-link flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors rounded-md ${
                   (activeDropdown === idx || (typeof window !== 'undefined' && window.location.pathname === item.href)) ? 'text-[#EB0028] bg-zinc-900/50' : 'text-zinc-200 hover:text-white hover:bg-zinc-900/40'
                 }`}
               >
@@ -222,15 +286,16 @@ const Header = () => {
         <div className="flex items-center gap-2 lg:hidden">
           <a
             href="/register"
-            className="px-3 py-1.5 text-xs font-bold text-white bg-[#EB0028] rounded-md shadow"
+            className="ted-mobile-ticket-link px-3 py-1.5 text-xs font-bold text-white bg-[#EB0028] rounded-md shadow"
           >
             Tickets
           </a>
           <button
+            ref={mobileToggleRef}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-900 rounded-lg focus:outline-none"
+            className="ted-mobile-menu-toggle p-2 text-zinc-400 hover:text-white hover:bg-zinc-900 rounded-lg focus:outline-none"
             type="button"
-            aria-label="Toggle navigation menu"
+            aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={isMenuOpen}
             aria-controls="mobile-navigation"
           >
@@ -238,6 +303,17 @@ const Header = () => {
           </button>
         </div>
       </div>
+
+      {/* Mobile drawer backdrop remains behind the panel and closes on an outside tap. */}
+      {isMenuOpen && (
+        <button
+          type="button"
+          className="ted-mobile-nav-backdrop lg:hidden"
+          aria-label="Close navigation menu"
+          tabIndex={-1}
+          onClick={() => setIsMenuOpen(false)}
+        />
+      )}
 
       {/* Mobile Drawer Menu */}
       <AnimatePresence>
@@ -249,7 +325,7 @@ const Header = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-zinc-950/98 border-b border-zinc-800 overflow-hidden"
+            className="ted-mobile-nav-panel lg:hidden bg-zinc-950/98 border-b border-zinc-800 overflow-hidden"
           >
             <div className="px-4 py-6 space-y-4 max-h-[80vh] overflow-y-auto">
               {navigationItems.map((item, idx) => (
@@ -268,7 +344,7 @@ const Header = () => {
                           key={sIdx}
                           href={sub.href}
                           onClick={() => setIsMenuOpen(false)}
-                          className="block text-sm text-zinc-400 hover:text-white"
+                          className="ted-mobile-nav-sublink block text-sm text-zinc-400 hover:text-white"
                         >
                           {sub.label}
                         </a>

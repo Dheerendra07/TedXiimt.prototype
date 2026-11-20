@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion as Motion } from 'framer-motion';
 import {
   ArrowRight, ArrowUpRight, BookOpen, Camera, ChevronLeft, ChevronRight,
@@ -12,22 +12,82 @@ import FloatingCTA from '../components/FloatingCTA';
 import './HomePage.css';
 
 const pillars = [
-  { number: '01', label: 'EDUCATION', title: <>LEARN TO <em>QUESTION.</em></>, description: 'A new perspective begins when a familiar answer is challenged.', action: 'EXPLORE PAST TALKS', href: '/library', Icon: BookOpen, className: 'ted-home-pillar--education' },
-  { number: '02', label: 'ENTERTAINMENT', title: <>MAKE EVERY <em>MOMENT MATTER.</em></>, description: 'Stories and expression that make an idea stay with you.', action: 'WATCH EVENT MOMENTS', href: '#home-highlights', Icon: Sparkles, className: '' },
-  { number: '03', label: 'ENTREPRENEURSHIP', title: <>TURN IDEAS <em>INTO ACTION.</em></>, description: 'The curiosity to imagine something better—and the courage to begin.', action: 'SHARE AN IDEA', href: '/speaker-apply', Icon: Lightbulb, className: '' },
+  {
+    number: '01', label: 'EDUCATION', title: <>LEARN TO <em>QUESTION.</em></>,
+    description: 'A new perspective begins when a familiar answer is challenged.',
+    action: 'EXPLORE PAST TALKS', href: '/library', Icon: BookOpen,
+    className: 'ted-home-pillar--education',
+    image: 'https://iimtu.edu.in/uploads/images/17630369861.jpg',
+    imagePosition: 'center 44%',
+  },
+  {
+    number: '02', label: 'ENTERTAINMENT', title: <>MAKE EVERY <em>MOMENT MATTER.</em></>,
+    description: 'Stories and expression that make an idea stay with you.',
+    action: 'WATCH EVENT MOMENTS', href: '#home-highlights', Icon: Sparkles,
+    className: '',
+    image: 'https://iimtu.edu.in/uploads/images/17630370541.jpg',
+    imagePosition: 'center 50%',
+  },
+  {
+    number: '03', label: 'ENTREPRENEURSHIP', title: <>TURN IDEAS <em>INTO ACTION.</em></>,
+    description: 'The curiosity to imagine something better—and the courage to begin.',
+    action: 'SHARE AN IDEA', href: '/speaker-apply', Icon: Lightbulb,
+    className: '',
+    image: 'https://iimtu.edu.in/uploads/images/17630370091.jpg',
+    imagePosition: 'center 46%',
+  },
 ];
 
 const discovery = [
-  { index: '01', label: 'THE VOICES', title: 'Ideas have a voice.', description: 'Meet the speakers and explore the perspectives brought to the TEDxIIMT stage.', href: '/speakers', action: 'MEET THE SPEAKERS', Icon: Mic2 },
-  { index: '02', label: 'THE PEOPLE', title: 'Made possible together.', description: 'Get to know the team building the experience behind every idea.', href: '/team', action: 'MEET THE TEAM', Icon: Users },
-  { index: '03', label: 'THE ECOSYSTEM', title: 'Good ideas need allies.', description: 'Discover the partners who help create room for meaningful conversations.', href: '/partners', action: 'VIEW PARTNERS', Icon: Handshake },
+  {
+    index: '01', label: 'THE VOICES', title: 'Ideas have a voice.',
+    description: 'Meet the speakers and explore the perspectives brought to the TEDxIIMT stage.',
+    href: '/speakers', action: 'MEET THE SPEAKERS', Icon: Mic2,
+    image: 'https://iimtu.edu.in/uploads/images/17630369861.jpg', imagePosition: 'center 46%',
+  },
+  {
+    index: '02', label: 'THE PEOPLE', title: 'Made possible together.',
+    description: 'Get to know the team building the experience behind every idea.',
+    href: '/team', action: 'MEET THE TEAM', Icon: Users,
+    image: 'https://iimtu.edu.in/uploads/images/17630370831.jpg', imagePosition: 'center center',
+  },
+  {
+    index: '03', label: 'THE ECOSYSTEM', title: 'Good ideas need allies.',
+    description: 'Discover the partners who help create room for meaningful conversations.',
+    href: '/partners', action: 'VIEW PARTNERS', Icon: Handshake,
+    image: 'https://iimtu.edu.in/uploads/images/17630370541.jpg', imagePosition: 'center 48%',
+  },
 ];
 
 const takeaways = [
-  { index: '01 / PERSPECTIVE', title: 'See differently.', description: 'Encounter ideas that invite you to look beyond the familiar.', action: 'EXPLORE THE ARCHIVE', href: '/library' },
-  { index: '02 / CONNECTION', title: 'Meet through ideas.', description: 'Find common ground with people who are curious about what comes next.', action: 'MEET THE COMMUNITY', href: '/team' },
-  { index: '03 / CURIOSITY', title: 'Keep asking.', description: 'Leave with new questions, fresh context and a wider point of view.', action: 'READ MORE STORIES', href: '/blog' },
-  { index: '04 / POSSIBILITY', title: 'Make it matter.', description: 'Carry an idea into your studies, work, community or next project.', action: 'SHARE YOUR IDEA', href: '/speaker-apply' },
+  {
+    index: '01 / PERSPECTIVE', title: 'See differently.',
+    description: 'Encounter ideas that invite you to look beyond the familiar.',
+    action: 'EXPLORE THE ARCHIVE', href: '/library',
+    image: 'https://iimtu.edu.in/uploads/images/17630369961.jpg',
+    imagePosition: 'center 52%',
+  },
+  {
+    index: '02 / CONNECTION', title: 'Meet through ideas.',
+    description: 'Find common ground with people who are curious about what comes next.',
+    action: 'MEET THE COMMUNITY', href: '/team',
+    image: 'https://iimtu.edu.in/uploads/images/17630370831.jpg',
+    imagePosition: 'center 50%',
+  },
+  {
+    index: '03 / CURIOSITY', title: 'Keep asking.',
+    description: 'Leave with new questions, fresh context and a wider point of view.',
+    action: 'READ MORE STORIES', href: '/blog',
+    image: 'https://iimtu.edu.in/uploads/images/17630370661.jpg',
+    imagePosition: 'center 52%',
+  },
+  {
+    index: '04 / POSSIBILITY', title: 'Make it matter.',
+    description: 'Carry an idea into your studies, work, community or next project.',
+    action: 'SHARE YOUR IDEA', href: '/speaker-apply',
+    image: 'https://iimtu.edu.in/uploads/images/17630370971.jpg',
+    imagePosition: 'center 48%',
+  },
 ];
 
 const galleryItems = [
@@ -89,19 +149,59 @@ const Reveal = ({ children, className = '', delay = 0, ...props }) => (
 const HomePage = () => {
   const [activePhoto, setActivePhoto] = useState(null);
   const selectedPhoto = activePhoto === null ? null : galleryItems[activePhoto];
+  const isLightboxOpen = activePhoto !== null;
+  const lightboxRef = useRef(null);
+  const lightboxCloseButtonRef = useRef(null);
+  const previousPhotoTriggerRef = useRef(null);
 
   useEffect(() => {
-    if (activePhoto === null) return undefined;
+    if (!isLightboxOpen) {
+      const previousTrigger = previousPhotoTriggerRef.current;
+      if (previousTrigger?.isConnected) {
+        previousTrigger.focus({ preventScroll: true });
+      }
+      previousPhotoTriggerRef.current = null;
+      return undefined;
+    }
+
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    lightboxCloseButtonRef.current?.focus({ preventScroll: true });
 
     const handleKeyDown = (event) => {
-      if (event.key === 'Escape') setActivePhoto(null);
+      if (event.key === 'Escape') {
+        setActivePhoto(null);
+        return;
+      }
+
       if (event.key === 'ArrowRight') {
         setActivePhoto((current) => current === null ? null : (current + 1) % galleryItems.length);
+        return;
       }
+
       if (event.key === 'ArrowLeft') {
         setActivePhoto((current) => current === null ? null : (current - 1 + galleryItems.length) % galleryItems.length);
+        return;
+      }
+
+      if (event.key === 'Tab') {
+        const dialog = lightboxRef.current;
+        const focusable = dialog?.querySelectorAll(
+          'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusable?.length || !dialog) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const focusIsOutsideDialog = !dialog.contains(document.activeElement);
+
+        if (event.shiftKey && (document.activeElement === first || focusIsOutsideDialog)) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && (document.activeElement === last || focusIsOutsideDialog)) {
+          event.preventDefault();
+          first.focus();
+        }
       }
     };
 
@@ -110,7 +210,12 @@ const HomePage = () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [activePhoto]);
+  }, [isLightboxOpen]);
+
+  const openPhoto = (index, trigger) => {
+    previousPhotoTriggerRef.current = trigger;
+    setActivePhoto(index);
+  };
 
   const changePhoto = (direction) => {
     setActivePhoto((current) => current === null ? null : (current + direction + galleryItems.length) % galleryItems.length);
@@ -122,7 +227,7 @@ const HomePage = () => {
         {/* Preserve the established hero artwork, mosaic and pointer interactions. */}
         <Hero />
 
-        <section className="ted-home-statement" aria-labelledby="home-statement-heading">
+        <section className="ted-home-statement ted-home-grid-surface" aria-labelledby="home-statement-heading">
           <div className="ted-home-shell ted-home-statement-grid">
             <Reveal>
               <span className="ted-home-kicker">TEDxIIMT UNIVERSITY / IDEAS WORTH SPREADING</span>
@@ -137,7 +242,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        <section className="ted-home-pillars" aria-labelledby="home-pillars-heading">
+        <section className="ted-home-pillars ted-home-grid-surface" aria-labelledby="home-pillars-heading">
           <div className="ted-home-shell">
             <Reveal className="ted-home-pillars-head">
               <div>
@@ -147,11 +252,22 @@ const HomePage = () => {
               <p>Education, Entertainment and Entrepreneurship are more than categories. They are different ways to question, connect and create.</p>
             </Reveal>
             <div className="ted-home-pillar-grid">
-              {pillars.map(({ number, label, title, description, action, href, Icon, className }, index) => (
+              {pillars.map(({ number, label, title, description, action, href, Icon, className, image, imagePosition }, index) => (
                 <Reveal key={number} data-number={number} className={'ted-home-pillar ' + className} delay={index * 0.1}>
+                  <img
+                    className="ted-home-pillar-photo"
+                    src={image}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                    style={{ objectPosition: imagePosition }}
+                  />
+                  <span className="ted-home-pillar-shade" aria-hidden="true" />
                   <div className="ted-home-pillar-top">
                     <span className="ted-home-pillar-label">{number} / {label}</span>
-                    <span className="ted-home-pillar-symbol"><Icon aria-hidden="true" /></span>
+                    <span className="ted-home-pillar-symbol">{React.createElement(Icon, { "aria-hidden": true })}</span>
                   </div>
                   <h3>{title}</h3>
                   <div className="ted-home-pillar-bottom">
@@ -183,7 +299,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        <section className="ted-home-stage" aria-labelledby="home-stage-heading">
+        <section className="ted-home-stage ted-home-grid-surface" aria-labelledby="home-stage-heading">
           <div className="ted-home-shell ted-home-stage-inner">
             <Reveal>
               <span className="ted-home-kicker">THE STAGE / THE NEXT PERSPECTIVE</span>
@@ -216,7 +332,7 @@ const HomePage = () => {
                   <button
                     type="button"
                     className="ted-home-gallery-card"
-                    onClick={() => setActivePhoto(index)}
+                    onClick={(event) => openPhoto(index, event.currentTarget)}
                     aria-label={'Open photo: ' + photo.title}
                   >
                     <img
@@ -251,13 +367,24 @@ const HomePage = () => {
               <p>A great event is built by many voices, many hands and a community that believes in sharing what matters.</p>
             </Reveal>
             <div className="ted-home-discover-grid">
-              {discovery.map(({ index, label, title, description, href, action, Icon }, cardIndex) => (
+              {discovery.map(({ index, label, title, description, href, action, Icon, image, imagePosition }, cardIndex) => (
                 <Reveal key={index} delay={cardIndex * 0.1}>
                   <a className="ted-home-discover-card" data-index={index} href={href}>
+                    <img
+                      className="ted-home-discover-photo"
+                      src={image}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                      draggable="false"
+                      style={{ objectPosition: imagePosition }}
+                    />
+                    <span className="ted-home-discover-shade" aria-hidden="true" />
                     <div className="ted-home-discover-top">
-                      <span>{index} / {label}</span><span className="ted-home-discover-icon"><Icon aria-hidden="true" /></span>
+                      <span>{index} / {label}</span><span className="ted-home-discover-icon">{React.createElement(Icon, { "aria-hidden": true })}</span>
                     </div>
-                    <div><h3>{title}</h3><p>{description}</p></div>
+                    <div className="ted-home-discover-content"><h3>{title}</h3><p>{description}</p></div>
                     <div className="ted-home-discover-bottom"><span>{action}</span><ArrowUpRight aria-hidden="true" /></div>
                   </a>
                 </Reveal>
@@ -270,7 +397,7 @@ const HomePage = () => {
           <SocialMedia />
         </div>
 
-        <section className="ted-home-benefits" aria-labelledby="home-benefits-heading">
+        <section className="ted-home-benefits ted-home-grid-surface" aria-labelledby="home-benefits-heading">
           <div className="ted-home-shell">
             <Reveal className="ted-home-benefits-head">
               <div>
@@ -282,6 +409,17 @@ const HomePage = () => {
             <div className="ted-home-benefits-grid">
               {takeaways.map((item, index) => (
                 <Reveal key={item.index} className="ted-home-benefit" delay={index * 0.08}>
+                  <img
+                    className="ted-home-benefit-photo"
+                    src={item.image}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                    style={{ objectPosition: item.imagePosition }}
+                  />
+                  <span className="ted-home-benefit-shade" aria-hidden="true" />
                   <span className="ted-home-benefit-index">{item.index}</span>
                   <h3>{item.title}</h3>
                   <p>{item.description}</p>
@@ -295,7 +433,7 @@ const HomePage = () => {
 
         <div className="ted-home-dynamic"><Partners /><Blog /></div>
 
-        <section className="ted-home-close" aria-labelledby="home-close-heading">
+        <section className="ted-home-close ted-home-grid-surface" aria-labelledby="home-close-heading">
           <div className="ted-home-shell ted-home-close-inner">
             <Reveal>
               <span className="ted-home-kicker">YOUR IDEA / YOUR NEXT STEP</span>
@@ -315,17 +453,19 @@ const HomePage = () => {
       <AnimatePresence>
         {selectedPhoto && (
           <Motion.div
+            ref={lightboxRef}
             className="ted-home-lightbox"
             role="dialog"
             aria-modal="true"
             aria-labelledby="ted-home-lightbox-title"
+            aria-describedby="ted-home-lightbox-description"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.22 }}
             onClick={() => setActivePhoto(null)}
           >
-            <button type="button" className="ted-home-lightbox-close" onClick={() => setActivePhoto(null)} aria-label="Close photo viewer">
+            <button ref={lightboxCloseButtonRef} type="button" className="ted-home-lightbox-close" onClick={() => setActivePhoto(null)} aria-label="Close photo viewer">
               <X aria-hidden="true" />
             </button>
             <button
@@ -343,9 +483,9 @@ const HomePage = () => {
               </div>
               <div className="ted-home-lightbox-caption">
                 <div>
-                  <span>{selectedPhoto.index} / 05 · {selectedPhoto.category}</span>
+                  <span aria-live="polite">{selectedPhoto.index} / 05 · {selectedPhoto.category}</span>
                   <h3 id="ted-home-lightbox-title">{selectedPhoto.title}</h3>
-                  <p>{selectedPhoto.detail}</p>
+                  <p id="ted-home-lightbox-description">{selectedPhoto.detail}</p>
                 </div>
                 <a href={selectedPhoto.sourcePage} target="_blank" rel="noopener noreferrer">
                   IIMT OFFICIAL SOURCE <ArrowUpRight aria-hidden="true" />

@@ -1,0 +1,15 @@
+.ted-footer-grid-overlay {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background-image:
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  opacity: .88;
+  pointer-events: none;
+}
+
+.ted-site-footer {
+  isolation: isolate;
+}
