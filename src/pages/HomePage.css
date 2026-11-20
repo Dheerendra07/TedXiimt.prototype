@@ -2051,8 +2051,8 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: .48;
-  filter: saturate(.78) contrast(1.08);
+  opacity: .60;
+  filter: saturate(.88) contrast(1.06);
   transform: scale(1.015);
   transition: opacity .55s ease, transform 1s cubic-bezier(.2,.7,.2,1), filter .55s ease;
   pointer-events: none;
@@ -2063,8 +2063,8 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
   z-index: 1;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(8,8,10,.96) 0%, rgba(8,8,10,.78) 49%, rgba(8,8,10,.45) 100%),
-    linear-gradient(0deg, rgba(8,8,10,.38), transparent 62%);
+    linear-gradient(90deg, rgba(8,8,10,.92) 0%, rgba(8,8,10,.66) 49%, rgba(8,8,10,.34) 100%),
+    linear-gradient(0deg, rgba(8,8,10,.30), transparent 62%);
   pointer-events: none;
 }
 
@@ -2079,8 +2079,8 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
 
 .ted-home-pillar:hover .ted-home-pillar-photo,
 .ted-home-pillar:focus-within .ted-home-pillar-photo {
-  opacity: .61;
-  filter: saturate(.95) contrast(1.04);
+  opacity: .72;
+  filter: saturate(1) contrast(1.02);
   transform: scale(1.055);
 }
 
@@ -2099,8 +2099,8 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: .42;
-  filter: saturate(.72) contrast(1.1);
+  opacity: .56;
+  filter: saturate(.84) contrast(1.08);
   transform: scale(1.02);
   transition: opacity .5s ease, transform .85s cubic-bezier(.2,.7,.2,1), filter .5s ease;
   pointer-events: none;
@@ -2111,8 +2111,8 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
   z-index: 1;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(6,6,7,.45) 0%, rgba(6,6,7,.72) 48%, rgba(6,6,7,.94) 100%),
-    linear-gradient(90deg, rgba(6,6,7,.2), transparent);
+    linear-gradient(180deg, rgba(6,6,7,.32) 0%, rgba(6,6,7,.64) 48%, rgba(6,6,7,.88) 100%),
+    linear-gradient(90deg, rgba(6,6,7,.16), transparent);
   pointer-events: none;
 }
 
@@ -2125,8 +2125,8 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
 
 .ted-home-benefit:hover .ted-home-benefit-photo,
 .ted-home-benefit:focus-within .ted-home-benefit-photo {
-  opacity: .55;
-  filter: saturate(.92) contrast(1.05);
+  opacity: .67;
+  filter: saturate(.96) contrast(1.03);
   transform: scale(1.06);
 }
 
