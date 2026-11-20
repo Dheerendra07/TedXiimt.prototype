@@ -30,7 +30,7 @@ try {
 
     await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.locator('.ted-page-progress').waitFor({ state: 'attached', timeout: 30000 });
-    await page.locator('.tedx-hero').waitFor({ state: 'attached', timeout: 30000 });
+    await page.locator('main h1').waitFor({ state: 'attached', timeout: 30000 });
 
     const metadata = await page.evaluate(() => ({
       title: document.title,
