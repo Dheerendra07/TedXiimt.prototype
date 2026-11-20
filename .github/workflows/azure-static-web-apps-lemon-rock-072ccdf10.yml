@@ -43,17 +43,17 @@ jobs:
           done
           cat /tmp/tedx-vite-preview.log
           exit 1
-      - name: Capture desktop and mobile browser screenshots
+      - name: Capture homepage discovery cards at desktop and mobile sizes
         if: github.event_name == 'pull_request'
         run: |
-          mkdir -p artifacts/homepage
-          npx --yes playwright@1.56.0 screenshot --browser chromium --viewport-size="1440,900" --wait-for-timeout=1800 --full-page http://127.0.0.1:4173/ artifacts/homepage/desktop.png
-          npx --yes playwright@1.56.0 screenshot --browser chromium --viewport-size="390,844" --wait-for-timeout=1800 --full-page http://127.0.0.1:4173/ artifacts/homepage/mobile.png
-      - name: Upload full-page homepage browser screenshots
+          npm exec --yes --package=playwright@1.56.0 -- sh -c '
+            PLAYWRIGHT_MODULE="$(dirname "$(readlink -f "$(command -v playwright)")")/index.mjs" node scripts/qa-homepage-discovery.mjs
+          '
+      - name: Upload homepage discovery browser screenshots
         if: always() && github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: homepage-browser-screenshots
+          name: homepage-discovery-browser-screenshots
           path: artifacts/homepage/*.png
           if-no-files-found: warn
       - name: Upload build artifact for PRs
