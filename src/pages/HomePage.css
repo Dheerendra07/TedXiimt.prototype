@@ -627,6 +627,8 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
   align-items: center;
   justify-content: center;
   padding: 56px 76px 32px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: rgba(0,0,0,.94);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
@@ -636,6 +638,8 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
   display: flex;
   width: min(1050px, 100%);
   max-height: calc(100vh - 92px);
+  max-height: min(calc(100vh - 92px), calc(100dvh - 92px));
+  min-height: 0;
   flex-direction: column;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,.16);
@@ -656,7 +660,9 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
 .ted-home-lightbox-image img {
   display: block;
   width: 100%;
+  height: auto;
   max-height: min(66vh, 760px);
+  max-height: min(66dvh, 760px);
   object-fit: contain;
 }
 
@@ -761,6 +767,13 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
 .ted-home-lightbox-nav:hover {
   border-color: var(--home-red);
   background: var(--home-red);
+}
+
+.ted-home-lightbox-close:focus-visible,
+.ted-home-lightbox-nav:focus-visible,
+.ted-home-lightbox-caption a:focus-visible {
+  outline: 2px solid var(--home-red);
+  outline-offset: 4px;
 }
 
 .ted-home-lightbox-prev:hover,
@@ -927,10 +940,12 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
   .ted-home-lightbox-panel {
     width: 100%;
     max-height: calc(100vh - 90px);
+    max-height: min(calc(100vh - 90px), calc(100dvh - 90px));
   }
 
   .ted-home-lightbox-image img {
     max-height: 58vh;
+    max-height: 58dvh;
   }
 
   .ted-home-lightbox-caption {
