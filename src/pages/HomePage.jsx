@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion as Motion } from 'framer-motion';
 import {
   ArrowRight, ArrowUpRight, BookOpen, Camera, ChevronLeft, ChevronRight,
@@ -104,19 +104,59 @@ const Reveal = ({ children, className = '', delay = 0, ...props }) => (
 const HomePage = () => {
   const [activePhoto, setActivePhoto] = useState(null);
   const selectedPhoto = activePhoto === null ? null : galleryItems[activePhoto];
+  const isLightboxOpen = activePhoto !== null;
+  const lightboxRef = useRef(null);
+  const lightboxCloseButtonRef = useRef(null);
+  const previousPhotoTriggerRef = useRef(null);
 
   useEffect(() => {
-    if (activePhoto === null) return undefined;
+    if (!isLightboxOpen) {
+      const previousTrigger = previousPhotoTriggerRef.current;
+      if (previousTrigger?.isConnected) {
+        previousTrigger.focus({ preventScroll: true });
+      }
+      previousPhotoTriggerRef.current = null;
+      return undefined;
+    }
+
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    lightboxCloseButtonRef.current?.focus({ preventScroll: true });
 
     const handleKeyDown = (event) => {
-      if (event.key === 'Escape') setActivePhoto(null);
+      if (event.key === 'Escape') {
+        setActivePhoto(null);
+        return;
+      }
+
       if (event.key === 'ArrowRight') {
         setActivePhoto((current) => current === null ? null : (current + 1) % galleryItems.length);
+        return;
       }
+
       if (event.key === 'ArrowLeft') {
         setActivePhoto((current) => current === null ? null : (current - 1 + galleryItems.length) % galleryItems.length);
+        return;
+      }
+
+      if (event.key === 'Tab') {
+        const dialog = lightboxRef.current;
+        const focusable = dialog?.querySelectorAll(
+          'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusable?.length || !dialog) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const focusIsOutsideDialog = !dialog.contains(document.activeElement);
+
+        if (event.shiftKey && (document.activeElement === first || focusIsOutsideDialog)) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && (document.activeElement === last || focusIsOutsideDialog)) {
+          event.preventDefault();
+          first.focus();
+        }
       }
     };
 
@@ -125,7 +165,12 @@ const HomePage = () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [activePhoto]);
+  }, [isLightboxOpen]);
+
+  const openPhoto = (index, trigger) => {
+    previousPhotoTriggerRef.current = trigger;
+    setActivePhoto(index);
+  };
 
   const changePhoto = (direction) => {
     setActivePhoto((current) => current === null ? null : (current + direction + galleryItems.length) % galleryItems.length);
@@ -231,7 +276,7 @@ const HomePage = () => {
                   <button
                     type="button"
                     className="ted-home-gallery-card"
-                    onClick={() => setActivePhoto(index)}
+                    onClick={(event) => openPhoto(index, event.currentTarget)}
                     aria-label={'Open photo: ' + photo.title}
                   >
                     <img
@@ -341,17 +386,19 @@ const HomePage = () => {
       <AnimatePresence>
         {selectedPhoto && (
           <Motion.div
+            ref={lightboxRef}
             className="ted-home-lightbox"
             role="dialog"
             aria-modal="true"
             aria-labelledby="ted-home-lightbox-title"
+            aria-describedby="ted-home-lightbox-description"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.22 }}
             onClick={() => setActivePhoto(null)}
           >
-            <button type="button" className="ted-home-lightbox-close" onClick={() => setActivePhoto(null)} aria-label="Close photo viewer">
+            <button ref={lightboxCloseButtonRef} type="button" className="ted-home-lightbox-close" onClick={() => setActivePhoto(null)} aria-label="Close photo viewer">
               <X aria-hidden="true" />
             </button>
             <button
@@ -369,9 +416,9 @@ const HomePage = () => {
               </div>
               <div className="ted-home-lightbox-caption">
                 <div>
-                  <span>{selectedPhoto.index} / 05 · {selectedPhoto.category}</span>
+                  <span aria-live="polite">{selectedPhoto.index} / 05 · {selectedPhoto.category}</span>
                   <h3 id="ted-home-lightbox-title">{selectedPhoto.title}</h3>
-                  <p>{selectedPhoto.detail}</p>
+                  <p id="ted-home-lightbox-description">{selectedPhoto.detail}</p>
                 </div>
                 <a href={selectedPhoto.sourcePage} target="_blank" rel="noopener noreferrer">
                   IIMT OFFICIAL SOURCE <ArrowUpRight aria-hidden="true" />
