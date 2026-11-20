@@ -84,6 +84,9 @@ try {
     if (cardData.some((card, index) => card.number !== String(index + 1).padStart(2, '0'))) {
       throw new Error(viewport.name + ': a discovery-card number is missing or out of order');
     }
+    if (cardData.some((card) => card.watermarkText !== card.number)) {
+      throw new Error(viewport.name + ': a discovery-card watermark is missing or incorrect');
+    }
     if (cardData.some((card) => !card.imageLoaded)) {
       throw new Error(viewport.name + ': one or more official discovery-card images failed to load');
     }
