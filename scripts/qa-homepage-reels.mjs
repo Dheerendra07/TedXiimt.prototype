@@ -15,7 +15,7 @@ const viewports = [
 ];
 
 await mkdir(outputDir, { recursive: true });
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, channel: 'chrome' });
 
 const assert = (condition, message) => {
   if (!condition) throw new Error(message);
