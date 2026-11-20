@@ -1,13 +1,15 @@
 import React from 'react';
 import logo from './logo-white.png';
+import './Footer.css';
 
 const Footer = () => {
   return (
-    <footer className="relative overflow-hidden border-t border-white/10 bg-[#050505] px-4 pb-8 pt-14 text-white sm:px-6 lg:px-8">
+    <footer className="ted-site-footer relative overflow-hidden border-t border-white/10 bg-[#050505] px-4 pb-8 pt-14 text-white sm:px-6 lg:px-8">
+      <div className="ted-footer-grid-overlay" aria-hidden="true" />
       <div className="pointer-events-none absolute -left-32 top-0 h-72 w-72 rounded-full bg-[#EB0028]/10 blur-3xl" />
       <div className="pointer-events-none absolute -right-32 bottom-0 h-80 w-80 rounded-full bg-[#EB0028]/5 blur-3xl" />
 
-      <div className="relative mx-auto max-w-7xl">
+      <div className="relative z-10 mx-auto max-w-7xl">
         <div className="mb-14 grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-[1.35fr_1fr_1fr_1fr] lg:gap-10">
           
           {/* Column 1: About & Identity */}

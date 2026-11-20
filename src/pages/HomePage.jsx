@@ -12,9 +12,30 @@ import FloatingCTA from '../components/FloatingCTA';
 import './HomePage.css';
 
 const pillars = [
-  { number: '01', label: 'EDUCATION', title: <>LEARN TO <em>QUESTION.</em></>, description: 'A new perspective begins when a familiar answer is challenged.', action: 'EXPLORE PAST TALKS', href: '/library', Icon: BookOpen, className: 'ted-home-pillar--education' },
-  { number: '02', label: 'ENTERTAINMENT', title: <>MAKE EVERY <em>MOMENT MATTER.</em></>, description: 'Stories and expression that make an idea stay with you.', action: 'WATCH EVENT MOMENTS', href: '#home-highlights', Icon: Sparkles, className: '' },
-  { number: '03', label: 'ENTREPRENEURSHIP', title: <>TURN IDEAS <em>INTO ACTION.</em></>, description: 'The curiosity to imagine something better—and the courage to begin.', action: 'SHARE AN IDEA', href: '/speaker-apply', Icon: Lightbulb, className: '' },
+  {
+    number: '01', label: 'EDUCATION', title: <>LEARN TO <em>QUESTION.</em></>,
+    description: 'A new perspective begins when a familiar answer is challenged.',
+    action: 'EXPLORE PAST TALKS', href: '/library', Icon: BookOpen,
+    className: 'ted-home-pillar--education',
+    image: 'https://iimtu.edu.in/uploads/images/17630369861.jpg',
+    imagePosition: 'center 44%',
+  },
+  {
+    number: '02', label: 'ENTERTAINMENT', title: <>MAKE EVERY <em>MOMENT MATTER.</em></>,
+    description: 'Stories and expression that make an idea stay with you.',
+    action: 'WATCH EVENT MOMENTS', href: '#home-highlights', Icon: Sparkles,
+    className: '',
+    image: 'https://iimtu.edu.in/uploads/images/17630370541.jpg',
+    imagePosition: 'center 50%',
+  },
+  {
+    number: '03', label: 'ENTREPRENEURSHIP', title: <>TURN IDEAS <em>INTO ACTION.</em></>,
+    description: 'The curiosity to imagine something better—and the courage to begin.',
+    action: 'SHARE AN IDEA', href: '/speaker-apply', Icon: Lightbulb,
+    className: '',
+    image: 'https://iimtu.edu.in/uploads/images/17630370091.jpg',
+    imagePosition: 'center 46%',
+  },
 ];
 
 const discovery = [
@@ -39,10 +60,34 @@ const discovery = [
 ];
 
 const takeaways = [
-  { index: '01 / PERSPECTIVE', title: 'See differently.', description: 'Encounter ideas that invite you to look beyond the familiar.', action: 'EXPLORE THE ARCHIVE', href: '/library' },
-  { index: '02 / CONNECTION', title: 'Meet through ideas.', description: 'Find common ground with people who are curious about what comes next.', action: 'MEET THE COMMUNITY', href: '/team' },
-  { index: '03 / CURIOSITY', title: 'Keep asking.', description: 'Leave with new questions, fresh context and a wider point of view.', action: 'READ MORE STORIES', href: '/blog' },
-  { index: '04 / POSSIBILITY', title: 'Make it matter.', description: 'Carry an idea into your studies, work, community or next project.', action: 'SHARE YOUR IDEA', href: '/speaker-apply' },
+  {
+    index: '01 / PERSPECTIVE', title: 'See differently.',
+    description: 'Encounter ideas that invite you to look beyond the familiar.',
+    action: 'EXPLORE THE ARCHIVE', href: '/library',
+    image: 'https://iimtu.edu.in/uploads/images/17630369961.jpg',
+    imagePosition: 'center 52%',
+  },
+  {
+    index: '02 / CONNECTION', title: 'Meet through ideas.',
+    description: 'Find common ground with people who are curious about what comes next.',
+    action: 'MEET THE COMMUNITY', href: '/team',
+    image: 'https://iimtu.edu.in/uploads/images/17630370831.jpg',
+    imagePosition: 'center 50%',
+  },
+  {
+    index: '03 / CURIOSITY', title: 'Keep asking.',
+    description: 'Leave with new questions, fresh context and a wider point of view.',
+    action: 'READ MORE STORIES', href: '/blog',
+    image: 'https://iimtu.edu.in/uploads/images/17630370661.jpg',
+    imagePosition: 'center 52%',
+  },
+  {
+    index: '04 / POSSIBILITY', title: 'Make it matter.',
+    description: 'Carry an idea into your studies, work, community or next project.',
+    action: 'SHARE YOUR IDEA', href: '/speaker-apply',
+    image: 'https://iimtu.edu.in/uploads/images/17630370971.jpg',
+    imagePosition: 'center 48%',
+  },
 ];
 
 const galleryItems = [
@@ -182,7 +227,7 @@ const HomePage = () => {
         {/* Preserve the established hero artwork, mosaic and pointer interactions. */}
         <Hero />
 
-        <section className="ted-home-statement" aria-labelledby="home-statement-heading">
+        <section className="ted-home-statement ted-home-grid-surface" aria-labelledby="home-statement-heading">
           <div className="ted-home-shell ted-home-statement-grid">
             <Reveal>
               <span className="ted-home-kicker">TEDxIIMT UNIVERSITY / IDEAS WORTH SPREADING</span>
@@ -197,7 +242,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        <section className="ted-home-pillars" aria-labelledby="home-pillars-heading">
+        <section className="ted-home-pillars ted-home-grid-surface" aria-labelledby="home-pillars-heading">
           <div className="ted-home-shell">
             <Reveal className="ted-home-pillars-head">
               <div>
@@ -207,8 +252,19 @@ const HomePage = () => {
               <p>Education, Entertainment and Entrepreneurship are more than categories. They are different ways to question, connect and create.</p>
             </Reveal>
             <div className="ted-home-pillar-grid">
-              {pillars.map(({ number, label, title, description, action, href, Icon, className }, index) => (
+              {pillars.map(({ number, label, title, description, action, href, Icon, className, image, imagePosition }, index) => (
                 <Reveal key={number} data-number={number} className={'ted-home-pillar ' + className} delay={index * 0.1}>
+                  <img
+                    className="ted-home-pillar-photo"
+                    src={image}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                    style={{ objectPosition: imagePosition }}
+                  />
+                  <span className="ted-home-pillar-shade" aria-hidden="true" />
                   <div className="ted-home-pillar-top">
                     <span className="ted-home-pillar-label">{number} / {label}</span>
                     <span className="ted-home-pillar-symbol"><Icon aria-hidden="true" /></span>
@@ -243,7 +299,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        <section className="ted-home-stage" aria-labelledby="home-stage-heading">
+        <section className="ted-home-stage ted-home-grid-surface" aria-labelledby="home-stage-heading">
           <div className="ted-home-shell ted-home-stage-inner">
             <Reveal>
               <span className="ted-home-kicker">THE STAGE / THE NEXT PERSPECTIVE</span>
@@ -341,7 +397,7 @@ const HomePage = () => {
           <SocialMedia />
         </div>
 
-        <section className="ted-home-benefits" aria-labelledby="home-benefits-heading">
+        <section className="ted-home-benefits ted-home-grid-surface" aria-labelledby="home-benefits-heading">
           <div className="ted-home-shell">
             <Reveal className="ted-home-benefits-head">
               <div>
@@ -353,6 +409,17 @@ const HomePage = () => {
             <div className="ted-home-benefits-grid">
               {takeaways.map((item, index) => (
                 <Reveal key={item.index} className="ted-home-benefit" delay={index * 0.08}>
+                  <img
+                    className="ted-home-benefit-photo"
+                    src={item.image}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                    style={{ objectPosition: item.imagePosition }}
+                  />
+                  <span className="ted-home-benefit-shade" aria-hidden="true" />
                   <span className="ted-home-benefit-index">{item.index}</span>
                   <h3>{item.title}</h3>
                   <p>{item.description}</p>
@@ -366,7 +433,7 @@ const HomePage = () => {
 
         <div className="ted-home-dynamic"><Partners /><Blog /></div>
 
-        <section className="ted-home-close" aria-labelledby="home-close-heading">
+        <section className="ted-home-close ted-home-grid-surface" aria-labelledby="home-close-heading">
           <div className="ted-home-shell ted-home-close-inner">
             <Reveal>
               <span className="ted-home-kicker">YOUR IDEA / YOUR NEXT STEP</span>

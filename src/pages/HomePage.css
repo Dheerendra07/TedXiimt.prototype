@@ -2016,3 +2016,124 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
     transform: none;
   }
 }
+
+/* Shared 72px TEDx grid surface: matches the established What is TEDx background. */
+.ted-home-grid-surface {
+  position: relative;
+  isolation: isolate;
+}
+
+.ted-home-grid-surface::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background-image:
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  content: "";
+  opacity: .58;
+  pointer-events: none;
+}
+
+.ted-home-grid-surface > .ted-home-shell {
+  position: relative;
+  z-index: 1;
+}
+
+/* Official IIMT event photography gives the large editorial cards their own visual anchor. */
+.ted-home-pillar { isolation: isolate; }
+
+.ted-home-pillar-photo {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .48;
+  filter: saturate(.78) contrast(1.08);
+  transform: scale(1.015);
+  transition: opacity .55s ease, transform 1s cubic-bezier(.2,.7,.2,1), filter .55s ease;
+  pointer-events: none;
+}
+
+.ted-home-pillar-shade {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(8,8,10,.96) 0%, rgba(8,8,10,.78) 49%, rgba(8,8,10,.45) 100%),
+    linear-gradient(0deg, rgba(8,8,10,.38), transparent 62%);
+  pointer-events: none;
+}
+
+.ted-home-pillar::before { z-index: 2; }
+
+.ted-home-pillar-top,
+.ted-home-pillar h3,
+.ted-home-pillar-bottom {
+  position: relative;
+  z-index: 3;
+}
+
+.ted-home-pillar:hover .ted-home-pillar-photo,
+.ted-home-pillar:focus-within .ted-home-pillar-photo {
+  opacity: .61;
+  filter: saturate(.95) contrast(1.04);
+  transform: scale(1.055);
+}
+
+/* Takeaway panels keep their editorial layout while gaining authentic image texture. */
+.ted-home-benefit {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #080809;
+}
+
+.ted-home-benefit-photo {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .42;
+  filter: saturate(.72) contrast(1.1);
+  transform: scale(1.02);
+  transition: opacity .5s ease, transform .85s cubic-bezier(.2,.7,.2,1), filter .5s ease;
+  pointer-events: none;
+}
+
+.ted-home-benefit-shade {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(6,6,7,.45) 0%, rgba(6,6,7,.72) 48%, rgba(6,6,7,.94) 100%),
+    linear-gradient(90deg, rgba(6,6,7,.2), transparent);
+  pointer-events: none;
+}
+
+.ted-home-benefit > :not(.ted-home-benefit-photo):not(.ted-home-benefit-shade):not(.ted-home-benefit-hit) {
+  position: relative;
+  z-index: 2;
+}
+
+.ted-home-benefit-hit { z-index: 4; }
+
+.ted-home-benefit:hover .ted-home-benefit-photo,
+.ted-home-benefit:focus-within .ted-home-benefit-photo {
+  opacity: .55;
+  filter: saturate(.92) contrast(1.05);
+  transform: scale(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-home-pillar-photo,
+  .ted-home-benefit-photo {
+    transition-duration: .01ms !important;
+    transform: none !important;
+  }
+}
