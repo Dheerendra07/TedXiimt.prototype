@@ -78,7 +78,7 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
           </button>
         )}
       </div>
-    </motion.article>
+    </Motion.article>
   );
 };
 
@@ -114,7 +114,7 @@ const SocialMedia = () => {
               Revisit selected moments from TEDxIIMT University 2025.
             </p>
           </div>
-        </motion.div>
+        </Motion.div>
 
         <div className="mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {reelVideos.map((src, index) => {
