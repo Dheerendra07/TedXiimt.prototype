@@ -74,9 +74,26 @@ try {
     assert(pageWidth <= viewport.width, viewport.name + ': homepage has horizontal overflow');
 
     for (const [selector, name] of [['.ted-home-pillars', 'edition'], ['.ted-home-speakers', 'speakers'], ['footer', 'footer']]) {
-      await page.locator(selector).scrollIntoViewIfNeeded();
-      await page.waitForTimeout(220);
-      await page.locator(selector).screenshot({ path: outputDir + '/factual-' + name + '-' + viewport.name + '.png', animations: 'disabled' });
+      const section = page.locator(selector);
+      await section.scrollIntoViewIfNeeded();
+
+      // Trigger once-only Motion reveals for every card before capturing the full section.
+      if (name === 'speakers') {
+        const cards = page.locator('.ted-home-speaker-card');
+        for (let index = 0; index < await cards.count(); index += 1) {
+          await cards.nth(index).scrollIntoViewIfNeeded();
+          await page.waitForTimeout(90);
+        }
+        await section.scrollIntoViewIfNeeded();
+      }
+
+      await page.waitForTimeout(260);
+      await section.screenshot({ path: outputDir + '/factual-' + name + '-' + viewport.name + '.png', animations: 'disabled' });
+    }
+
+    const mobileTicketControls = await page.locator('.ted-home > div[class~="fixed"][class~="bottom-6"][class~="right-6"]').count();
+    if (viewport.name === 'mobile') {
+      assert(mobileTicketControls === 0, 'mobile: duplicate floating ticket action should not cover homepage cards');
     }
 
     assert(pageErrors.length === 0, viewport.name + ': browser runtime errors: ' + pageErrors.join('; '));
