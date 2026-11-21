@@ -189,15 +189,22 @@ const Footer = () => {
 
       const stageRect = stage.getBoundingClientRect();
       const imageRect = imageLayer.getBoundingClientRect();
-      // The art is width-fitted and bottom-aligned inside its own lower stage.
-      // This is the same mapping used by the visible CSS background.
-      const scale = imageRect.width / maskDimensions.width;
+      // Keep the colour mask aligned with the lightly zoomed-out, lifted CSS artwork.
+      // The matching custom properties are reset at tablet/mobile breakpoints.
+      const artworkStyle = window.getComputedStyle(imageLayer);
+      const artworkScale = Number.parseFloat(
+        artworkStyle.getPropertyValue('--footer-artwork-scale')
+      ) || 1;
+      const artworkLift = Number.parseFloat(
+        artworkStyle.getPropertyValue('--footer-artwork-lift')
+      ) || 0;
+      const scale = (imageRect.width * artworkScale) / maskDimensions.width;
       const renderedWidth = maskDimensions.width * scale;
       const renderedHeight = maskDimensions.height * scale;
       coverTransform = {
         scale,
         offsetX: imageRect.left - stageRect.left + ((imageRect.width - renderedWidth) * 0.5),
-        offsetY: imageRect.top - stageRect.top + imageRect.height - renderedHeight,
+        offsetY: imageRect.top - stageRect.top + imageRect.height - renderedHeight - artworkLift,
         renderedWidth,
         renderedHeight,
       };
