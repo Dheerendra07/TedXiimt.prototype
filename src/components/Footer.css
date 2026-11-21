@@ -488,6 +488,7 @@
   }
 
   .ted-footer-group {
+    height: auto;
     padding: 22px 20px 15px;
   }
 
