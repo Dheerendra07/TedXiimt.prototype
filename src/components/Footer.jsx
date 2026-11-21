@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import logo from './logo-white.png';
 import './Footer.css';
 
@@ -37,328 +37,211 @@ const footerGroups = [
   },
 ];
 
-const MOSAIC_PALETTE = ['#EB0028', '#CF1237', '#A80F2D', '#7D1028', '#570F22', '#B31E3D'];
-const MOSAIC_TRAIL_PALETTE = MOSAIC_PALETTE.slice(0, 3);
-const MOSAIC_ACCENTS = [
-  { column: 1, row: 4, width: 1, height: 1, color: 2, opacity: 0.34 },
-  { column: 15, row: 0, width: 2, height: 2, color: 2, opacity: 0.28 },
-  { column: 18, row: 2, width: 1, height: 1, color: 1, opacity: 0.22 },
-  { column: 27, row: 3, width: 1, height: 1, color: 0, opacity: 0.62 },
-  { column: 31, row: 5, width: 1, height: 1, color: 5, opacity: 0.28 },
-  { column: 35, row: 7, width: 1, height: 1, color: 0, opacity: 0.72 },
-  { column: 38, row: 9, width: 2, height: 1, color: 1, opacity: 0.5 },
-  { column: 42, row: 10, width: 1, height: 1, color: 0, opacity: 0.76 },
-  { column: 45, row: 12, width: 2, height: 2, color: 1, opacity: 0.58 },
-  { column: 41, row: 13, width: 1, height: 1, color: 4, opacity: 0.32 },
-  { column: 38, row: 14, width: 2, height: 2, color: 0, opacity: 0.58 },
-  { column: 35, row: 16, width: 1, height: 1, color: 3, opacity: 0.42 },
-  { column: 39, row: 17, width: 1, height: 2, color: 0, opacity: 0.76 },
-  { column: 43, row: 18, width: 2, height: 2, color: 2, opacity: 0.64 },
-  { column: 31, row: 19, width: 1, height: 1, color: 4, opacity: 0.26 },
-  { column: 26, row: 20, width: 2, height: 1, color: 3, opacity: 0.32 },
-  { column: 22, row: 22, width: 1, height: 1, color: 2, opacity: 0.3 },
-  { column: 16, row: 23, width: 1, height: 1, color: 0, opacity: 0.26 },
-  { column: 5, row: 20, width: 1, height: 1, color: 5, opacity: 0.2 },
-  { column: 2, row: 10, width: 1, height: 1, color: 0, opacity: 0.38 },
-];
+const PUZZLE_IMAGE_WIDTH = 1920;
+const PUZZLE_IMAGE_HEIGHT = 1080;
 
 const Footer = () => {
   const artworkRef = useRef(null);
-  const trailCanvasRef = useRef(null);
+  const [puzzleLayout, setPuzzleLayout] = useState({
+    columns: 0,
+    rows: 0,
+    cellSize: 40,
+    width: 0,
+    height: 0,
+    renderedWidth: 0,
+    renderedHeight: 0,
+    offsetX: 0,
+    offsetY: 0,
+  });
+  const [isAssembled, setIsAssembled] = useState(false);
 
   useEffect(() => {
     const surface = artworkRef.current;
-    const canvas = trailCanvasRef.current;
-    if (!surface || !canvas) return undefined;
+    if (!surface) return undefined;
 
-    const context = canvas.getContext('2d', { alpha: true });
-    if (!context) return undefined;
+    const updateLayout = () => {
+      const bounds = surface.getBoundingClientRect();
+      if (!bounds.width || !bounds.height) return;
 
-    const CELL_INSET = 4;
-    const REVEAL_MS = 80;
-    const HOLD_MS = 680;
-    const ERASE_MS = 280;
-    const MAX_ACTIVE_CELLS = 180;
-    const SAMPLE_POINTS = [0.1, 0.3, 0.5, 0.7, 0.9];
-    const maskCanvas = document.createElement('canvas');
-    const maskContext = maskCanvas.getContext('2d', { willReadFrequently: true });
-    const maskImage = new Image();
-    const safeCells = new Set();
-    const cells = new Map();
-    const accents = surface.querySelectorAll('[data-footer-mosaic-accent]');
-    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      const cellSize = Math.round(Math.min(40, Math.max(30, window.innerWidth * 0.023)));
+      const columns = Math.ceil(bounds.width / cellSize);
+      const rows = Math.ceil(bounds.height / cellSize);
+      const coverScale = Math.max(
+        bounds.width / PUZZLE_IMAGE_WIDTH,
+        bounds.height / PUZZLE_IMAGE_HEIGHT
+      );
+      const renderedWidth = PUZZLE_IMAGE_WIDTH * coverScale;
+      const renderedHeight = PUZZLE_IMAGE_HEIGHT * coverScale;
+      const offsetX = (bounds.width - renderedWidth) * 0.5;
+      const offsetY = (bounds.height - renderedHeight) * 0.64;
 
-    let width = 0;
-    let height = 0;
-    let cellSize = 40;
-    let tileSize = 32;
-    let pixelRatio = 1;
-    let gridColumns = 0;
-    let gridRows = 0;
-    let maskPixels = null;
-    let maskReady = false;
-    let previousCell = null;
-    let animationFrame = 0;
-    let disposed = false;
-
-    const cellTouchesArtwork = (column, row, cellWidth = 1, cellHeight = 1) => {
-      if (!maskReady || !maskPixels || !width || !height) return false;
-
-      for (let y = 0; y < cellHeight; y += 1) {
-        for (let x = 0; x < cellWidth; x += 1) {
-          for (let sampleY = 0; sampleY < SAMPLE_POINTS.length; sampleY += 1) {
-            for (let sampleX = 0; sampleX < SAMPLE_POINTS.length; sampleX += 1) {
-              const localX = ((column + x) * cellSize) + CELL_INSET + (tileSize * SAMPLE_POINTS[sampleX]);
-              const localY = ((row + y) * cellSize) + CELL_INSET + (tileSize * SAMPLE_POINTS[sampleY]);
-              if (localX < 0 || localY < 0 || localX >= width || localY >= height) continue;
-
-              const sourceX = Math.min(maskCanvas.width - 1, Math.max(0, Math.floor((localX / width) * maskCanvas.width)));
-              const sourceY = Math.min(maskCanvas.height - 1, Math.max(0, Math.floor((localY / height) * maskCanvas.height)));
-              const alphaIndex = ((sourceY * maskCanvas.width) + sourceX) * 4 + 3;
-              if (maskPixels[alphaIndex] > 24) return true;
-            }
-          }
-        }
-      }
-
-      return false;
-    };
-
-    const rebuildGrid = () => {
-      safeCells.clear();
-      gridColumns = Math.ceil(width / cellSize);
-      gridRows = Math.ceil(height / cellSize);
-
-      if (maskReady) {
-        for (let row = 0; row < gridRows; row += 1) {
-          for (let column = 0; column < gridColumns; column += 1) {
-            if (!cellTouchesArtwork(column, row)) {
-              safeCells.add(column + ':' + row);
-            }
-          }
-        }
-      }
-
-      accents.forEach((accent) => {
-        const column = Number(accent.dataset.footerColumn);
-        const row = Number(accent.dataset.footerRow);
-        const accentWidth = Number(accent.dataset.footerWidth);
-        const accentHeight = Number(accent.dataset.footerHeight);
-        accent.style.visibility = !maskReady || !cellTouchesArtwork(column, row, accentWidth, accentHeight)
-          ? 'visible'
-          : 'hidden';
+      setPuzzleLayout((current) => {
+        const unchanged = (
+          current.columns === columns &&
+          current.rows === rows &&
+          current.cellSize === cellSize &&
+          Math.abs(current.width - bounds.width) < 1 &&
+          Math.abs(current.height - bounds.height) < 1
+        );
+        if (unchanged) return current;
+        return {
+          columns,
+          rows,
+          cellSize,
+          width: bounds.width,
+          height: bounds.height,
+          renderedWidth,
+          renderedHeight,
+          offsetX,
+          offsetY,
+        };
       });
     };
 
-    const resizeCanvas = () => {
-      const bounds = surface.getBoundingClientRect();
-      width = bounds.width;
-      height = bounds.height;
-      cellSize = Math.round(Math.min(40, Math.max(30, window.innerWidth * 0.023)));
-      tileSize = cellSize - (CELL_INSET * 2);
-      surface.style.setProperty('--ted-footer-cell', cellSize + 'px');
-
-      pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.max(1, Math.round(width * pixelRatio));
-      canvas.height = Math.max(1, Math.round(height * pixelRatio));
-      canvas.style.width = width + 'px';
-      canvas.style.height = height + 'px';
-      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-      context.clearRect(0, 0, width, height);
-      cells.clear();
-      previousCell = null;
-      rebuildGrid();
-    };
-
-    const activateCell = (column, row, enteredAt) => {
-      const key = column + ':' + row;
-      if (!safeCells.has(key)) return;
-
-      cells.delete(key);
-      cells.set(key, { column, row, enteredAt, eraseAt: enteredAt + HOLD_MS });
-      while (cells.size > MAX_ACTIVE_CELLS) {
-        cells.delete(cells.keys().next().value);
-      }
-    };
-
-    const traceGridLine = (from, to, startedAt, finishedAt) => {
-      let x = from.column;
-      let y = from.row;
-      const deltaX = Math.abs(to.column - x);
-      const deltaY = Math.abs(to.row - y);
-      const stepX = x < to.column ? 1 : -1;
-      const stepY = y < to.row ? 1 : -1;
-      const longest = Math.max(deltaX, deltaY, 1);
-      let error = deltaX - deltaY;
-      let step = 0;
-
-      while (x !== to.column || y !== to.row) {
-        const doubledError = error * 2;
-        if (doubledError > -deltaY) {
-          error -= deltaY;
-          x += stepX;
-        }
-        if (doubledError < deltaX) {
-          error += deltaX;
-          y += stepY;
-        }
-        step += 1;
-        activateCell(x, y, startedAt + ((finishedAt - startedAt) * Math.min(1, step / longest)));
-      }
-    };
-
-    const drawCell = (cell, now) => {
-      if (!safeCells.has(cell.column + ':' + cell.row)) return false;
-      const eraseAge = now - cell.eraseAt;
-      if (eraseAge >= ERASE_MS) return false;
-
-      const reveal = 1 - Math.pow(1 - Math.min(1, Math.max(0, now - cell.enteredAt) / REVEAL_MS), 3);
-      const eraseProgress = eraseAge <= 0 ? 0 : Math.min(1, eraseAge / ERASE_MS);
-      const smoothErase = eraseProgress * eraseProgress * (3 - (2 * eraseProgress));
-      const opacity = reveal * (1 - smoothErase);
-      const scale = 1 - (0.06 * smoothErase);
-      const left = (cell.column * cellSize) + CELL_INSET;
-      const top = (cell.row * cellSize) + CELL_INSET;
-      const tone = MOSAIC_TRAIL_PALETTE[(cell.column * 7 + cell.row * 3) % MOSAIC_TRAIL_PALETTE.length];
-
-      context.save();
-      context.globalAlpha = opacity * 0.84;
-      context.translate(left + (tileSize / 2), top + (tileSize / 2));
-      context.scale(scale, scale);
-      context.fillStyle = tone;
-      context.fillRect(-(tileSize / 2), -(tileSize / 2), tileSize, tileSize);
-      context.restore();
-      return true;
-    };
-
-    const draw = (now) => {
-      animationFrame = 0;
-      context.clearRect(0, 0, width, height);
-      for (const [key, cell] of cells) {
-        if (!drawCell(cell, now)) cells.delete(key);
-      }
-      if (cells.size > 0) animationFrame = window.requestAnimationFrame(draw);
-    };
-
-    const requestDraw = () => {
-      if (!animationFrame && cells.size > 0) {
-        animationFrame = window.requestAnimationFrame(draw);
-      }
-    };
-
-    const handlePointerMove = (event) => {
-      if (event.pointerType === 'touch' || !maskReady || safeCells.size === 0) {
-        previousCell = null;
-        return;
-      }
-
-      const bounds = surface.getBoundingClientRect();
-      const localX = event.clientX - bounds.left;
-      const localY = event.clientY - bounds.top;
-      if (localX < 0 || localY < 0 || localX >= width || localY >= height) {
-        previousCell = null;
-        return;
-      }
-
-      const now = performance.now();
-      const nextCell = {
-        column: Math.floor(localX / cellSize),
-        row: Math.floor(localY / cellSize),
-      };
-
-      if (!previousCell) {
-        activateCell(nextCell.column, nextCell.row, now);
-      } else if (nextCell.column !== previousCell.column || nextCell.row !== previousCell.row) {
-        traceGridLine(previousCell, nextCell, previousCell.time, now);
-      }
-
-      previousCell = { ...nextCell, time: now };
-      requestDraw();
-    };
-
-    const handlePointerLeave = () => {
-      previousCell = null;
-    };
-
     const resizeObserver = typeof ResizeObserver !== 'undefined'
-      ? new ResizeObserver(resizeCanvas)
+      ? new ResizeObserver(updateLayout)
       : null;
 
-    maskImage.decoding = 'async';
-    maskImage.onload = () => {
-      if (disposed || !maskContext) return;
-      maskCanvas.width = maskImage.naturalWidth;
-      maskCanvas.height = maskImage.naturalHeight;
-      maskContext.drawImage(maskImage, 0, 0);
-      try {
-        maskPixels = maskContext.getImageData(0, 0, maskCanvas.width, maskCanvas.height).data;
-        maskReady = true;
-      } catch (error) {
-        maskPixels = null;
-        maskReady = false;
-        console.warn('[TEDx footer] Mosaic artwork mask unavailable.', error);
-      }
-      resizeCanvas();
-    };
-    maskImage.onerror = () => {
-      maskReady = false;
-      maskPixels = null;
-      rebuildGrid();
-    };
-    maskImage.src = '/transparent-hero-bg.PNG';
-
-    resizeCanvas();
     resizeObserver?.observe(surface);
-    window.addEventListener('resize', resizeCanvas, { passive: true });
-    if (!prefersReducedMotion) {
-      surface.addEventListener('pointermove', handlePointerMove, { passive: true });
-      surface.addEventListener('pointerleave', handlePointerLeave, { passive: true });
-    }
+    window.addEventListener('resize', updateLayout, { passive: true });
+    updateLayout();
 
     return () => {
-      disposed = true;
       resizeObserver?.disconnect();
-      window.removeEventListener('resize', resizeCanvas);
-      surface.removeEventListener('pointermove', handlePointerMove);
-      surface.removeEventListener('pointerleave', handlePointerLeave);
-      if (animationFrame) window.cancelAnimationFrame(animationFrame);
-      cells.clear();
-      context.clearRect(0, 0, width, height);
-      maskImage.onload = null;
-      maskImage.onerror = null;
+      window.removeEventListener('resize', updateLayout);
     };
   }, []);
+
+  useEffect(() => {
+    const surface = artworkRef.current;
+    if (!surface) return undefined;
+
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion || typeof IntersectionObserver === 'undefined') {
+      setIsAssembled(true);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        setIsAssembled(true);
+        observer.disconnect();
+      }
+    }, {
+      threshold: 0.16,
+      rootMargin: '0px 0px -5% 0px',
+    });
+
+    observer.observe(surface);
+    return () => observer.disconnect();
+  }, []);
+
+  const puzzleCells = useMemo(() => {
+    const { columns, rows, cellSize, width, height } = puzzleLayout;
+    if (!columns || !rows || !width || !height) return [];
+
+    const cells = [];
+    for (let row = 0; row < rows; row += 1) {
+      for (let column = 0; column < columns; column += 1) {
+        cells.push({
+          column,
+          row,
+          diagonal: column + row,
+          left: column * cellSize,
+          top: row * cellSize,
+          width: Math.max(0, Math.min(cellSize - 1, width - (column * cellSize) - 1)),
+          height: Math.max(0, Math.min(cellSize - 1, height - (row * cellSize) - 1)),
+        });
+      }
+    }
+
+    // A deterministic diagonal weave makes the image assemble like a puzzle,
+    // rather than using random positions or a flashy repeating effect.
+    cells.sort((a, b) => {
+      if (a.diagonal !== b.diagonal) return a.diagonal - b.diagonal;
+      return a.row % 2 === 0
+        ? a.column - b.column
+        : b.column - a.column;
+    });
+
+    const accentBlocks = [
+      {
+        column: Math.round(columns * 0.16),
+        row: Math.round(rows * 0.16),
+        width: 2,
+        height: 2,
+        tone: 'rgba(168, 15, 45, 0.3)',
+      },
+      {
+        column: Math.round(columns * 0.48),
+        row: Math.round(rows * 0.48),
+        width: 2,
+        height: 2,
+        tone: 'rgba(235, 0, 40, 0.22)',
+      },
+      {
+        column: Math.round(columns * 0.76),
+        row: Math.round(rows * 0.18),
+        width: 2,
+        height: 1,
+        tone: 'rgba(207, 18, 55, 0.26)',
+      },
+      {
+        column: Math.round(columns * 0.88),
+        row: Math.round(rows * 0.68),
+        width: 1,
+        height: 2,
+        tone: 'rgba(87, 15, 34, 0.3)',
+      },
+    ];
+
+    return cells.map((cell, index) => {
+      const accent = accentBlocks.find((block) => (
+        cell.column >= block.column &&
+        cell.column < block.column + block.width &&
+        cell.row >= block.row &&
+        cell.row < block.row + block.height
+      ));
+
+      return {
+        ...cell,
+        key: cell.column + ':' + cell.row,
+        order: index,
+        accent: accent ? accent.tone : null,
+      };
+    });
+  }, [puzzleLayout]);
 
   return (
     <footer className="ted-site-footer">
       <div className="ted-footer-shell">
-        <div ref={artworkRef} className="ted-footer-artwork" aria-hidden="true">
+        <div
+          ref={artworkRef}
+          className={'ted-footer-artwork' + (isAssembled ? ' is-assembling' : '')}
+          aria-hidden="true"
+          style={{ '--ted-footer-cell': puzzleLayout.cellSize + 'px' }}
+        >
           <div className="ted-footer-artwork__image" />
           <div className="ted-footer-artwork__shade" />
-          <div className="ted-footer-artwork__grid" />
           <div className="ted-footer-artwork__tiles">
-            {MOSAIC_ACCENTS.map((cell, index) => (
+            {puzzleCells.map((cell) => (
               <span
-                key={index}
-                data-footer-mosaic-accent
-                data-footer-column={cell.column}
-                data-footer-row={cell.row}
-                data-footer-width={cell.width}
-                data-footer-height={cell.height}
-                className="ted-footer-tile"
+                key={cell.key}
+                className={'ted-footer-puzzle-cell' + (cell.accent ? ' ted-footer-puzzle-cell--accent' : '')}
                 style={{
-                  left: 'calc(var(--ted-footer-cell, 40px) * ' + cell.column + ' + 4px)',
-                  top: 'calc(var(--ted-footer-cell, 40px) * ' + cell.row + ' + 4px)',
-                  width: 'calc(var(--ted-footer-cell, 40px) * ' + cell.width + ' - 8px)',
-                  height: 'calc(var(--ted-footer-cell, 40px) * ' + cell.height + ' - 8px)',
-                  backgroundColor: MOSAIC_PALETTE[cell.color],
-                  opacity: Math.min(cell.opacity, 0.5),
-                  visibility: 'hidden',
+                  left: (cell.left + 1) + 'px',
+                  top: (cell.top + 1) + 'px',
+                  width: cell.width + 'px',
+                  height: cell.height + 'px',
+                  backgroundSize: puzzleLayout.renderedWidth + 'px ' + puzzleLayout.renderedHeight + 'px',
+                  backgroundPosition: (puzzleLayout.offsetX - cell.left - 1) + 'px ' + (puzzleLayout.offsetY - cell.top - 1) + 'px',
+                  '--puzzle-delay': (cell.order * 5) + 'ms',
+                  '--puzzle-accent': cell.accent || 'transparent',
                 }}
               />
             ))}
           </div>
-          <canvas ref={trailCanvasRef} className="ted-footer-artwork__trail" />
+          <div className="ted-footer-artwork__grid" />
         </div>
 
         <div className="ted-footer-navigation-grid">
