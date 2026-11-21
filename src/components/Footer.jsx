@@ -40,8 +40,43 @@ const footerGroups = [
   },
 ];
 
+
+const FOOTER_MONUMENT_REGIONS = [
+  {
+    id: 'lotus',
+    bounds: { left: 0, top: 0.61, right: 0.275, bottom: 1 },
+    palette: ['#D5E0E5', '#BCCACD', '#788B98'],
+    highlight: '#EDF3F2',
+  },
+  {
+    id: 'qutub',
+    bounds: { left: 0.275, top: 0.29, right: 0.35, bottom: 1 },
+    palette: ['#C27A52', '#A85C3C', '#623A2A'],
+    highlight: '#FFD1A6',
+  },
+  {
+    id: 'humayun',
+    bounds: { left: 0.35, top: 0.64, right: 0.48, bottom: 1 },
+    palette: ['#D5D3C7', '#B87961', '#754B43'],
+    highlight: '#F2DED0',
+  },
+  {
+    id: 'india-gate',
+    bounds: { left: 0.48, top: 0.42, right: 0.68, bottom: 1 },
+    palette: ['#CFA17B', '#AA7452', '#674B3A'],
+    highlight: '#F2C9A3',
+  },
+  {
+    id: 'akshardham',
+    bounds: { left: 0.68, top: 0.52, right: 1, bottom: 1 },
+    palette: ['#D8B091', '#BD8468', '#764D3F'],
+    highlight: '#F4D0AD',
+  },
+];
+
 const Footer = () => {
   const stageRef = useRef(null);
+  const revealCanvasRef = useRef(null);
   const [isActive, setIsActive] = useState(false);
   const [flowStep, setFlowStep] = useState(0);
 
@@ -91,6 +126,305 @@ const Footer = () => {
     };
   }, []);
 
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    const canvas = revealCanvasRef.current;
+    const imageLayer = stage?.querySelector('.ted-footer-artwork__image');
+    if (!stage || !canvas || !imageLayer) return undefined;
+
+    const context = canvas.getContext('2d', { alpha: true });
+    if (!context) return undefined;
+
+    const sourceArtwork = new Image();
+    const backgroundArtwork = new Image();
+    const colourCanvas = document.createElement('canvas');
+    const colourContext = colourCanvas.getContext('2d', { willReadFrequently: true });
+    if (!colourContext) return undefined;
+
+    const REVEAL_MS = 520;
+    const HOLD_MS = 1050;
+    const FADE_MS = 680;
+    let width = 0;
+    let height = 0;
+    let pixelRatio = 1;
+    let coverTransform = null;
+    let maskDimensions = null;
+    let maskPixels = null;
+    let maskLoaded = false;
+    let backgroundLoaded = false;
+    let activeRegionId = null;
+    let animationFrame = 0;
+    let disposed = false;
+    const activeReveals = new Map();
+
+    const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
+    const updateImageTransform = () => {
+      if (!maskDimensions) return;
+      const stageRect = stage.getBoundingClientRect();
+      const imageRect = imageLayer.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const fitMode = viewportWidth <= 720 ? 'width'
+        : viewportWidth <= 1100 ? 'contain' : 'cover';
+      const scale = fitMode === 'cover'
+        ? Math.max(imageRect.width / maskDimensions.width, imageRect.height / maskDimensions.height)
+        : fitMode === 'contain'
+          ? Math.min(imageRect.width / maskDimensions.width, imageRect.height / maskDimensions.height)
+          : imageRect.width / maskDimensions.width;
+      const renderedWidth = maskDimensions.width * scale;
+      const renderedHeight = maskDimensions.height * scale;
+      const offsetX = (imageRect.left - stageRect.left) + ((imageRect.width - renderedWidth) * 0.5);
+      const offsetY = (imageRect.top - stageRect.top) + (
+        fitMode === 'cover' ? (imageRect.height - renderedHeight) * 0.5 : 0
+      );
+
+      coverTransform = {
+        scale,
+        offsetX,
+        offsetY,
+        renderedWidth,
+        renderedHeight,
+      };
+    };
+
+    const rebuildColourArtwork = () => {
+      if (!maskLoaded || !backgroundLoaded || !coverTransform || !width || !height) return;
+
+      colourCanvas.width = Math.max(1, Math.round(width * pixelRatio));
+      colourCanvas.height = Math.max(1, Math.round(height * pixelRatio));
+      colourContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      colourContext.clearRect(0, 0, width, height);
+
+      colourContext.drawImage(
+        backgroundArtwork,
+        coverTransform.offsetX,
+        coverTransform.offsetY,
+        coverTransform.renderedWidth,
+        coverTransform.renderedHeight
+      );
+
+      FOOTER_MONUMENT_REGIONS.forEach((region) => {
+        const left = coverTransform.offsetX + (region.bounds.left * coverTransform.renderedWidth);
+        const top = coverTransform.offsetY + (region.bounds.top * coverTransform.renderedHeight);
+        const right = coverTransform.offsetX + (region.bounds.right * coverTransform.renderedWidth);
+        const bottom = coverTransform.offsetY + (region.bounds.bottom * coverTransform.renderedHeight);
+
+        colourContext.save();
+        colourContext.beginPath();
+        colourContext.rect(left, top, right - left, bottom - top);
+        colourContext.clip();
+
+        const materialGradient = colourContext.createLinearGradient(0, top, 0, bottom);
+        region.palette.forEach((tone, index) => {
+          materialGradient.addColorStop(index / (region.palette.length - 1), tone);
+        });
+        colourContext.globalCompositeOperation = 'color';
+        colourContext.globalAlpha = 1;
+        colourContext.fillStyle = materialGradient;
+        colourContext.fillRect(left, top, right - left, bottom - top);
+
+        const naturalLight = colourContext.createLinearGradient(0, top, 0, bottom);
+        naturalLight.addColorStop(0, region.highlight);
+        naturalLight.addColorStop(0.38, 'rgba(0, 0, 0, 0.08)');
+        naturalLight.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        colourContext.globalCompositeOperation = 'screen';
+        colourContext.globalAlpha = 0.34;
+        colourContext.fillStyle = naturalLight;
+        colourContext.fillRect(left, top, right - left, bottom - top);
+        colourContext.restore();
+      });
+
+      // Keep the original transparent monument silhouettes; no square colour blocks.
+      colourContext.globalAlpha = 1;
+      colourContext.globalCompositeOperation = 'destination-in';
+      colourContext.drawImage(
+        sourceArtwork,
+        coverTransform.offsetX,
+        coverTransform.offsetY,
+        coverTransform.renderedWidth,
+        coverTransform.renderedHeight
+      );
+      colourContext.globalCompositeOperation = 'source-over';
+
+      try {
+        maskPixels = colourContext.getImageData(0, 0, colourCanvas.width, colourCanvas.height).data;
+      } catch (error) {
+        maskPixels = null;
+        console.warn('[TEDx footer] Colour reveal hit testing unavailable.', error);
+      }
+    };
+
+    const getRegionAtPoint = (localX, localY) => {
+      if (!maskPixels || !coverTransform || !maskDimensions) return null;
+
+      const sourceX = (localX - coverTransform.offsetX) / coverTransform.scale;
+      const sourceY = (localY - coverTransform.offsetY) / coverTransform.scale;
+      if (
+        sourceX < 0 || sourceY < 0 ||
+        sourceX >= maskDimensions.width || sourceY >= maskDimensions.height
+      ) return null;
+
+      const pixelX = Math.min(colourCanvas.width - 1, Math.max(0, Math.floor(localX * pixelRatio)));
+      const pixelY = Math.min(colourCanvas.height - 1, Math.max(0, Math.floor(localY * pixelRatio)));
+      const alphaIndex = ((pixelY * colourCanvas.width) + pixelX) * 4 + 3;
+      if (maskPixels[alphaIndex] < 24) return null;
+
+      const normalX = sourceX / maskDimensions.width;
+      const normalY = sourceY / maskDimensions.height;
+      return FOOTER_MONUMENT_REGIONS.find((region) => (
+        normalX >= region.bounds.left && normalX <= region.bounds.right &&
+        normalY >= region.bounds.top && normalY <= region.bounds.bottom
+      )) || null;
+    };
+
+    const drawReveal = (now) => {
+      animationFrame = 0;
+      context.clearRect(0, 0, width, height);
+      let hasPendingReveal = false;
+
+      activeReveals.forEach((state, regionId) => {
+        const region = FOOTER_MONUMENT_REGIONS.find((item) => item.id === regionId);
+        if (!region) {
+          activeReveals.delete(regionId);
+          return;
+        }
+
+        const elapsed = now - state.startedAt;
+        const totalDuration = REVEAL_MS + HOLD_MS + FADE_MS;
+        if (elapsed >= totalDuration) {
+          activeReveals.delete(regionId);
+          return;
+        }
+
+        let opacity = 1;
+        if (elapsed < REVEAL_MS) {
+          opacity = easeOutCubic(elapsed / REVEAL_MS);
+        } else if (elapsed > REVEAL_MS + HOLD_MS) {
+          opacity = 1 - easeOutCubic((elapsed - REVEAL_MS - HOLD_MS) / FADE_MS);
+        }
+
+        const left = coverTransform.offsetX + (region.bounds.left * coverTransform.renderedWidth);
+        const top = coverTransform.offsetY + (region.bounds.top * coverTransform.renderedHeight);
+        const right = coverTransform.offsetX + (region.bounds.right * coverTransform.renderedWidth);
+        const bottom = coverTransform.offsetY + (region.bounds.bottom * coverTransform.renderedHeight);
+
+        context.save();
+        context.beginPath();
+        context.rect(left, top, right - left, bottom - top);
+        context.clip();
+        context.globalAlpha = opacity;
+        context.drawImage(colourCanvas, 0, 0, width, height);
+        context.restore();
+        hasPendingReveal = true;
+      });
+
+      if (hasPendingReveal) {
+        animationFrame = window.requestAnimationFrame(drawReveal);
+      }
+    };
+
+    const requestRevealDraw = () => {
+      if (!animationFrame) animationFrame = window.requestAnimationFrame(drawReveal);
+    };
+
+    const handlePointerMove = (event) => {
+      if (event.pointerType === 'touch' || event.target.closest?.('a, button')) {
+        activeRegionId = null;
+        return;
+      }
+
+      const bounds = stage.getBoundingClientRect();
+      const localX = event.clientX - bounds.left;
+      const localY = event.clientY - bounds.top;
+      const region = getRegionAtPoint(localX, localY);
+      const nextRegionId = region?.id || null;
+
+      if (nextRegionId !== activeRegionId) {
+        activeRegionId = nextRegionId;
+        if (region && !activeReveals.has(region.id) && maskPixels) {
+          activeReveals.set(region.id, { startedAt: performance.now() });
+          requestRevealDraw();
+        }
+      }
+    };
+
+    const handlePointerLeave = () => {
+      activeRegionId = null;
+    };
+
+    const resizeCanvas = () => {
+      if (disposed) return;
+      const bounds = stage.getBoundingClientRect();
+      width = bounds.width;
+      height = bounds.height;
+      pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(width * pixelRatio));
+      canvas.height = Math.max(1, Math.round(height * pixelRatio));
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      if (maskDimensions) {
+        updateImageTransform();
+        rebuildColourArtwork();
+        activeReveals.clear();
+        context.clearRect(0, 0, width, height);
+      }
+    };
+
+    const initializeArtwork = () => {
+      if (disposed || !maskLoaded || !backgroundLoaded) return;
+      maskDimensions = {
+        width: sourceArtwork.naturalWidth,
+        height: sourceArtwork.naturalHeight,
+      };
+      if (!maskDimensions.width || !maskDimensions.height) return;
+      resizeCanvas();
+    };
+
+    sourceArtwork.decoding = 'async';
+    sourceArtwork.onload = () => {
+      maskLoaded = true;
+      initializeArtwork();
+    };
+    sourceArtwork.onerror = () => {
+      maskPixels = null;
+      console.warn('[TEDx footer] Transparent monument mask could not be loaded.');
+    };
+
+    backgroundArtwork.decoding = 'async';
+    backgroundArtwork.onload = () => {
+      backgroundLoaded = true;
+      initializeArtwork();
+    };
+    backgroundArtwork.onerror = () => {
+      maskPixels = null;
+      console.warn('[TEDx footer] Original artwork could not be loaded for colour reveal.');
+    };
+
+    sourceArtwork.src = '/transparent-hero-bg.PNG';
+    backgroundArtwork.src = '/hero-bg.png';
+
+    const resizeObserver = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(resizeCanvas)
+      : null;
+    resizeObserver?.observe(stage);
+    window.addEventListener('resize', resizeCanvas, { passive: true });
+    stage.addEventListener('pointermove', handlePointerMove, { passive: true });
+    stage.addEventListener('pointerleave', handlePointerLeave, { passive: true });
+    resizeCanvas();
+
+    return () => {
+      disposed = true;
+      resizeObserver?.disconnect();
+      window.removeEventListener('resize', resizeCanvas);
+      stage.removeEventListener('pointermove', handlePointerMove);
+      stage.removeEventListener('pointerleave', handlePointerLeave);
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+      activeReveals.clear();
+      context.clearRect(0, 0, width, height);
+    };
+  }, []);
+
   return (
     <footer className="ted-site-footer">
       <div className="ted-footer-shell">
@@ -103,6 +437,12 @@ const Footer = () => {
             <div className="ted-footer-artwork__ambient" />
             <div className="ted-footer-artwork__image" />
             <div className="ted-footer-artwork__shade" />
+            <canvas
+              ref={revealCanvasRef}
+              className="ted-footer-artwork__reveal"
+              aria-hidden="true"
+            />
+            <div className="ted-footer-artwork__grid" />
             <div className={'ted-footer-flow ted-footer-flow--' + flowStep} />
           </div>
 
