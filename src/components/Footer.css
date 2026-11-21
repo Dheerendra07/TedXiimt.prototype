@@ -476,3 +476,384 @@
     transition: none;
   }
 }
+
+/* ── Animated footer stage: content lives over the original artwork ── */
+.ted-site-footer {
+  padding: 28px 28px 22px;
+  background: #050505;
+}
+
+.ted-footer-stage {
+  position: relative;
+  isolation: isolate;
+  min-height: 590px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #050505;
+}
+
+.ted-footer-artwork {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  border: 0;
+  background: #050505;
+}
+
+.ted-footer-artwork__image {
+  filter: blur(13px) brightness(0.42) saturate(0.82);
+  opacity: 0.76;
+}
+
+.ted-footer-artwork__full-image {
+  filter: brightness(1.13) contrast(1.08) saturate(0.96);
+}
+
+.ted-footer-artwork__shade {
+  background:
+    linear-gradient(90deg,
+      rgba(3, 4, 7, 0.88) 0%,
+      rgba(3, 4, 7, 0.73) 27%,
+      rgba(3, 4, 7, 0.60) 58%,
+      rgba(3, 4, 7, 0.76) 100%),
+    linear-gradient(180deg,
+      rgba(3, 4, 7, 0.28) 0%,
+      rgba(3, 4, 7, 0.06) 38%,
+      rgba(3, 4, 7, 0.5) 100%);
+}
+
+.ted-footer-stage__atmosphere {
+  position: absolute;
+  z-index: 1;
+  inset: -24%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 18% 38%, rgba(235, 0, 40, 0.17), transparent 37%),
+    radial-gradient(ellipse at 78% 66%, rgba(118, 18, 44, 0.18), transparent 39%),
+    linear-gradient(112deg, transparent 30%, rgba(255, 255, 255, 0.025) 49%, transparent 68%);
+  background-size: 160% 160%, 160% 160%, 220% 220%;
+  mix-blend-mode: screen;
+  opacity: 0.62;
+  animation: ted-footer-atmosphere-flow 26s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+
+@keyframes ted-footer-atmosphere-flow {
+  0% {
+    background-position: 0% 38%, 100% 64%, 0% 50%;
+    opacity: 0.42;
+    transform: translate3d(-1.5%, 0, 0) scale(0.99);
+  }
+  100% {
+    background-position: 42% 62%, 48% 28%, 100% 50%;
+    opacity: 0.72;
+    transform: translate3d(1.5%, 0, 0) scale(1.015);
+  }
+}
+
+.ted-footer-navigation-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1.24fr) repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  min-height: 590px;
+  padding: 58px 34px 52px;
+  border: 0;
+  background: linear-gradient(90deg, rgba(3, 4, 7, 0.12), rgba(3, 4, 7, 0.04) 52%, rgba(3, 4, 7, 0.12));
+}
+
+.ted-footer-brand-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 30px 30px 30px 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.16);
+  animation: ted-footer-content-arrive 820ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both;
+}
+
+.ted-footer-brand-kicker {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 21px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.ted-footer-brand-kicker::before {
+  width: 19px;
+  height: 2px;
+  flex: 0 0 auto;
+  background: var(--ted-footer-red);
+  content: '';
+  box-shadow: 0 0 13px rgba(235, 0, 40, 0.55);
+}
+
+.ted-footer-logo {
+  width: 178px;
+  max-height: 48px;
+}
+
+.ted-footer-brand-copy {
+  max-width: 310px;
+  margin: 22px 0 0;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.ted-footer-column {
+  min-width: 0;
+  padding: 35px 21px 26px;
+  border-left: 1px solid rgba(255, 255, 255, 0.13);
+  animation: ted-footer-content-arrive 820ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ted-footer-column:nth-child(2) { animation-delay: 150ms; }
+.ted-footer-column:nth-child(3) { animation-delay: 220ms; }
+.ted-footer-column:nth-child(4) { animation-delay: 290ms; }
+
+@keyframes ted-footer-content-arrive {
+  from { opacity: 0; transform: translate3d(0, 13px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+.ted-footer-column__heading {
+  gap: 11px;
+  margin: 0 0 22px;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.17em;
+}
+
+.ted-footer-column__heading span {
+  color: #ff3558;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+}
+
+.ted-footer-link {
+  position: relative;
+  min-height: 42px;
+  padding: 0 0 0 0;
+  border-bottom-color: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 11.5px;
+  transition:
+    color 220ms ease,
+    padding 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 220ms ease,
+    background-color 220ms ease;
+}
+
+.ted-footer-link:hover {
+  padding-left: 7px;
+  border-color: rgba(235, 0, 40, 0.46);
+  color: #fff;
+  background: linear-gradient(90deg, rgba(235, 0, 40, 0.09), transparent 82%);
+}
+
+.ted-footer-link__arrow {
+  color: #ff3558;
+  font-size: 13px;
+  opacity: 0.5;
+  transform: translate(-3px, 3px);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.ted-footer-link:hover .ted-footer-link__arrow,
+.ted-footer-link:focus-visible .ted-footer-link__arrow {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+.ted-footer-legal {
+  margin-top: 0;
+  padding-top: 21px;
+  border-top: 1px solid rgba(255, 255, 255, 0.11);
+}
+
+.ted-footer-legal__disclaimer {
+  color: #85858e;
+}
+
+.ted-footer-legal__links {
+  color: #a1a1aa;
+}
+
+@media (max-width: 1100px) {
+  .ted-footer-stage {
+    min-height: 700px;
+  }
+
+  .ted-footer-navigation-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    min-height: 700px;
+    padding: 36px 28px;
+  }
+
+  .ted-footer-brand-cell {
+    grid-column: 1 / -1;
+    padding: 12px 0 28px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .ted-footer-brand-copy {
+    max-width: 500px;
+  }
+
+  .ted-footer-column {
+    padding: 27px 18px 20px;
+    border-top: 0;
+  }
+
+  .ted-footer-column:first-of-type {
+    border-left: 0;
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .ted-site-footer {
+    padding: 16px 12px 18px;
+  }
+
+  .ted-footer-stage {
+    min-height: 0;
+  }
+
+  .ted-footer-navigation-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-height: 0;
+    padding: 31px 18px 27px;
+    row-gap: 0;
+  }
+
+  .ted-footer-brand-cell {
+    grid-column: 1 / -1;
+    padding: 11px 0 25px;
+    border-right: 0;
+  }
+
+  .ted-footer-brand-kicker {
+    margin-bottom: 16px;
+    font-size: 8px;
+    letter-spacing: 0.17em;
+  }
+
+  .ted-footer-logo {
+    width: 156px;
+    max-height: 43px;
+  }
+
+  .ted-footer-brand-copy {
+    max-width: 380px;
+    margin-top: 16px;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  .ted-footer-column,
+  .ted-footer-column:first-of-type {
+    padding: 23px 13px 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-left: 0;
+  }
+
+  .ted-footer-column:nth-child(3) {
+    padding-right: 0;
+    padding-left: 15px;
+    border-left: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .ted-footer-column:last-child {
+    grid-column: 1 / -1;
+    padding: 23px 0 10px;
+    border-left: 0;
+  }
+
+  .ted-footer-column:last-child .ted-footer-link-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 22px;
+  }
+
+  .ted-footer-column__heading {
+    gap: 8px;
+    margin-bottom: 13px;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+  }
+
+  .ted-footer-column__heading span {
+    font-size: 9px;
+  }
+
+  .ted-footer-link {
+    min-height: 39px;
+    gap: 7px;
+    font-size: 10.5px;
+    line-height: 1.35;
+  }
+
+  .ted-footer-legal {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 13px;
+    padding-top: 17px;
+  }
+
+  .ted-footer-legal__disclaimer {
+    font-size: 9px;
+  }
+
+  .ted-footer-legal__links {
+    justify-content: flex-start;
+    gap: 9px 14px;
+    font-size: 9px;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 390px) {
+  .ted-footer-navigation-grid {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .ted-footer-column,
+  .ted-footer-column:first-of-type {
+    padding-right: 9px;
+  }
+
+  .ted-footer-column:nth-child(3) {
+    padding-right: 0;
+    padding-left: 10px;
+  }
+
+  .ted-footer-column:last-child .ted-footer-link-list {
+    column-gap: 14px;
+  }
+
+  .ted-footer-link {
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-footer-stage__atmosphere,
+  .ted-footer-brand-cell,
+  .ted-footer-column {
+    animation: none !important;
+  }
+}
+
