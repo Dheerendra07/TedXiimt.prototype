@@ -162,10 +162,12 @@ const Footer = () => {
     const colourContext = colourCanvas.getContext('2d', { willReadFrequently: true });
     if (!colourContext) return undefined;
 
-    const REVEAL_MS = 520;
-    const HOLD_MS = 1050;
-    const FADE_MS = 680;
-    const HIDE_CARD_MS = 620;
+    // A longer reveal gives the material colour time to bloom before it settles.
+    const REVEAL_MS = 760;
+    const HOLD_MS = 1580;
+    const FADE_MS = 920;
+    const SWEEP_MS = 1180;
+    const HIDE_CARD_MS = 760;
     let width = 0;
     let height = 0;
     let pixelRatio = 1;
@@ -292,6 +294,13 @@ const Footer = () => {
       )) || null;
     };
 
+    const clampUnit = (value) => Math.min(1, Math.max(0, value));
+    const easeOutQuint = (value) => 1 - Math.pow(1 - clampUnit(value), 5);
+    const smoothStep = (value) => {
+      const progress = clampUnit(value);
+      return progress * progress * (3 - (2 * progress));
+    };
+
     const drawReveal = (now) => {
       animationFrame = 0;
       context.clearRect(0, 0, width, height);
@@ -311,24 +320,61 @@ const Footer = () => {
           return;
         }
 
-        let opacity = 1;
-        if (elapsed < REVEAL_MS) {
-          opacity = easeOutCubic(elapsed / REVEAL_MS);
-        } else if (elapsed > REVEAL_MS + HOLD_MS) {
-          opacity = 1 - easeOutCubic((elapsed - REVEAL_MS - HOLD_MS) / FADE_MS);
-        }
+        const revealProgress = clampUnit(elapsed / REVEAL_MS);
+        const settledOpacity = 0.96 * easeOutQuint(revealProgress);
+        const fadeProgress = clampUnit((elapsed - REVEAL_MS - HOLD_MS) / FADE_MS);
+        const fadeOpacity = elapsed <= REVEAL_MS + HOLD_MS
+          ? 1
+          : 1 - smoothStep(fadeProgress);
+        const opacity = settledOpacity * fadeOpacity;
 
         const left = coverTransform.offsetX + (region.bounds.left * coverTransform.renderedWidth);
         const top = coverTransform.offsetY + (region.bounds.top * coverTransform.renderedHeight);
         const right = coverTransform.offsetX + (region.bounds.right * coverTransform.renderedWidth);
         const bottom = coverTransform.offsetY + (region.bounds.bottom * coverTransform.renderedHeight);
+        const regionWidth = right - left;
+        const regionHeight = bottom - top;
+        const glowStrength = (1 - easeOutQuint(revealProgress)) * fadeOpacity;
 
         context.save();
         context.beginPath();
-        context.rect(left, top, right - left, bottom - top);
+        context.rect(left, top, regionWidth, regionHeight);
         context.clip();
+
+        // First pass: a soft, coloured bloom follows the original silhouette.
+        context.globalAlpha = opacity * 0.42;
+        context.shadowColor = region.highlight;
+        context.shadowBlur = 10 + (22 * glowStrength);
+        context.drawImage(colourCanvas, 0, 0, width, height);
+
+        // Second pass: crisp material colour keeps the landmark's real detail intact.
+        context.shadowBlur = 0;
         context.globalAlpha = opacity;
         context.drawImage(colourCanvas, 0, 0, width, height);
+
+        // A diagonal specular sweep travels only across the already-masked monument.
+        const sweepProgress = clampUnit((elapsed - 90) / SWEEP_MS);
+        if (sweepProgress > 0 && sweepProgress < 1) {
+          const beamWidth = Math.max(24, regionWidth * 0.3);
+          const beamCenter = left - (regionWidth * 0.48) + (sweepProgress * regionWidth * 1.96);
+          const highlightSweep = context.createLinearGradient(
+            beamCenter - beamWidth,
+            top,
+            beamCenter + beamWidth,
+            bottom
+          );
+          highlightSweep.addColorStop(0, 'rgba(255, 255, 255, 0)');
+          highlightSweep.addColorStop(0.4, 'rgba(255, 255, 255, 0.035)');
+          highlightSweep.addColorStop(0.5, 'rgba(255, 255, 255, 0.42)');
+          highlightSweep.addColorStop(0.6, 'rgba(255, 255, 255, 0.035)');
+          highlightSweep.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+          context.globalCompositeOperation = 'source-atop';
+          context.globalAlpha = (1 - (sweepProgress * 0.16)) * fadeOpacity;
+          context.fillStyle = highlightSweep;
+          context.fillRect(left, top, regionWidth, regionHeight);
+        }
+
         context.restore();
         hasPendingReveal = true;
       });
