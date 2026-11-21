@@ -559,6 +559,7 @@ const Footer = () => {
 
           {hoveredMonument && (
             <aside
+              key={hoveredMonument.id}
               className="ted-footer-hover-card"
               style={{
                 left: hoverCardPosition.left + 'px',
