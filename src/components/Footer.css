@@ -1294,3 +1294,108 @@
     transition: none;
   }
 }
+
+
+/* ── Footer artwork finish: atmospheric depth without adding section height ── */
+.ted-footer-artwork__image {
+  isolation: isolate;
+}
+
+.ted-footer-artwork__image::before,
+.ted-footer-artwork__image::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  pointer-events: none;
+}
+
+.ted-footer-artwork__image::before {
+  background:
+    radial-gradient(ellipse 42% 31% at 50% 82%, rgba(225, 184, 151, 0.15), transparent 72%),
+    radial-gradient(ellipse 24% 32% at 17% 78%, rgba(132, 169, 190, 0.085), transparent 76%),
+    radial-gradient(ellipse 26% 30% at 83% 80%, rgba(205, 151, 120, 0.09), transparent 76%);
+  mix-blend-mode: screen;
+  opacity: 0.68;
+}
+
+.ted-footer-artwork__image::after {
+  background:
+    radial-gradient(ellipse 88% 92% at 50% 48%, transparent 55%, rgba(3, 4, 7, 0.3) 100%),
+    linear-gradient(180deg, rgba(3, 4, 7, 0.035), transparent 22%, transparent 72%, rgba(3, 4, 7, 0.17));
+  opacity: 0.82;
+}
+
+.ted-footer-artwork::before {
+  position: absolute;
+  z-index: 6;
+  right: 9%;
+  bottom: 1.5%;
+  left: 9%;
+  height: 13%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(205, 164, 139, 0.105) 0%,
+    rgba(117, 103, 99, 0.045) 38%,
+    transparent 74%
+  );
+  content: '';
+  filter: blur(17px);
+  opacity: 0.72;
+  pointer-events: none;
+  animation: ted-footer-ground-ambience 20s ease-in-out infinite alternate;
+}
+
+.ted-footer-artwork::after {
+  position: absolute;
+  z-index: 6;
+  right: 13%;
+  bottom: 12.5%;
+  left: 13%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.035) 16%,
+    rgba(224, 190, 165, 0.16) 50%,
+    rgba(255, 255, 255, 0.035) 84%,
+    transparent 100%
+  );
+  box-shadow: 0 0 18px rgba(224, 190, 165, 0.12);
+  content: '';
+  opacity: 0.48;
+  pointer-events: none;
+}
+
+.ted-footer-stage.is-active .ted-footer-artwork__image::before {
+  animation: ted-footer-skyline-halo 17s ease-in-out infinite alternate;
+}
+
+@keyframes ted-footer-skyline-halo {
+  from {
+    opacity: 0.56;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 0.82;
+    transform: scale(1.015);
+  }
+}
+
+@keyframes ted-footer-ground-ambience {
+  from {
+    opacity: 0.48;
+    transform: scaleX(0.94) translateY(1px);
+  }
+  to {
+    opacity: 0.78;
+    transform: scaleX(1.04) translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-footer-stage.is-active .ted-footer-artwork__image::before,
+  .ted-footer-artwork::before {
+    animation: none !important;
+  }
+}
