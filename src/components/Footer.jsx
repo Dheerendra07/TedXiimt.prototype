@@ -40,37 +40,56 @@ const footerGroups = [
   },
 ];
 
-
 const FOOTER_MONUMENT_REGIONS = [
   {
     id: 'lotus',
+    number: '01',
+    name: 'LOTUS TEMPLE',
     bounds: { left: 0, top: 0.61, right: 0.275, bottom: 1 },
     palette: ['#D5E0E5', '#BCCACD', '#788B98'],
     highlight: '#EDF3F2',
+    title: 'Ideas grow when we stay open.',
+    message: 'A more meaningful conversation begins when different voices are welcomed — and allowed to challenge what we think we know.',
   },
   {
     id: 'qutub',
+    number: '02',
+    name: 'QUTUB MINAR',
     bounds: { left: 0.275, top: 0.29, right: 0.35, bottom: 1 },
     palette: ['#C27A52', '#A85C3C', '#623A2A'],
     highlight: '#FFD1A6',
+    title: 'Build with patience. Leave with impact.',
+    message: 'Lasting ideas are shaped layer by layer: by practice, persistence and the people who keep improving the work.',
   },
   {
     id: 'humayun',
+    number: '03',
+    name: 'HUMAYUN’S TOMB',
     bounds: { left: 0.35, top: 0.64, right: 0.48, bottom: 1 },
     palette: ['#D5D3C7', '#B87961', '#754B43'],
     highlight: '#F2DED0',
+    title: 'A new perspective can reshape the old.',
+    message: 'Progress does not erase what came before. It sees familiar stories differently and carries the most meaningful parts forward.',
   },
   {
     id: 'india-gate',
+    number: '04',
+    name: 'INDIA GATE',
     bounds: { left: 0.48, top: 0.42, right: 0.68, bottom: 1 },
     palette: ['#CFA17B', '#AA7452', '#674B3A'],
     highlight: '#F2C9A3',
+    title: 'Make every contribution visible.',
+    message: 'Big change is never a solo act. It is made possible by people whose ideas, effort and courage deserve to be heard.',
   },
   {
     id: 'akshardham',
+    number: '05',
+    name: 'AKSHARDHAM',
     bounds: { left: 0.68, top: 0.52, right: 1, bottom: 1 },
     palette: ['#D8B091', '#BD8468', '#764D3F'],
     highlight: '#F4D0AD',
+    title: 'Let purpose guide the details.',
+    message: 'An idea becomes meaningful when care, craft and conviction turn it into something people can experience.',
   },
 ];
 
@@ -79,6 +98,8 @@ const Footer = () => {
   const revealCanvasRef = useRef(null);
   const [isActive, setIsActive] = useState(false);
   const [flowStep, setFlowStep] = useState(0);
+  const [hoveredMonument, setHoveredMonument] = useState(null);
+  const [hoverCardPosition, setHoverCardPosition] = useState({ left: 24, top: 360 });
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -126,7 +147,6 @@ const Footer = () => {
     };
   }, []);
 
-
   useEffect(() => {
     const stage = stageRef.current;
     const canvas = revealCanvasRef.current;
@@ -145,6 +165,7 @@ const Footer = () => {
     const REVEAL_MS = 520;
     const HOLD_MS = 1050;
     const FADE_MS = 680;
+    const HIDE_CARD_MS = 620;
     let width = 0;
     let height = 0;
     let pixelRatio = 1;
@@ -155,33 +176,26 @@ const Footer = () => {
     let backgroundLoaded = false;
     let activeRegionId = null;
     let animationFrame = 0;
+    let hideCardTimer = null;
     let disposed = false;
     const activeReveals = new Map();
 
     const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
+
     const updateImageTransform = () => {
       if (!maskDimensions) return;
+
       const stageRect = stage.getBoundingClientRect();
       const imageRect = imageLayer.getBoundingClientRect();
-      const viewportWidth = window.innerWidth;
-      const fitMode = viewportWidth <= 720 ? 'width'
-        : viewportWidth <= 1100 ? 'contain' : 'cover';
-      const scale = fitMode === 'cover'
-        ? Math.max(imageRect.width / maskDimensions.width, imageRect.height / maskDimensions.height)
-        : fitMode === 'contain'
-          ? Math.min(imageRect.width / maskDimensions.width, imageRect.height / maskDimensions.height)
-          : imageRect.width / maskDimensions.width;
+      // The art is width-fitted and bottom-aligned inside its own lower stage.
+      // This is the same mapping used by the visible CSS background.
+      const scale = imageRect.width / maskDimensions.width;
       const renderedWidth = maskDimensions.width * scale;
       const renderedHeight = maskDimensions.height * scale;
-      const offsetX = (imageRect.left - stageRect.left) + ((imageRect.width - renderedWidth) * 0.5);
-      const offsetY = (imageRect.top - stageRect.top) + (
-        fitMode === 'cover' ? (imageRect.height - renderedHeight) * 0.5 : 0
-      );
-
       coverTransform = {
         scale,
-        offsetX,
-        offsetY,
+        offsetX: imageRect.left - stageRect.left + ((imageRect.width - renderedWidth) * 0.5),
+        offsetY: imageRect.top - stageRect.top + imageRect.height - renderedHeight,
         renderedWidth,
         renderedHeight,
       };
@@ -234,7 +248,8 @@ const Footer = () => {
         colourContext.restore();
       });
 
-      // Keep the original transparent monument silhouettes; no square colour blocks.
+      // The transparent original is the silhouette mask; only the actual monument
+      // pixels receive material colour. This never paints square or rectangular tiles.
       colourContext.globalAlpha = 1;
       colourContext.globalCompositeOperation = 'destination-in';
       colourContext.drawImage(
@@ -267,7 +282,7 @@ const Footer = () => {
       const pixelX = Math.min(colourCanvas.width - 1, Math.max(0, Math.floor(localX * pixelRatio)));
       const pixelY = Math.min(colourCanvas.height - 1, Math.max(0, Math.floor(localY * pixelRatio)));
       const alphaIndex = ((pixelY * colourCanvas.width) + pixelX) * 4 + 3;
-      if (maskPixels[alphaIndex] < 24) return null;
+      if (maskPixels[alphaIndex] < 20) return null;
 
       const normalX = sourceX / maskDimensions.width;
       const normalY = sourceY / maskDimensions.height;
@@ -327,9 +342,20 @@ const Footer = () => {
       if (!animationFrame) animationFrame = window.requestAnimationFrame(drawReveal);
     };
 
+    const hideMessageSoon = () => {
+      if (hideCardTimer !== null) window.clearTimeout(hideCardTimer);
+      hideCardTimer = window.setTimeout(() => {
+        hideCardTimer = null;
+        setHoveredMonument(null);
+      }, HIDE_CARD_MS);
+    };
+
     const handlePointerMove = (event) => {
       if (event.pointerType === 'touch' || event.target.closest?.('a, button')) {
-        activeRegionId = null;
+        if (activeRegionId !== null) {
+          activeRegionId = null;
+          hideMessageSoon();
+        }
         return;
       }
 
@@ -337,19 +363,49 @@ const Footer = () => {
       const localX = event.clientX - bounds.left;
       const localY = event.clientY - bounds.top;
       const region = getRegionAtPoint(localX, localY);
-      const nextRegionId = region?.id || null;
 
-      if (nextRegionId !== activeRegionId) {
-        activeRegionId = nextRegionId;
-        if (region && !activeReveals.has(region.id) && maskPixels) {
-          activeReveals.set(region.id, { startedAt: performance.now() });
-          requestRevealDraw();
+      if (!region) {
+        if (activeRegionId !== null) {
+          activeRegionId = null;
+          hideMessageSoon();
         }
+        return;
       }
+
+      if (activeRegionId === region.id) return;
+
+      activeRegionId = region.id;
+      if (hideCardTimer !== null) {
+        window.clearTimeout(hideCardTimer);
+        hideCardTimer = null;
+      }
+
+      // Re-entering any monument always restarts its colour reveal, even when
+      // the previous pass for that same monument has not finished fading.
+      activeReveals.clear();
+      activeReveals.set(region.id, { startedAt: performance.now() });
+      requestRevealDraw();
+      setHoveredMonument(region);
+
+      const imageRect = imageLayer.getBoundingClientRect();
+      const artTop = imageRect.top - bounds.top;
+      const cardWidth = Math.min(356, Math.max(250, width - 36));
+      const cardHeight = 174;
+      const cardLeft = localX < width * 0.5
+        ? Math.max(18, width - cardWidth - 22)
+        : 22;
+      const cardTop = Math.max(
+        artTop + 16,
+        Math.min(height - cardHeight - 18, localY - cardHeight - 28)
+      );
+      setHoverCardPosition({ left: cardLeft, top: cardTop });
     };
 
     const handlePointerLeave = () => {
-      activeRegionId = null;
+      if (activeRegionId !== null) {
+        activeRegionId = null;
+        hideMessageSoon();
+      }
     };
 
     const resizeCanvas = () => {
@@ -363,10 +419,15 @@ const Footer = () => {
       canvas.style.width = width + 'px';
       canvas.style.height = height + 'px';
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
       if (maskDimensions) {
         updateImageTransform();
         rebuildColourArtwork();
         activeReveals.clear();
+        if (animationFrame) {
+          window.cancelAnimationFrame(animationFrame);
+          animationFrame = 0;
+        }
         context.clearRect(0, 0, width, height);
       }
     };
@@ -408,6 +469,7 @@ const Footer = () => {
       ? new ResizeObserver(resizeCanvas)
       : null;
     resizeObserver?.observe(stage);
+    resizeObserver?.observe(imageLayer);
     window.addEventListener('resize', resizeCanvas, { passive: true });
     stage.addEventListener('pointermove', handlePointerMove, { passive: true });
     stage.addEventListener('pointerleave', handlePointerLeave, { passive: true });
@@ -420,6 +482,7 @@ const Footer = () => {
       stage.removeEventListener('pointermove', handlePointerMove);
       stage.removeEventListener('pointerleave', handlePointerLeave);
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
+      if (hideCardTimer !== null) window.clearTimeout(hideCardTimer);
       activeReveals.clear();
       context.clearRect(0, 0, width, height);
     };
@@ -493,6 +556,30 @@ const Footer = () => {
               ))}
             </div>
           </div>
+
+          {hoveredMonument && (
+            <aside
+              className="ted-footer-hover-card"
+              style={{
+                left: hoverCardPosition.left + 'px',
+                top: hoverCardPosition.top + 'px',
+              }}
+              aria-live="polite"
+              aria-label={'TEDxIIMT perspective for ' + hoveredMonument.name}
+            >
+              <div className="ted-footer-hover-card__topline">
+                <span>TEDxIIMT PERSPECTIVE</span>
+                <span>{hoveredMonument.number} / 05</span>
+              </div>
+              <p className="ted-footer-hover-card__place">{hoveredMonument.name}</p>
+              <h3>{hoveredMonument.title}</h3>
+              <p className="ted-footer-hover-card__message">{hoveredMonument.message}</p>
+              <div className="ted-footer-hover-card__foot">
+                <span className="ted-footer-hover-card__pulse" />
+                AN IDEA TO TAKE WITH YOU
+              </div>
+            </aside>
+          )}
         </section>
 
         <div className="ted-footer-legal">
