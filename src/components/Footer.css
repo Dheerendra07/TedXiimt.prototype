@@ -101,7 +101,7 @@
   content: '';
   filter: blur(9px);
   transform: translate3d(-140%, var(--beam-y, 0%), 0) rotate(var(--beam-angle, 112deg));
-  animation: ted-footer-light-pass var(--beam-duration, 8.4s) cubic-bezier(0.55, 0, 0.35, 1) infinite;
+  animation: none;
 }
 
 .ted-footer-flow::after {
@@ -112,6 +112,14 @@
     linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.025) 51%, transparent 60%);
   content: '';
   opacity: 0.48;
+  animation: none;
+}
+
+.ted-footer-stage.is-active .ted-footer-flow::before {
+  animation: ted-footer-light-pass var(--beam-duration, 8.4s) cubic-bezier(0.55, 0, 0.35, 1) infinite;
+}
+
+.ted-footer-stage.is-active .ted-footer-flow::after {
   animation: ted-footer-glow-drift 17s ease-in-out infinite alternate;
 }
 
