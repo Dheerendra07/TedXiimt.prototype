@@ -277,6 +277,7 @@ const Footer = () => {
   return (
     <footer className="ted-site-footer">
       <div className="ted-footer-shell">
+        <section className="ted-footer-stage" aria-label="Explore TEDxIIMT University">
         <div
           ref={artworkRef}
           className={'ted-footer-artwork' + (isPuzzleActive ? ' is-puzzling puzzle-mode-' + puzzleMode : '')}
@@ -313,9 +314,11 @@ const Footer = () => {
           </div>
           <div className="ted-footer-artwork__grid" />
         </div>
+        <div className="ted-footer-stage__atmosphere" aria-hidden="true" />
 
         <div className="ted-footer-navigation-grid">
           <div className="ted-footer-brand-cell">
+            <p className="ted-footer-brand-kicker">Curious minds · Courageous ideas</p>
             <a
               href="/"
               className="ted-footer-logo-link"
@@ -352,6 +355,7 @@ const Footer = () => {
             </nav>
           ))}
         </div>
+        </section>
 
         <div className="ted-footer-legal">
           <p className="ted-footer-legal__disclaimer">
