@@ -79,7 +79,7 @@
   transform-origin: center;
   filter: brightness(1.16) contrast(1.05) saturate(1.02);
   backface-visibility: hidden;
-  will-change: opacity, transform, filter;
+  contain: paint;
 }
 
 .ted-footer-puzzle-cell--accent::after {
@@ -140,9 +140,9 @@
 }
 
 @keyframes ted-footer-puzzle-diagonal {
-  0% { opacity: 0; transform: var(--puzzle-entry-transform); filter: brightness(0.72) saturate(0.75); }
-  36% { opacity: 0.92; transform: translate3d(0, 0, 0) scale(1.035); filter: brightness(1.32) saturate(1.14); }
-  100% { opacity: 0; transform: translate3d(0, 0, 0) scale(1); filter: brightness(1.08) saturate(0.96); }
+  0% { opacity: 0; transform: var(--puzzle-entry-transform); }
+  36% { opacity: 0.92; transform: translate3d(0, 0, 0) scale(1.035); }
+  100% { opacity: 0; transform: translate3d(0, 0, 0) scale(1); }
 }
 @keyframes ted-footer-puzzle-rows {
   0% { opacity: 0; transform: var(--puzzle-entry-transform); }
@@ -155,9 +155,9 @@
   100% { opacity: 0; transform: translate3d(0, 0, 0) scale(1); }
 }
 @keyframes ted-footer-puzzle-center {
-  0% { opacity: 0; transform: var(--puzzle-entry-transform); filter: brightness(0.65); }
-  44% { opacity: 0.9; transform: translate3d(0, 0, 0) scale(1.04); filter: brightness(1.32); }
-  100% { opacity: 0; transform: translate3d(0, 0, 0) scale(1); filter: brightness(1); }
+  0% { opacity: 0; transform: var(--puzzle-entry-transform); }
+  44% { opacity: 0.9; transform: translate3d(0, 0, 0) scale(1.04); }
+  100% { opacity: 0; transform: translate3d(0, 0, 0) scale(1); }
 }
 @keyframes ted-footer-puzzle-corners {
   0% { opacity: 0; transform: var(--puzzle-entry-transform); }
