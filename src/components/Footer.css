@@ -363,6 +363,36 @@
     opacity: 0.58;
   }
 
+  /* Keep the larger mosaic blocks inside the narrower mobile artwork frame. */
+  .ted-footer-tile--one {
+    top: 4px;
+    left: calc(var(--ted-footer-cell) * 1 + 4px);
+  }
+
+  .ted-footer-tile--two {
+    top: 4px;
+    left: calc(var(--ted-footer-cell) * 5 + 4px);
+  }
+
+  .ted-footer-tile--three {
+    top: calc(var(--ted-footer-cell) * 2 + 4px);
+    left: calc(var(--ted-footer-cell) * 2 + 4px);
+  }
+
+  .ted-footer-tile--four {
+    top: calc(var(--ted-footer-cell) * 2 + 4px);
+    left: calc(var(--ted-footer-cell) * 6 + 4px);
+  }
+
+  .ted-footer-tile--five,
+  .ted-footer-tile--six,
+  .ted-footer-tile--seven,
+  .ted-footer-tile--eight,
+  .ted-footer-tile--nine,
+  .ted-footer-tile--ten {
+    display: none;
+  }
+
   .ted-footer-navigation-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
