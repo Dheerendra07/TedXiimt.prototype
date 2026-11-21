@@ -40,7 +40,6 @@ const footerGroups = [
 const Footer = () => {
   return (
     <footer className="ted-site-footer">
-      <div className="ted-footer-grid-overlay" aria-hidden="true" />
       <div className="ted-footer-shell">
         <div className="ted-footer-artwork" aria-hidden="true">
           <div className="ted-footer-artwork__image" />
