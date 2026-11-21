@@ -256,37 +256,6 @@ const Footer = () => {
       return 'translate3d(0, -11px, 0) rotate(2deg) scale(0.88)';
     };
 
-    const accentBlocks = [
-      {
-        column: Math.round(columns * 0.16),
-        row: Math.round(rows * 0.16),
-        width: 2,
-        height: 2,
-        tone: 'rgba(168, 15, 45, 0.3)',
-      },
-      {
-        column: Math.round(columns * 0.48),
-        row: Math.round(rows * 0.48),
-        width: 2,
-        height: 2,
-        tone: 'rgba(235, 0, 40, 0.22)',
-      },
-      {
-        column: Math.round(columns * 0.76),
-        row: Math.round(rows * 0.18),
-        width: 2,
-        height: 1,
-        tone: 'rgba(207, 18, 55, 0.26)',
-      },
-      {
-        column: Math.round(columns * 0.88),
-        row: Math.round(rows * 0.68),
-        width: 1,
-        height: 2,
-        tone: 'rgba(87, 15, 34, 0.3)',
-      },
-    ];
-
     return cells.map((cell, index) => {
       const accent = accentBlocks.find((block) => (
         cell.column >= block.column &&
