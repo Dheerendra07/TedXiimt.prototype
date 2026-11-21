@@ -1547,3 +1547,38 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
     display: none;
   }
 }
+
+
+/* Gentle heading-spacing correction — preserve the original copy and hierarchy. */
+.ted-home-statement-title {
+  letter-spacing: -0.058em;
+  line-height: 0.84;
+  word-spacing: 0.015em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.ted-home-statement-title span {
+  display: block;
+  letter-spacing: inherit;
+}
+
+.ted-home-stage h2 {
+  letter-spacing: -0.052em;
+  line-height: 0.94;
+  word-spacing: 0.012em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@media (max-width: 600px) {
+  .ted-home-statement-title {
+    letter-spacing: -0.052em;
+    line-height: 0.86;
+  }
+
+  .ted-home-stage h2 {
+    letter-spacing: -0.045em;
+    line-height: 0.98;
+  }
+}
