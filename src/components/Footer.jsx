@@ -154,7 +154,7 @@ const Footer = () => {
       const bounds = surface.getBoundingClientRect();
       width = bounds.width;
       height = bounds.height;
-      cellSize = Math.round(Math.min(40, Math.max(30, width * 0.023)));
+      cellSize = Math.round(Math.min(40, Math.max(30, window.innerWidth * 0.023)));
       tileSize = cellSize - (CELL_INSET * 2);
       surface.style.setProperty('--ted-footer-cell', cellSize + 'px');
 
