@@ -42,10 +42,11 @@ const Footer = () => {
     <footer className="ted-site-footer">
       <div className="ted-footer-grid-overlay" aria-hidden="true" />
       <div className="ted-footer-shell">
-        <section className="ted-footer-frame" aria-label="TEDxIIMT University">
-          <div className="ted-footer-frame__image" aria-hidden="true" />
-          <div className="ted-footer-frame__grid" aria-hidden="true" />
-          <div className="ted-footer-frame__tiles" aria-hidden="true">
+        <div className="ted-footer-artwork" aria-hidden="true">
+          <div className="ted-footer-artwork__image" />
+          <div className="ted-footer-artwork__shade" />
+          <div className="ted-footer-artwork__grid" />
+          <div className="ted-footer-artwork__tiles">
             <span className="ted-footer-tile ted-footer-tile--one" />
             <span className="ted-footer-tile ted-footer-tile--two" />
             <span className="ted-footer-tile ted-footer-tile--three" />
@@ -53,30 +54,11 @@ const Footer = () => {
             <span className="ted-footer-tile ted-footer-tile--five" />
             <span className="ted-footer-tile ted-footer-tile--six" />
             <span className="ted-footer-tile ted-footer-tile--seven" />
+            <span className="ted-footer-tile ted-footer-tile--eight" />
+            <span className="ted-footer-tile ted-footer-tile--nine" />
+            <span className="ted-footer-tile ted-footer-tile--ten" />
           </div>
-
-          <div className="ted-footer-frame__content">
-            <p className="ted-footer-kicker">
-              <span className="ted-footer-kicker__dot" />
-              IIMT UNIVERSITY <span className="ted-footer-kicker__divider">/</span> MEERUT, INDIA
-            </p>
-            <h2 className="ted-footer-wordmark">
-              <span className="ted-footer-wordmark__ted">TED</span><span className="ted-footer-wordmark__x">x</span><span className="ted-footer-wordmark__iimt">IIMT</span>
-            </h2>
-            <p className="ted-footer-tagline">Break the <em>Flow.</em></p>
-            <div className="ted-footer-frame__bottom">
-              <p>Ideas worth spreading. Voices worth hearing.</p>
-              <a href="/about" className="ted-footer-discover-link">
-                Discover TEDxIIMT <span aria-hidden="true">↗</span>
-              </a>
-            </div>
-          </div>
-
-          <p className="ted-footer-frame__edition" aria-hidden="true">
-            <span>INDEPENDENTLY ORGANIZED</span>
-            <span>IDEAS <b>·</b> PEOPLE <b>·</b> PERSPECTIVES</span>
-          </p>
-        </section>
+        </div>
 
         <div className="ted-footer-navigation-grid">
           <div className="ted-footer-brand-cell">
@@ -91,7 +73,6 @@ const Footer = () => {
               A platform for curious minds, courageous ideas and conversations
               that move perspectives forward.
             </p>
-            <span className="ted-footer-brand-note">Locally rooted. Open to the world.</span>
           </div>
 
           {footerGroups.map((group) => (
