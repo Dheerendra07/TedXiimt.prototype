@@ -53,7 +53,8 @@ const Footer = () => {
     offsetX: 0,
     offsetY: 0,
   });
-  const [isAssembled, setIsAssembled] = useState(false);
+  const [isPuzzleActive, setIsPuzzleActive] = useState(false);
+  const [puzzleMode, setPuzzleMode] = useState(0);
 
   useEffect(() => {
     const surface = artworkRef.current;
@@ -66,14 +67,16 @@ const Footer = () => {
       const cellSize = Math.round(Math.min(40, Math.max(30, window.innerWidth * 0.023)));
       const columns = Math.ceil(bounds.width / cellSize);
       const rows = Math.ceil(bounds.height / cellSize);
-      const coverScale = Math.max(
+      // Fit the complete original 16:9 artwork inside the compact frame.
+      // A separate ambient cover layer fills the remaining side space.
+      const fitScale = Math.min(
         bounds.width / PUZZLE_IMAGE_WIDTH,
         bounds.height / PUZZLE_IMAGE_HEIGHT
       );
-      const renderedWidth = PUZZLE_IMAGE_WIDTH * coverScale;
-      const renderedHeight = PUZZLE_IMAGE_HEIGHT * coverScale;
+      const renderedWidth = PUZZLE_IMAGE_WIDTH * fitScale;
+      const renderedHeight = PUZZLE_IMAGE_HEIGHT * fitScale;
       const offsetX = (bounds.width - renderedWidth) * 0.5;
-      const offsetY = (bounds.height - renderedHeight) * 0.64;
+      const offsetY = (bounds.height - renderedHeight) * 0.5;
 
       setPuzzleLayout((current) => {
         const unchanged = (
@@ -118,22 +121,38 @@ const Footer = () => {
 
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion || typeof IntersectionObserver === 'undefined') {
-      setIsAssembled(true);
+      setIsPuzzleActive(false);
       return undefined;
     }
 
+    let intervalId = null;
     const observer = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting)) {
-        setIsAssembled(true);
-        observer.disconnect();
+      const isVisible = entries.some((entry) => entry.isIntersecting);
+      if (isVisible) {
+        setIsPuzzleActive(true);
+        if (intervalId === null) {
+          // Six different grid puzzle passes cycle while the artwork is in view.
+          intervalId = window.setInterval(() => {
+            setPuzzleMode((current) => (current + 1) % 6);
+          }, 6800);
+        }
+      } else {
+        setIsPuzzleActive(false);
+        if (intervalId !== null) {
+          window.clearInterval(intervalId);
+          intervalId = null;
+        }
       }
     }, {
-      threshold: 0.16,
-      rootMargin: '0px 0px -5% 0px',
+      threshold: 0.14,
+      rootMargin: '0px 0px -6% 0px',
     });
 
     observer.observe(surface);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (intervalId !== null) window.clearInterval(intervalId);
+    };
   }, []);
 
   const puzzleCells = useMemo(() => {
@@ -155,14 +174,87 @@ const Footer = () => {
       }
     }
 
-    // A deterministic diagonal weave makes the image assemble like a puzzle,
-    // rather than using random positions or a flashy repeating effect.
-    cells.sort((a, b) => {
-      if (a.diagonal !== b.diagonal) return a.diagonal - b.diagonal;
-      return a.row % 2 === 0
-        ? a.column - b.column
-        : b.column - a.column;
-    });
+    // Six deterministic puzzle paths: diagonal, row snake, column snake,
+    // center-out, four-corner convergence, and perimeter-to-center spiral.
+    const centerX = (columns - 1) / 2;
+    const centerY = (rows - 1) / 2;
+    const ringOf = (cell) => Math.min(
+      cell.column,
+      cell.row,
+      columns - 1 - cell.column,
+      rows - 1 - cell.row
+    );
+    const angleOf = (cell) => {
+      const angle = Math.atan2(cell.row - centerY, cell.column - centerX);
+      return (angle + (Math.PI * 2)) % (Math.PI * 2);
+    };
+
+    const orderCells = (a, b) => {
+      if (puzzleMode === 0) {
+        return (a.diagonal - b.diagonal) ||
+          (a.row % 2 === 0 ? a.column - b.column : b.column - a.column);
+      }
+      if (puzzleMode === 1) {
+        return (a.row - b.row) ||
+          (a.row % 2 === 0 ? a.column - b.column : b.column - a.column);
+      }
+      if (puzzleMode === 2) {
+        return (a.column - b.column) ||
+          (a.column % 2 === 0 ? a.row - b.row : b.row - a.row);
+      }
+      if (puzzleMode === 3) {
+        const distanceA = Math.hypot(a.column - centerX, a.row - centerY);
+        const distanceB = Math.hypot(b.column - centerX, b.row - centerY);
+        return (distanceA - distanceB) || (angleOf(a) - angleOf(b));
+      }
+      if (puzzleMode === 4) {
+        const cornerDistance = (cell) => Math.min(
+          Math.hypot(cell.column, cell.row),
+          Math.hypot(columns - 1 - cell.column, cell.row),
+          Math.hypot(cell.column, rows - 1 - cell.row),
+          Math.hypot(columns - 1 - cell.column, rows - 1 - cell.row)
+        );
+        return (cornerDistance(a) - cornerDistance(b)) || (angleOf(a) - angleOf(b));
+      }
+      return (ringOf(a) - ringOf(b)) || (angleOf(a) - angleOf(b));
+    };
+
+    cells.sort(orderCells);
+
+    const accentAnchors = [
+      [[0.14, 0.16], [0.46, 0.42], [0.78, 0.2], [0.84, 0.7]],
+      [[0.12, 0.35], [0.36, 0.58], [0.68, 0.28], [0.9, 0.62]],
+      [[0.24, 0.12], [0.48, 0.46], [0.72, 0.68], [0.86, 0.28]],
+      [[0.5, 0.34], [0.36, 0.52], [0.64, 0.52], [0.5, 0.72]],
+      [[0.08, 0.12], [0.9, 0.12], [0.08, 0.78], [0.9, 0.78]],
+      [[0.5, 0.08], [0.88, 0.5], [0.5, 0.82], [0.12, 0.5]],
+    ][puzzleMode];
+
+    const accentBlocks = accentAnchors.map(([x, y], index) => ({
+      column: Math.max(0, Math.min(columns - 2, Math.round(columns * x))),
+      row: Math.max(0, Math.min(rows - 2, Math.round(rows * y))),
+      width: index % 2 === 0 ? 2 : 1,
+      height: index % 2 === 0 ? 2 : 1,
+      tone: [
+        'rgba(168, 15, 45, 0.3)',
+        'rgba(235, 0, 40, 0.22)',
+        'rgba(207, 18, 55, 0.26)',
+        'rgba(87, 15, 34, 0.28)',
+      ][index],
+    }));
+
+    const entryTransform = (cell) => {
+      if (puzzleMode === 0) return 'translate3d(-8px, -8px, 0) rotate(-1deg) scale(0.88)';
+      if (puzzleMode === 1) return 'translate3d(0, ' + (cell.row % 2 ? '-10px' : '10px') + ', 0) scale(0.92)';
+      if (puzzleMode === 2) return 'translate3d(' + (cell.column % 2 ? '-10px' : '10px') + ', 0, 0) scale(0.92)';
+      if (puzzleMode === 3) return 'translate3d(0, 0, 0) scale(0.68)';
+      if (puzzleMode === 4) {
+        const x = cell.column < centerX ? -9 : 9;
+        const y = cell.row < centerY ? -9 : 9;
+        return 'translate3d(' + x + 'px, ' + y + 'px, 0) rotate(' + ((cell.column + cell.row) % 2 ? '-2deg' : '2deg') + ') scale(0.86)';
+      }
+      return 'translate3d(0, -11px, 0) rotate(2deg) scale(0.88)';
+    };
 
     const accentBlocks = [
       {
@@ -208,20 +300,28 @@ const Footer = () => {
         key: cell.column + ':' + cell.row,
         order: index,
         accent: accent ? accent.tone : null,
+        entryTransform: entryTransform(cell),
       };
     });
-  }, [puzzleLayout]);
+  }, [puzzleLayout, puzzleMode]);
 
   return (
     <footer className="ted-site-footer">
       <div className="ted-footer-shell">
         <div
           ref={artworkRef}
-          className={'ted-footer-artwork' + (isAssembled ? ' is-assembling' : '')}
+          className={'ted-footer-artwork' + (isPuzzleActive ? ' is-puzzling puzzle-mode-' + puzzleMode : '')}
           aria-hidden="true"
           style={{ '--ted-footer-cell': puzzleLayout.cellSize + 'px' }}
         >
           <div className="ted-footer-artwork__image" />
+          <div
+            className="ted-footer-artwork__full-image"
+            style={{
+              backgroundSize: puzzleLayout.renderedWidth + 'px ' + puzzleLayout.renderedHeight + 'px',
+              backgroundPosition: 'center center',
+            }}
+          />
           <div className="ted-footer-artwork__shade" />
           <div className="ted-footer-artwork__tiles">
             {puzzleCells.map((cell) => (
@@ -235,8 +335,9 @@ const Footer = () => {
                   height: cell.height + 'px',
                   backgroundSize: puzzleLayout.renderedWidth + 'px ' + puzzleLayout.renderedHeight + 'px',
                   backgroundPosition: (puzzleLayout.offsetX - cell.left - 1) + 'px ' + (puzzleLayout.offsetY - cell.top - 1) + 'px',
-                  '--puzzle-delay': (cell.order * 5) + 'ms',
+                  '--puzzle-delay': (cell.order * 6) + 'ms',
                   '--puzzle-accent': cell.accent || 'transparent',
+                  '--puzzle-entry-transform': cell.entryTransform,
                 }}
               />
             ))}
