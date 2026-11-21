@@ -75,6 +75,30 @@
       rgba(4, 5, 8, 0.34) 100%);
 }
 
+.ted-footer-artwork__reveal {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.ted-footer-artwork__grid {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  background-position: 0 0;
+  opacity: 0.58;
+}
+
+
 /* Six soft, uninterrupted light passes — deliberately no tile grid or mosaic. */
 .ted-footer-flow {
   z-index: 3;
@@ -92,10 +116,10 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.015) 26%,
-    rgba(235, 0, 40, 0.15) 48%,
-    rgba(255, 255, 255, 0.075) 54%,
-    rgba(255, 255, 255, 0.012) 69%,
+    rgba(255, 255, 255, 0.012) 26%,
+    rgba(255, 255, 255, 0.095) 49%,
+    rgba(255, 255, 255, 0.055) 54%,
+    rgba(255, 255, 255, 0.01) 69%,
     transparent 100%
   );
   content: '';
@@ -108,7 +132,7 @@
   position: absolute;
   inset: -20%;
   background:
-    radial-gradient(ellipse at var(--glow-x, 24%) var(--glow-y, 70%), rgba(235, 0, 40, 0.17), transparent 36%),
+    radial-gradient(ellipse at var(--glow-x, 24%) var(--glow-y, 70%), rgba(255, 255, 255, 0.065), transparent 36%),
     linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.025) 51%, transparent 60%);
   content: '';
   opacity: 0.48;
@@ -154,11 +178,21 @@
   z-index: 4;
   display: grid;
   grid-template-columns: minmax(245px, 0.88fr) minmax(0, 2.5fr);
-  align-items: stretch;
+  align-items: center;
   min-height: 100%;
   height: 100%;
   padding: 64px 54px;
+  pointer-events: none;
   background: linear-gradient(90deg, rgba(4, 5, 8, 0.16), rgba(4, 5, 8, 0.08) 55%, rgba(4, 5, 8, 0.16));
+}
+
+
+.ted-footer-content > * {
+  pointer-events: none;
+}
+
+.ted-footer-content a {
+  pointer-events: auto;
 }
 
 .ted-footer-brand {
@@ -167,7 +201,9 @@
   justify-content: center;
   align-items: flex-start;
   min-width: 0;
-  padding: 24px 42px 24px 0;
+  height: fit-content;
+  align-self: center;
+  padding: 16px 42px 16px 0;
   border-right: 1px solid rgba(255, 255, 255, 0.18);
   opacity: 1;
 }
@@ -246,8 +282,9 @@
 
 .ted-footer-group {
   min-width: 0;
-  height: 100%;
-  padding: 30px 22px 24px;
+  height: fit-content;
+  align-self: center;
+  padding: 17px 22px;
   border-left: 1px solid rgba(255, 255, 255, 0.14);
   opacity: 0;
   transform: translate3d(0, 14px, 0);
@@ -573,7 +610,8 @@
 
   .ted-footer-group,
   .ted-footer-group:first-child {
-    height: auto;
+    height: fit-content;
+    align-self: start;
     min-width: 0;
     padding: 23px 12px 19px 0;
     border-top: 1px solid rgba(255, 255, 255, 0.16);
@@ -687,6 +725,7 @@
 @media (prefers-reduced-motion: reduce) {
   .ted-footer-flow::before,
   .ted-footer-flow::after,
+  .ted-footer-artwork__reveal,
   .ted-footer-stage.is-active .ted-footer-brand,
   .ted-footer-stage.is-active .ted-footer-group {
     animation: none !important;
