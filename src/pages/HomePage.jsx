@@ -4,7 +4,7 @@ import { ARCHIVE_EDITIONS } from '../data/archiveData';
 import { AnimatePresence, motion as Motion } from 'framer-motion';
 import {
   ArrowRight, ArrowUpRight, CalendarDays, Camera, ChevronLeft, ChevronRight,
-  MapPin, Mic2, Users, X,
+  MapPin, X,
 } from 'lucide-react';
 import Hero from '../components/Hero';
 import SocialMedia from '../components/SocialMedia';
@@ -15,19 +15,37 @@ import './HomePage.css';
 
 const discovery = [
   {
-    index: '01', label: 'THE SPEAKERS', title: 'Eight voices. One stage.',
-    description: 'Meet the eight speakers featured in IIMT University’s official Break the Flow event recap.',
-    href: '/speakers', action: 'EXPLORE THE SPEAKERS', Icon: Mic2,
+    index: '01',
+    label: 'THE VOICES',
+    title: 'Our Speakers',
+    description: 'Meet the visionaries who bring powerful ideas to our stage.',
+    href: '/speakers',
+    action: 'MEET OUR SPEAKERS',
+    image: 'https://www.tedxiimtuniversity.com/assets/Aditya_Yadav.jpeg',
+    imageAlt: 'Speaker portrait used for the TEDxIIMT University speakers collection.',
+    imagePosition: 'center 27%',
   },
   {
-    index: '02', label: 'EVENT CURATION', title: 'Faculty-led. Community-shaped.',
-    description: 'The 2025 event was curated by Dr. Vaibhav Sharma, Dr. Akshay Raj, Dr. Vatsala Tomar and Ms. Zeba Tyagi.',
-    href: '/team', action: 'MEET THE TEAM', Icon: Users,
+    index: '02',
+    label: 'THE PEOPLE',
+    title: 'Our Team',
+    description: 'Discover the passionate people who make TEDxIIMT possible.',
+    href: '/team',
+    action: 'MEET THE TEAM',
+    image: 'https://www.tedxiimtuniversity.com/hero-bg.png',
+    imageAlt: 'TEDxIIMT event stage and visual identity.',
+    imagePosition: 'center center',
   },
   {
-    index: '03', label: 'THE ARCHIVE', title: 'The day, documented.',
-    description: 'Revisit official TEDxIIMT stage, audience and campus moments from the 2025 edition.',
-    href: '/gallery', action: 'VIEW EVENT GALLERY', Icon: Camera,
+    index: '03',
+    label: 'THE COLLABORATORS',
+    title: 'Our Partners',
+    description: 'Recognise the organisations and collaborators helping ideas travel further.',
+    href: '/partners',
+    action: 'EXPLORE OUR PARTNERS',
+    image: 'https://www.tedxiimtuniversity.com/transparent-hero-bg.PNG',
+    imageAlt: 'TEDxIIMT event monument artwork used as a background visual.',
+    imagePosition: 'center center',
   },
 ];
 
@@ -441,22 +459,31 @@ const HomePage = () => {
           </div>
         </section>
 
-        <section className="ted-home-discover" aria-labelledby="home-discover-heading">
+        <section className="ted-home-discover ted-home-grid-surface" aria-labelledby="home-discover-heading">
           <div className="ted-home-shell">
             <Reveal className="ted-home-discover-head">
               <div>
-                <span className="ted-home-kicker">THE EVENT / PEOPLE AND PROGRAMME</span>
-                <h2 id="home-discover-heading" className="ted-home-section-heading">The people behind <em>Break the Flow.</em></h2>
+                <span className="ted-home-kicker">EXPLORE / TEDxIIMT UNIVERSITY</span>
+                <h2 id="home-discover-heading" className="ted-home-section-heading">Discover <em>what brings us together.</em></h2>
               </div>
-              <p>On 11 November 2025, IIMT University brought speakers, faculty, students and creative performers together in Meerut.</p>
+              <p>Meet the voices, people and partners behind the TEDxIIMT experience.</p>
             </Reveal>
             <div className="ted-home-discover-grid">
-              {discovery.map(({ index, label, title, description, href, action, Icon }, cardIndex) => (
+              {discovery.map(({ index, label, title, description, href, action, image, imageAlt, imagePosition }, cardIndex) => (
                 <Reveal key={index} delay={cardIndex * 0.08}>
                   <a className="ted-home-discover-card" data-index={index} href={href}>
+                    <img
+                      className="ted-home-discover-image"
+                      src={image}
+                      alt={imageAlt}
+                      loading="lazy"
+                      decoding="async"
+                      style={{ objectPosition: imagePosition }}
+                    />
+                    <span className="ted-home-discover-image-shade" aria-hidden="true" />
                     <div className="ted-home-discover-top">
                       <span>{index} / {label}</span>
-                      <span className="ted-home-discover-icon">{React.createElement(Icon, { "aria-hidden": true })}</span>
+                      <span className="ted-home-discover-open" aria-hidden="true"><ArrowUpRight /></span>
                     </div>
                     <div className="ted-home-discover-content">
                       <h3>{title}</h3>
