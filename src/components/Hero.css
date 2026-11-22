@@ -101,7 +101,7 @@
 }
 
 .tedx-hero__wordmark {
-  color: #F7F6F5;
+  color: var(--ted-red);
   font-size: clamp(5.2rem, 6.2vw, 6.65rem);
   font-weight: 900;
   letter-spacing: -.09em;
@@ -943,16 +943,95 @@
   }
 }
 
-/* One-time TEDx mark reveal: a controlled flip, close-up and clean settle. */
+/* TED assembles first: three clean letter slices rise into alignment, then X takes over. */
+.tedx-hero__letter {
+  position: relative;
+  display: inline-block;
+  vertical-align: baseline;
+  color: var(--ted-red);
+  text-shadow: 0 4px 24px rgba(235, 0, 40, .12);
+  isolation: isolate;
+}
+
+.tedx-hero__letter::before {
+  display: block;
+  visibility: hidden;
+  content: attr(data-letter);
+}
+
+.tedx-hero__letter--t { --letter-delay: .34s; }
+.tedx-hero__letter--e { --letter-delay: .58s; }
+.tedx-hero__letter--d { --letter-delay: .82s; }
+
+.tedx-hero__letter-part {
+  position: absolute;
+  inset: 0;
+  display: block;
+  color: var(--ted-red);
+  pointer-events: none;
+  will-change: transform, opacity, filter;
+  animation: tedx-letter-assemble 1.12s cubic-bezier(.16, 1, .3, 1)
+    calc(var(--letter-delay) + var(--piece-delay)) both;
+}
+
+.tedx-hero__letter-part--upper {
+  --piece-delay: .12s;
+  --piece-x: -.16em;
+  --piece-y: -.46em;
+  --piece-rotate: -11deg;
+  clip-path: polygon(0 0, 100% 0, 100% 37%, 0 37%);
+}
+
+.tedx-hero__letter-part--middle {
+  --piece-delay: .04s;
+  --piece-x: .25em;
+  --piece-y: .08em;
+  --piece-rotate: 8deg;
+  clip-path: polygon(0 32%, 100% 32%, 100% 69%, 0 69%);
+}
+
+.tedx-hero__letter-part--lower {
+  --piece-delay: 0s;
+  --piece-x: -.12em;
+  --piece-y: .48em;
+  --piece-rotate: -7deg;
+  clip-path: polygon(0 64%, 100% 64%, 100% 100%, 0 100%);
+}
+
+@keyframes tedx-letter-assemble {
+  0% {
+    opacity: 0;
+    transform: translate3d(var(--piece-x), var(--piece-y), 0)
+      rotate(var(--piece-rotate)) scale(.88);
+    filter: blur(5px) brightness(1.7);
+  }
+  48% {
+    opacity: 1;
+    transform: translate3d(0, -.035em, 0) rotate(0) scale(1.035);
+    filter: blur(0) brightness(1.3);
+  }
+  73% {
+    opacity: 1;
+    transform: translate3d(0, .012em, 0) scale(.99);
+    filter: none;
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+/* The X begins only after all TED fragments have joined and settled. */
 .tedx-hero__wordmark-x {
   position: relative;
+  display: inline-block;
   color: var(--ted-red);
   text-shadow: 0 0 .18em rgba(235, 0, 40, .2);
-  display: inline-block;
   transform-origin: 50% 55%;
   transform-style: preserve-3d;
   backface-visibility: visible;
-  animation: tedx-wordmark-x-flight 2.55s cubic-bezier(.16, .84, .22, 1) .78s both;
+  animation: tedx-wordmark-x-flight 2.55s cubic-bezier(.16, .84, .22, 1) 2.28s both;
   will-change: transform, filter, opacity;
 }
 
@@ -972,7 +1051,7 @@
   opacity: 0;
   pointer-events: none;
   transform: translate(-50%, -50%) rotate(-24deg) scale(.38);
-  animation: tedx-wordmark-x-orbit 1.8s cubic-bezier(.18, .72, .22, 1) .98s both;
+  animation: tedx-wordmark-x-orbit 1.8s cubic-bezier(.18, .72, .22, 1) 2.48s both;
 }
 
 .tedx-hero__wordmark-x::after {
@@ -985,7 +1064,7 @@
   opacity: 0;
   filter: blur(7px);
   pointer-events: none;
-  animation: tedx-wordmark-x-aura 1.7s ease-out .78s both;
+  animation: tedx-wordmark-x-aura 1.7s ease-out 2.28s both;
 }
 
 @keyframes tedx-wordmark-x-flight {
@@ -1055,27 +1134,21 @@
 }
 
 @keyframes tedx-wordmark-x-aura {
-  0% {
-    opacity: 0;
-    transform: scale(.25);
-  }
-  36% {
-    opacity: .82;
-    transform: scale(.62);
-  }
-  62% {
-    opacity: .2;
-    transform: scale(1.32);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.8);
-  }
+  0% { opacity: 0; transform: scale(.25); }
+  36% { opacity: .82; transform: scale(.62); }
+  62% { opacity: .2; transform: scale(1.32); }
+  100% { opacity: 0; transform: scale(1.8); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tedx-hero__wordmark-x,
-  .tedx-hero__wordmark-x::before,
+  .tedx-hero__letter-part,
+  .tedx-hero__wordmark-x {
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+  }
+
   .tedx-hero__wordmark-x::before,
   .tedx-hero__wordmark-x::after {
     animation: none !important;
@@ -1084,4 +1157,3 @@
     opacity: 0 !important;
   }
 }
-
