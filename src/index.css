@@ -79,9 +79,3 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-
-
-/* TEDx red signature dot: keep the lowercase-i stem in its original text colour. */
-.tedx-red-i-dot{position:relative;display:inline-block;color:inherit}
-.tedx-red-i-dot::after{content:"";position:absolute;left:50%;top:.055em;width:.19em;height:.19em;border-radius:50%;background:#EB0028;transform:translateX(-50%);box-shadow:0 0 0 .035em rgba(235,0,40,.18),0 0 .34em rgba(235,0,40,.28);pointer-events:none}
-@media(prefers-reduced-motion:no-preference){.tedx-red-i-dot::after{transition:box-shadow 220ms ease,transform 220ms ease}}

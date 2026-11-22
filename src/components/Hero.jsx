@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion as Motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 import { useEdition } from '../context/EditionContext';
-import { AccentIText, IIMTMark } from './IIMTSignature';
+import { IIMTMark } from './IIMTSignature';
 import './Hero.css';
 
 const CAMPUS_PHOTOS = [
@@ -199,12 +199,12 @@ const Hero = () => {
             </div>
             <h1 className="tedx-hero__university">
               <IIMTMark className="tedx-hero__university-iimt" stemColor="#FFFFFF" />{' '}
-              <span className="tedx-hero__university-name"><AccentIText>University</AccentIText></span>
+              <span className="tedx-hero__university-name">University</span>
             </h1>
           </Motion.div>
 
           <Motion.div variants={itemVariants} className="tedx-hero__message">
-            <p className="tedx-hero__theme"><AccentIText>Break the <em>Flow.</em></AccentIText></p>
+            <p className="tedx-hero__theme">Break the <em>Flow.</em></p>
             <span className="tedx-hero__rule" aria-hidden="true" />
             <p className="tedx-hero__description">
               A platform to share ideas that challenge,<br className="tedx-desktop-break" />

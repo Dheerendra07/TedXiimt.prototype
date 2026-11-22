@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { AccentIText } from './IIMTSignature';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 import speakersData from '../data/speakersData';
 
@@ -73,9 +72,9 @@ const FeaturedSpeakers = () => {
           <div className="inline-block mb-4">
             <div className="h-1 w-16 bg-[#EB0028]"></div>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4"><AccentIText>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
             Featured <span className="text-[#EB0028]">Speakers</span>
-          </AccentIText></h2>
+          </h2>
           <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto">
             Visionaries sharing ideas worth spreading
           </p>
@@ -110,9 +109,9 @@ const FeaturedSpeakers = () => {
                       <div className="text-[#EB0028] text-xs md:text-sm font-bold uppercase tracking-widest mb-3">
                         Speaker {currentSpeaker + 1} of {speakers.length}
                       </div>
-                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3"><AccentIText>
+                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3">
                         {active.name}
-                      </AccentIText></h3>
+                      </h3>
                       <p className="text-lg md:text-xl text-gray-400 mb-2">
                         {active.title}
                       </p>
