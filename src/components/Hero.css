@@ -1473,3 +1473,70 @@
     filter: none !important;
   }
 }
+
+
+/* Real-time Three.js GLB scene; the logo stays above the scene layer. */
+.tedx-hero__wordmark {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+}
+.tedx-hero__transform-scene {
+  position: absolute;
+  z-index: 3;
+  top: -3.05em;
+  left: calc(50% + clamp(280px, 31vw, 430px));
+  width: min(1050px, 92vw);
+  height: clamp(390px, 42vw, 520px);
+  max-width: none;
+  overflow: visible;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+.tedx-3d-stage__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.tedx-hero__wordmark:not(.is-scene-ready) .tedx-hero__letter,
+.tedx-hero__wordmark:not(.is-scene-ready) .tedx-hero__wordmark-x,
+.tedx-hero__wordmark:not(.is-scene-ready) .tedx-hero__t-shades {
+  animation-play-state: paused;
+}
+.tedx-hero__wordmark.is-scene-ready .tedx-hero__letter,
+.tedx-hero__wordmark.is-scene-ready .tedx-hero__wordmark-x,
+.tedx-hero__wordmark.is-scene-ready .tedx-hero__t-shades {
+  animation-play-state: running;
+}
+
+@media (max-width: 1150px) and (min-width: 721px) {
+  .tedx-hero__transform-scene {
+    top: -2.95em;
+    left: calc(50% + clamp(205px, 21vw, 260px));
+    width: min(920px, 94vw);
+    height: clamp(355px, 43vw, 470px);
+  }
+}
+
+@media (max-width: 720px) {
+  .tedx-hero__transform-scene {
+    top: -2.9em;
+    left: calc(50% + 3rem);
+    width: 136vw;
+    height: clamp(270px, 70vw, 350px);
+    min-height: 270px;
+    max-height: 350px;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 380px) {
+  .tedx-hero__transform-scene {
+    top: -2.85em;
+    width: 144vw;
+    height: clamp(245px, 68vw, 285px);
+    min-height: 245px;
+    max-height: 285px;
+  }
+}
