@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TEDxIIMT — Signature Red Accent Preview</title>
+<style>
+:root{color-scheme:dark;--red:#eb302f;--ink:#090a0d;--panel:#111318;--muted:#9297a2;--line:rgba(255,255,255,.12);--white:#f5f5f3}
+*{box-sizing:border-box}body{margin:0;background:var(--ink);color:var(--white);font-family:Inter,Arial,sans-serif;letter-spacing:-.025em}
+.page{width:min(1120px,calc(100% - 40px));margin:auto;padding:42px 0 76px}
+.top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:22px;color:#b8bbc2;font:11px/1.4 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase}
+.mark{font-weight:800;letter-spacing:-.08em;font-size:19px;color:#fff}.mark b{color:var(--red)}
+.intro{padding:76px 0 54px;max-width:720px}.eyebrow{font:11px ui-monospace,monospace;letter-spacing:.16em;color:var(--red);text-transform:uppercase}
+h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.065em;margin:18px 0 20px;font-weight:650}
+.lead{color:#aeb2bb;font-size:16px;line-height:1.7;max-width:590px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sample{background:linear-gradient(145deg,#15171d,#0e1014);border:1px solid var(--line);border-radius:13px;padding:30px;min-height:225px;position:relative;overflow:hidden}
+.sample:after{content:"";position:absolute;inset:auto -45px -95px auto;width:210px;height:210px;border-radius:50%;background:radial-gradient(circle,rgba(235,48,47,.09),transparent 68%);pointer-events:none}
+.label{font:10px ui-monospace,monospace;color:#8d929d;letter-spacing:.15em;text-transform:uppercase;margin-bottom:34px}
+.kicker{font:11px ui-monospace,monospace;letter-spacing:.12em;color:var(--red);text-transform:uppercase;margin-bottom:13px}
+h2{font-size:clamp(29px,4vw,43px);line-height:1.04;letter-spacing:-.055em;margin:0;font-weight:620}
+.desc{font-size:13px;line-height:1.6;color:#9297a2;margin:15px 0 0;max-width:360px}
+.red-i{position:relative;display:inline-block;color:inherit}
+.red-i:after{content:"";position:absolute;left:50%;top:.075em;transform:translateX(-50%);width:.16em;height:.16em;border-radius:50%;background:var(--red);box-shadow:0 0 9px rgba(235,48,47,.2)}
+.editorial{display:flex;align-items:center;gap:12px;margin-bottom:15px}
+.editorial .num{font:11px ui-monospace,monospace;color:var(--red);letter-spacing:.1em}
+.editorial .rule{height:1px;width:42px;background:linear-gradient(90deg,var(--red),rgba(235,48,47,.12))}
+.wide{grid-column:1/-1;min-height:260px;display:flex;justify-content:space-between;align-items:flex-end;gap:30px}
+.wide .content{max-width:640px}.wide .meta{font:10px ui-monospace,monospace;letter-spacing:.14em;color:#777d88;text-transform:uppercase;align-self:flex-end;white-space:nowrap}
+.footer{display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line);margin-top:28px;padding-top:20px;color:#777d88;font:10px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase}
+@media(max-width:650px){.page{width:min(100% - 28px,560px);padding-top:25px}.intro{padding:56px 0 36px}.grid{grid-template-columns:1fr}.wide{grid-column:auto;display:block}.wide .meta{margin-top:32px}.sample{padding:24px;min-height:205px}.top{font-size:9px}}
+</style>
+</head>
+<body>
+<main class="page">
+<header class="top"><div class="mark">TED<span style="color:var(--red)">x</span>IIMT</div><div>Visual direction / 01</div><div>Concept preview · Not live UI</div></header>
+<section class="intro"><div class="eyebrow">Signature red accent system</div><h1>Small details.<br>Stronger <span class="red-i">i</span>dentity.</h1><p class="lead">A restrained TEDx-red signature for selected white brand headings. Original typography stays in charge: no font swaps, no size changes, no global text effects.</p></section>
+<section class="grid">
+<article class="sample"><div class="label">01 / Signature red dot</div><div class="kicker">Ideas worth spreading</div><h2>Ideas begin<br>with a <span class="red-i">s</span>park.</h2><p class="desc">The lowercase i keeps its original stem and position. Only its dot receives the brand red.</p></article>
+<article class="sample"><div class="label">02 / Editorial marker</div><div class="editorial"><span class="num">01 /</span><span class="rule"></span></div><h2>Featured<br>speakers</h2><p class="desc">A tiny red index and hairline create structure without touching the heading itself.</p></article>
+<article class="sample wide"><div class="content"><div class="label">03 / Combined signature</div><div class="editorial"><span class="num">02 / THE EDITION</span><span class="rule"></span></div><h2>Break the Flow.<br>Question the <span class="red-i">o</span>rdinary.</h2><p class="desc">The recommended balance: red dot only where a lowercase i naturally appears, paired with a quiet editorial marker. Speaker names and body copy remain untouched.</p></div><div class="meta">TEDxIIMT University<br>Brand accent study</div></article>
+</section>
+<footer class="footer"><span>Exploration only · No production styles changed</span><span>TEDxIIMT / Design preview</span></footer>
+</main>
+</body></html>
