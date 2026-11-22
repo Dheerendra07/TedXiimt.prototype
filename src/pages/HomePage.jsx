@@ -500,7 +500,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        <div id="home-highlights">
+        <div id="home-highlights" className="ted-home-reels">
           <SocialMedia />
         </div>
 
