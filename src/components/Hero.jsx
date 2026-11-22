@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion as Motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 import { useEdition } from '../context/EditionContext';
-import TEDVehicleSequence from './TEDVehicleSequence';
 import './Hero.css';
 
 const CAMPUS_PHOTOS = [
@@ -69,13 +68,6 @@ const Hero = () => {
   const [photos, setPhotos] = useState(CAMPUS_PHOTOS);
   const [activePhoto, setActivePhoto] = useState(0);
   const [photosReady, setPhotosReady] = useState(false);
-  const [sceneReady, setSceneReady] = useState(false);
-  const markSceneReady = useCallback(() => setSceneReady(true), []);
-
-  useEffect(() => {
-    if (prefersReducedMotion) setSceneReady(true);
-  }, [prefersReducedMotion]);
-
   useEffect(() => {
     let cancelled = false;
 
@@ -173,8 +165,7 @@ const Hero = () => {
           </Motion.div>
 
           <Motion.div variants={itemVariants} className="tedx-hero__identity">
-            <div className={`tedx-hero__wordmark${sceneReady ? ' is-scene-ready' : ''}`} aria-label="TEDx">
-              <TEDVehicleSequence onReady={markSceneReady} disabled={prefersReducedMotion} />
+            <div className="tedx-hero__wordmark" aria-label="TEDx">
               <span className="tedx-hero__letter-wrap tedx-hero__letter-wrap--t">
                 <span className="tedx-hero__letter tedx-hero__letter--t" aria-hidden="true">T</span>
                 <svg className="tedx-hero__t-shades" viewBox="0 0 110 72" aria-hidden="true" focusable="false">
