@@ -205,7 +205,7 @@ export default function TEDVehicleSequence({ onReady, disabled = false }) {
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
-        camera.position.set(0, 4.45, 9.7);
+        camera.position.set(0, 4.45, 11);
         camera.lookAt(0, 1.5, 0);
 
         scene.add(new THREE.HemisphereLight(0xe8eef7, 0x12151b, 2.1));
@@ -294,7 +294,7 @@ export default function TEDVehicleSequence({ onReady, disabled = false }) {
           renderer.setSize(width, height, false);
           camera.aspect = width / height;
           camera.fov = mobile ? 35 : 32;
-          camera.position.set(0, mobile ? 4.8 : 4.45, mobile ? 10.8 : 9.7);
+          camera.position.set(0, mobile ? 4.45 : 4.45, mobile ? 8.4 : 11);
           camera.lookAt(0, mobile ? 1.45 : 1.5, 0);
           camera.updateProjectionMatrix();
         };
@@ -305,7 +305,7 @@ export default function TEDVehicleSequence({ onReady, disabled = false }) {
 
         const width = Math.max(host.clientWidth, 320);
         const mobile = width < 620;
-        const xPositions = mobile ? [-3.05, 0, 3.05] : [-4.55, 0, 4.55];
+        const xPositions = mobile ? [-3.0, 0, 3.0] : [-4.1, 0, 4.1];
 
         available.forEach(({ config, gltf }) => {
           const root = gltf.scene;
