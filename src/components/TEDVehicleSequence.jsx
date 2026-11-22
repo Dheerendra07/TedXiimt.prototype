@@ -123,26 +123,12 @@ function animateDust(cloud, elapsed, start, duration) {
   cloud.points.geometry.attributes.position.needsUpdate = true;
 }
 
-function normalizeModel(root, targetWidth, targetHeight) {
-  root.updateMatrixWorld(true);
-  const bounds = new window.THREE.Box3().setFromObject(root);
-  const size = bounds.getSize(new window.THREE.Vector3());
-  const center = bounds.getCenter(new window.THREE.Vector3());
-  const factor = Math.min(
-    targetWidth / Math.max(size.x, size.z, 0.001),
-    targetHeight / Math.max(size.y, 0.001),
-  );
-  root.scale.setScalar(factor);
-  root.position.set(-center.x * factor, -bounds.min.y * factor, -center.z * factor);
-  return factor;
-}
-
-export default function TEDVehicleSequence({ onReady }) {
+export default function TEDVehicleSequence({ onReady, disabled = false }) {
   const hostRef = useRef(null);
 
   useEffect(() => {
     const host = hostRef.current;
-    if (!host) {
+    if (!host || disabled) {
       onReady?.();
       return undefined;
     }
@@ -154,7 +140,6 @@ export default function TEDVehicleSequence({ onReady }) {
     let resizeObserver;
     let animationFrame = 0;
     let startAt = 0;
-    let lastFrame = 0;
     let readyCalled = false;
     let pmrem;
     let environment;
@@ -201,7 +186,6 @@ export default function TEDVehicleSequence({ onReady }) {
         ]);
 
         if (cancelled) return;
-        window.THREE = THREE;
 
         renderer = new THREE.WebGLRenderer({
           alpha: true,
@@ -482,9 +466,6 @@ export default function TEDVehicleSequence({ onReady }) {
         const tick = () => {
           if (cancelled) return;
           const elapsed = (performance.now() - startAt) / 1000;
-          const now = performance.now();
-          const delta = Math.min((now - lastFrame) / 1000 || 0.016, 0.05);
-          lastFrame = now;
 
           vehicles.forEach((slot, index) => {
             const landing = easeOut((elapsed - 0.12 - index * 0.1) / 0.92);
