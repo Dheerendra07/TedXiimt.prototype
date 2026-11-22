@@ -196,7 +196,10 @@ const Hero = () => {
                 </svg>
               </span><span className="tedx-hero__letter tedx-hero__letter--e" aria-hidden="true">E</span><span className="tedx-hero__letter tedx-hero__letter--d" aria-hidden="true">D</span><sup className="tedx-hero__wordmark-x" aria-hidden="true">x</sup>
             </div>
-            <h1>IIMT University</h1>
+            <h1 className="tedx-hero__university">
+              <span className="tedx-hero__university-iimt">IIMT</span>{' '}
+              <span className="tedx-hero__university-name">University</span>
+            </h1>
           </Motion.div>
 
           <Motion.div variants={itemVariants} className="tedx-hero__message">
