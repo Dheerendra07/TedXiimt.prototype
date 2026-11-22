@@ -1,4 +1,4 @@
-/* TEDxIIMT — custom opening scene, drawn in SVG/CSS to stay native to the site. */
+/* TEDxIIMT first frame — authentic campus photography, quiet grid, restrained brand treatment. */
 .tedx-hero {
   --ted-red: #eb0028;
   position: relative;
@@ -10,52 +10,44 @@
   max-height: 1120px;
   align-items: center;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse 45% 58% at 73% 38%, rgba(155, 91, 86, .2), transparent 76%),
-    linear-gradient(118deg, #050609 0%, #0B0D12 49%, #17161B 100%);
-  color: #f7f5f4;
+  background: #080a0e;
+  color: #f7f6f5;
 }
 
-.tedx-hero__atmosphere {
+.tedx-hero__photo-frame {
   position: absolute;
   z-index: 0;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 48% 54% at 78% 48%, rgba(225, 143, 117, .15), transparent 72%),
-    radial-gradient(ellipse 42% 64% at 4% 48%, rgba(112, 13, 34, .18), transparent 76%),
-    linear-gradient(180deg, rgba(3, 4, 6, .08), transparent 46%, rgba(0, 0, 0, .55));
-  pointer-events: none;
+  inset: 0 0 0 26%;
+  overflow: hidden;
+  background: #161a20;
 }
 
-.tedx-hero-artwork {
-  position: absolute;
-  z-index: 0;
-  top: 0;
-  right: 0;
+.tedx-hero__photo {
   display: block;
   width: 100%;
   height: 100%;
-  overflow: visible;
-  opacity: .98;
-  transform-origin: 72% 48%;
-  animation: tedx-scene-drift 34s cubic-bezier(.45, 0, .55, 1) infinite alternate;
-  pointer-events: none;
+  object-fit: cover;
+  object-position: center 48%;
+  transform-origin: 62% 48%;
+  animation: tedx-campus-photo-settle 28s cubic-bezier(.45, 0, .55, 1) infinite alternate;
+  backface-visibility: hidden;
 }
 
-.tedx-hero__vignette {
+.tedx-hero__photo-shade {
   position: absolute;
   z-index: 1;
   inset: 0;
   background:
     linear-gradient(90deg,
-      rgba(4, 5, 7, .99) 0%,
-      rgba(4, 5, 7, .98) 20%,
-      rgba(5, 6, 8, .9) 35%,
-      rgba(5, 6, 8, .6) 49%,
-      rgba(5, 6, 8, .16) 68%,
-      rgba(5, 6, 8, .08) 100%),
-    linear-gradient(0deg, rgba(0, 0, 0, .72) 0%, rgba(0, 0, 0, .16) 24%, transparent 56%),
-    linear-gradient(180deg, rgba(0, 0, 0, .32) 0%, transparent 23%);
+      #080a0e 0%,
+      rgba(8, 10, 14, .99) 18%,
+      rgba(8, 10, 14, .91) 31%,
+      rgba(8, 10, 14, .67) 43%,
+      rgba(8, 10, 14, .27) 56%,
+      rgba(8, 10, 14, .06) 75%,
+      rgba(8, 10, 14, .02) 100%),
+    linear-gradient(0deg, rgba(5, 7, 10, .48) 0%, rgba(5, 7, 10, .08) 25%, transparent 51%),
+    linear-gradient(180deg, rgba(5, 7, 10, .24) 0%, transparent 24%);
   pointer-events: none;
 }
 
@@ -64,12 +56,23 @@
   z-index: 2;
   inset: 0;
   background-image:
-    linear-gradient(90deg, rgba(206, 216, 226, .06) 1px, transparent 1px),
-    linear-gradient(rgba(206, 216, 226, .06) 1px, transparent 1px);
+    linear-gradient(90deg, rgba(222, 229, 236, .075) 1px, transparent 1px),
+    linear-gradient(rgba(222, 229, 236, .075) 1px, transparent 1px);
   background-size: 72px 72px;
   background-position: center center;
-  opacity: .38;
-  mask-image: linear-gradient(90deg, rgba(0, 0, 0, .64), rgba(0, 0, 0, .72) 49%, rgba(0, 0, 0, .2));
+  opacity: .34;
+  mask-image: linear-gradient(90deg, rgba(0, 0, 0, .84), rgba(0, 0, 0, .66) 60%, rgba(0, 0, 0, .24));
+  pointer-events: none;
+}
+
+.tedx-hero__top-rule {
+  position: absolute;
+  z-index: 3;
+  top: 91px;
+  right: 6%;
+  left: 6%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,.18), rgba(255,255,255,.04) 54%, transparent);
   pointer-events: none;
 }
 
@@ -81,12 +84,12 @@
   height: 100%;
   align-items: center;
   margin: 0 auto;
-  padding: 86px 0 54px;
+  padding: 112px 0 78px;
   pointer-events: none;
 }
 
 .tedx-hero__content {
-  width: min(100%, 700px);
+  width: min(58%, 710px);
   pointer-events: auto;
 }
 
@@ -94,8 +97,8 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: clamp(27px, 3.1vh, 36px);
-  color: rgba(244, 240, 238, .84);
+  margin-bottom: clamp(26px, 3vh, 35px);
+  color: rgba(244, 241, 239, .87);
   font-size: 10px;
   font-weight: 650;
   letter-spacing: .34em;
@@ -110,7 +113,7 @@
   flex: 0 0 auto;
   border-radius: 50%;
   background: var(--ted-red);
-  box-shadow: 0 0 12px rgba(235, 0, 40, .58);
+  box-shadow: 0 0 10px rgba(235, 0, 40, .42);
 }
 
 .tedx-hero__identity {
@@ -122,44 +125,43 @@
 
 .tedx-hero__wordmark {
   color: var(--ted-red);
-  font-size: clamp(5.4rem, 7.35vw, 7.7rem);
+  font-size: clamp(5.2rem, 7.2vw, 7.3rem);
   font-weight: 900;
   letter-spacing: -.09em;
-  line-height: .79;
-  text-shadow: 0 7px 36px rgba(0, 0, 0, .3);
+  line-height: .8;
 }
 
 .tedx-hero__wordmark sup {
   display: inline-block;
   margin-left: .025em;
-  font-size: .47em;
+  font-size: .46em;
   letter-spacing: -.08em;
   line-height: 0;
   vertical-align: .72em;
 }
 
 .tedx-hero__identity h1 {
-  margin: 15px 0 0;
+  margin: 14px 0 0;
   color: #f7f6f5;
-  font-size: clamp(2.8rem, 4.45vw, 4.9rem);
+  font-size: clamp(2.7rem, 4.3vw, 4.75rem);
   font-weight: 390;
   letter-spacing: -.064em;
-  line-height: .98;
+  line-height: .99;
   white-space: nowrap;
-  text-shadow: 0 4px 24px rgba(0, 0, 0, .34);
+  text-shadow: 0 4px 24px rgba(0, 0, 0, .32);
 }
 
 .tedx-hero__message {
-  margin-top: clamp(16px, 2vh, 22px);
+  margin-top: clamp(17px, 2vh, 22px);
 }
 
 .tedx-hero__theme {
   margin: 0;
-  color: rgba(248, 246, 245, .96);
-  font-size: clamp(2.05rem, 3.05vw, 3.3rem);
+  color: rgba(248, 246, 245, .97);
+  font-size: clamp(2.05rem, 3.1vw, 3.35rem);
   font-weight: 320;
   letter-spacing: -.055em;
-  line-height: 1.08;
+  line-height: 1.1;
 }
 
 .tedx-hero__theme em {
@@ -175,18 +177,16 @@
   width: 62px;
   height: 2px;
   margin-top: 17px;
-  background: linear-gradient(90deg, var(--ted-red), rgba(235, 0, 40, .14));
-  box-shadow: 0 0 18px rgba(235, 0, 40, .38);
+  background: linear-gradient(90deg, var(--ted-red), rgba(235, 0, 40, .18));
 }
 
 .tedx-hero__description {
   margin: 16px 0 0;
-  color: rgba(231, 231, 232, .76);
+  color: rgba(231, 231, 232, .78);
   font-size: 14px;
   font-weight: 420;
   letter-spacing: .008em;
   line-height: 1.72;
-  text-shadow: 0 2px 16px rgba(0, 0, 0, .56);
 }
 
 .tedx-hero__actions {
@@ -198,12 +198,11 @@
 }
 
 .tedx-hero__button {
-  position: relative;
   display: inline-flex;
   min-height: 51px;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 15px;
   padding: 0 26px;
   border: 1px solid transparent;
   border-radius: 999px;
@@ -213,20 +212,20 @@
   letter-spacing: .005em;
   text-decoration: none;
   transition:
-    transform 280ms cubic-bezier(.2, .75, .25, 1),
-    background-color 260ms ease,
-    border-color 260ms ease,
-    box-shadow 260ms ease;
+    transform 260ms cubic-bezier(.2, .75, .25, 1),
+    background-color 240ms ease,
+    border-color 240ms ease,
+    box-shadow 240ms ease;
 }
 
 .tedx-hero__button > svg {
   width: 17px;
   height: 17px;
-  transition: transform 260ms cubic-bezier(.2, .75, .25, 1);
+  transition: transform 240ms ease;
 }
 
 .tedx-hero__button:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 
 .tedx-hero__button:hover > svg {
@@ -234,70 +233,50 @@
 }
 
 .tedx-hero__button--primary {
-  min-width: 206px;
-  background: linear-gradient(110deg, #f00b32, #c90026);
-  box-shadow: 0 10px 30px rgba(235, 0, 40, .22), inset 0 1px 0 rgba(255, 255, 255, .16);
+  min-width: 202px;
+  background: var(--ted-red);
+  box-shadow: 0 8px 24px rgba(235, 0, 40, .2);
 }
 
 .tedx-hero__button--primary:hover {
-  background: linear-gradient(110deg, #ff2347, #da002b);
-  box-shadow: 0 15px 38px rgba(235, 0, 40, .34);
+  background: #d90025;
+  box-shadow: 0 12px 28px rgba(235, 0, 40, .27);
 }
 
 .tedx-hero__button--secondary {
-  min-width: 188px;
-  border-color: rgba(255, 255, 255, .33);
-  background: rgba(5, 6, 8, .34);
-  backdrop-filter: blur(9px);
-  -webkit-backdrop-filter: blur(9px);
+  min-width: 184px;
+  border-color: rgba(255, 255, 255, .34);
+  background: rgba(8, 10, 14, .22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .tedx-hero__button--secondary:hover {
-  border-color: rgba(255, 255, 255, .72);
-  background: rgba(255, 255, 255, .085);
-}
-
-.tedx-hero__play {
-  display: grid;
-  width: 21px;
-  height: 21px;
-  place-items: center;
-  border: 1px solid rgba(235, 0, 40, .9);
-  border-radius: 50%;
-  color: var(--ted-red);
-}
-
-.tedx-hero__play span {
-  width: 0;
-  height: 0;
-  margin-left: 2px;
-  border-top: 4px solid transparent;
-  border-bottom: 4px solid transparent;
-  border-left: 6px solid currentColor;
+  border-color: rgba(255, 255, 255, .68);
+  background: rgba(255, 255, 255, .07);
 }
 
 .tedx-hero__meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 13px 27px;
-  margin-top: clamp(23px, 2.8vh, 30px);
+  gap: 12px 25px;
+  margin-top: clamp(23px, 2.7vh, 29px);
   color: rgba(245, 242, 241, .84);
   font-size: 12px;
   font-weight: 470;
-  letter-spacing: .005em;
 }
 
 .tedx-hero__meta span {
   display: inline-flex;
-  min-height: 25px;
+  min-height: 24px;
   align-items: center;
-  gap: 11px;
+  gap: 10px;
 }
 
 .tedx-hero__meta span + span {
-  padding-left: 25px;
-  border-left: 1px solid rgba(255, 255, 255, .38);
+  padding-left: 23px;
+  border-left: 1px solid rgba(255, 255, 255, .36);
 }
 
 .tedx-hero__meta svg {
@@ -307,9 +286,112 @@
   stroke-width: 1.8;
 }
 
-.tedx-hero__scroll {
+.tedx-hero__event-banner {
   position: absolute;
   z-index: 5;
+  right: clamp(5%, 7.4vw, 9%);
+  bottom: clamp(100px, 15.5vh, 166px);
+  display: flex;
+  width: min(410px, 34vw);
+  min-height: 112px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 19px 22px 18px 24px;
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-left: 3px solid var(--ted-red);
+  background: linear-gradient(112deg, rgba(8, 9, 12, .94), rgba(12, 13, 17, .86));
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .28);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+.tedx-hero__event-banner-brand {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tedx-hero__event-banner-brand > span {
+  color: var(--ted-red);
+  font-size: 39px;
+  font-weight: 900;
+  letter-spacing: -.085em;
+  line-height: .88;
+}
+
+.tedx-hero__banner-x {
+  display: inline-block;
+  font-size: .52em;
+  letter-spacing: -.08em;
+  vertical-align: .46em;
+}
+
+.tedx-hero__event-banner-brand i {
+  display: none;
+}
+
+.tedx-hero__event-banner-brand strong {
+  color: rgba(255, 255, 255, .94);
+  font-size: 11px;
+  font-weight: 620;
+  letter-spacing: .09em;
+  white-space: nowrap;
+}
+
+.tedx-hero__event-banner-detail {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  padding-left: 16px;
+  border-left: 1px solid rgba(255, 255, 255, .18);
+}
+
+.tedx-hero__event-banner-detail span:first-child {
+  color: rgba(255, 255, 255, .96);
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: .13em;
+  white-space: nowrap;
+}
+
+.tedx-hero__event-banner-detail span:last-child {
+  max-width: 150px;
+  color: rgba(220, 220, 222, .65);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: .11em;
+  line-height: 1.5;
+}
+
+.tedx-hero__photo-credit {
+  position: absolute;
+  z-index: 6;
+  right: clamp(5%, 7.4vw, 9%);
+  bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, .62);
+  font-size: 9px;
+  font-weight: 450;
+  letter-spacing: .015em;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .6);
+}
+
+.tedx-hero__photo-credit a {
+  color: rgba(255, 255, 255, .82);
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, .34);
+  text-underline-offset: 2px;
+}
+
+.tedx-hero__scroll {
+  position: absolute;
+  z-index: 6;
   bottom: 18px;
   left: 50%;
   display: flex;
@@ -351,19 +433,9 @@
   background: linear-gradient(rgba(255, 255, 255, .65), transparent);
 }
 
-.tedx-stage-lights {
-  transform-origin: 50% 65%;
-  animation: tedx-stage-glow 5.6s ease-in-out infinite alternate;
-}
-
-@keyframes tedx-scene-drift {
-  from { transform: scale(1.006) translate3d(0, 0, 0); }
-  to { transform: scale(1.035) translate3d(-.3%, -.18%, 0); }
-}
-
-@keyframes tedx-stage-glow {
-  from { opacity: .78; }
-  to { opacity: 1; }
+@keyframes tedx-campus-photo-settle {
+  from { transform: scale(1.005); }
+  to { transform: scale(1.025); }
 }
 
 @keyframes tedx-scroll-nudge {
@@ -373,64 +445,68 @@
 
 @media (max-width: 1100px) {
   .tedx-hero__content {
-    width: min(58%, 620px);
+    width: min(62%, 650px);
   }
 
-  .tedx-hero__wordmark {
-    font-size: clamp(5rem, 8vw, 6.9rem);
+  .tedx-hero__photo-frame {
+    left: 20%;
   }
 
-  .tedx-hero__identity h1 {
-    font-size: clamp(2.65rem, 5.1vw, 4rem);
-  }
-
-  .tedx-hero__vignette {
+  .tedx-hero__photo-shade {
     background:
-      linear-gradient(90deg, rgba(4, 5, 7, .99) 0%, rgba(4, 5, 7, .92) 27%, rgba(5, 6, 8, .69) 48%, rgba(5, 6, 8, .22) 78%, rgba(5, 6, 8, .12)),
-      linear-gradient(0deg, rgba(0, 0, 0, .74), transparent 50%);
+      linear-gradient(90deg, #080a0e 0%, rgba(8, 10, 14, .96) 20%, rgba(8, 10, 14, .83) 34%, rgba(8, 10, 14, .55) 49%, rgba(8, 10, 14, .1) 78%, transparent 100%),
+      linear-gradient(0deg, rgba(5, 7, 10, .46), transparent 45%),
+      linear-gradient(180deg, rgba(5, 7, 10, .22), transparent 24%);
+  }
+
+  .tedx-hero__event-banner {
+    right: 5%;
+    width: min(380px, 36vw);
+    padding-inline: 18px;
   }
 }
 
 @media (max-width: 720px) {
   .tedx-hero {
     height: 100svh;
-    min-height: 760px;
-    max-height: 920px;
+    min-height: 790px;
+    max-height: 960px;
     align-items: flex-start;
   }
 
-  .tedx-hero-artwork {
-    top: 25%;
-    right: -32%;
-    width: 145%;
-    height: 82%;
-    opacity: .74;
-    animation-duration: 42s;
+  .tedx-hero__photo-frame {
+    inset: 68px 0 auto;
+    height: min(78vw, 365px);
   }
 
-  .tedx-hero__atmosphere {
-    background:
-      radial-gradient(ellipse 95% 55% at 82% 68%, rgba(176, 91, 78, .17), transparent 72%),
-      radial-gradient(ellipse 70% 48% at 4% 22%, rgba(112, 13, 34, .17), transparent 76%),
-      linear-gradient(180deg, rgba(3, 4, 6, .18), rgba(0, 0, 0, .48));
+  .tedx-hero__photo {
+    object-position: center 48%;
+    animation-duration: 36s;
   }
 
-  .tedx-hero__vignette {
+  .tedx-hero__photo-shade {
     background:
-      linear-gradient(180deg, rgba(4, 5, 7, .86) 0%, rgba(4, 5, 7, .78) 36%, rgba(4, 5, 7, .35) 64%, rgba(0, 0, 0, .56) 100%),
-      linear-gradient(90deg, rgba(4, 5, 7, .76), rgba(4, 5, 7, .12));
+      linear-gradient(180deg, rgba(8, 10, 14, .24) 0%, rgba(8, 10, 14, .16) 30%, rgba(8, 10, 14, .74) 66%, #080a0e 100%),
+      linear-gradient(90deg, rgba(8, 10, 14, .38), rgba(8, 10, 14, .02));
   }
 
   .tedx-hero__grid {
     background-size: 58px 58px;
-    opacity: .27;
-    mask-image: linear-gradient(180deg, rgba(0, 0, 0, .82), rgba(0, 0, 0, .54) 70%, transparent);
+    opacity: .29;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, .76), rgba(0, 0, 0, .55) 65%, transparent);
+  }
+
+  .tedx-hero__top-rule {
+    top: 82px;
+    left: 6%;
+    right: 6%;
   }
 
   .tedx-hero__content-wrap {
     width: 88%;
     height: auto;
-    padding: 125px 0 180px;
+    align-items: flex-start;
+    padding: 126px 0 220px;
   }
 
   .tedx-hero__content {
@@ -439,36 +515,36 @@
 
   .tedx-hero__eyebrow {
     gap: 9px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
     font-size: 8px;
     letter-spacing: .23em;
   }
 
   .tedx-hero__wordmark {
-    font-size: clamp(5rem, 18vw, 6.6rem);
+    font-size: clamp(4.8rem, 17vw, 6.2rem);
   }
 
   .tedx-hero__identity h1 {
     margin-top: 12px;
-    font-size: clamp(2.3rem, 8.2vw, 3.4rem);
+    font-size: clamp(2.25rem, 8vw, 3.15rem);
   }
 
   .tedx-hero__message {
-    margin-top: 18px;
+    margin-top: 17px;
   }
 
   .tedx-hero__theme {
-    font-size: clamp(2.15rem, 8vw, 2.8rem);
+    font-size: clamp(2.05rem, 7.6vw, 2.65rem);
   }
 
   .tedx-hero__rule {
-    margin-top: 15px;
+    margin-top: 14px;
   }
 
   .tedx-hero__description {
-    margin-top: 13px;
+    margin-top: 12px;
     font-size: 13px;
-    line-height: 1.65;
+    line-height: 1.62;
   }
 
   .tedx-desktop-break {
@@ -476,15 +552,14 @@
   }
 
   .tedx-hero__actions {
-    gap: 10px;
-    margin-top: 21px;
+    gap: 9px;
+    margin-top: 19px;
   }
 
   .tedx-hero__button {
-    min-height: 47px;
-    padding-inline: 17px;
+    min-height: 46px;
+    padding-inline: 16px;
     font-size: 11px;
-    gap: 9px;
   }
 
   .tedx-hero__button--primary,
@@ -493,8 +568,8 @@
   }
 
   .tedx-hero__meta {
-    gap: 11px 17px;
-    margin-top: 21px;
+    gap: 10px 15px;
+    margin-top: 19px;
     font-size: 10px;
   }
 
@@ -503,14 +578,43 @@
     border-left: 0;
   }
 
-  .tedx-hero__meta svg {
-    width: 16px;
-    height: 16px;
+  .tedx-hero__event-banner {
+    right: 6%;
+    bottom: 82px;
+    width: 88%;
+    min-height: 88px;
+    padding: 14px 17px;
+  }
+
+  .tedx-hero__event-banner-brand > span {
+    font-size: 33px;
+  }
+
+  .tedx-hero__event-banner-brand strong {
+    font-size: 9px;
+  }
+
+  .tedx-hero__event-banner-detail {
+    gap: 5px;
+    padding-left: 12px;
+  }
+
+  .tedx-hero__event-banner-detail span:first-child {
+    font-size: 10px;
+  }
+
+  .tedx-hero__event-banner-detail span:last-child {
+    font-size: 7px;
+  }
+
+  .tedx-hero__photo-credit {
+    right: 6%;
+    bottom: 18px;
+    font-size: 8px;
   }
 
   .tedx-hero__scroll {
-    bottom: 13px;
-    font-size: 8px;
+    display: none;
   }
 }
 
@@ -520,17 +624,18 @@
     font-size: 7px;
   }
 
-  .tedx-hero__wordmark {
-    font-size: 4.7rem;
-  }
-
   .tedx-hero__identity h1 {
-    font-size: 2.08rem;
+    font-size: 2.02rem;
   }
 
-  .tedx-hero__button {
-    padding-inline: 13px;
-    font-size: 10px;
+  .tedx-hero__event-banner {
+    gap: 10px;
+    padding-inline: 12px;
+  }
+
+  .tedx-hero__event-banner-brand strong {
+    font-size: 8px;
+    letter-spacing: .05em;
   }
 }
 
@@ -540,12 +645,12 @@
   }
 
   .tedx-hero__content-wrap {
-    padding-top: 82px;
-    padding-bottom: 46px;
+    padding-top: 96px;
+    padding-bottom: 62px;
   }
 
   .tedx-hero__eyebrow {
-    margin-bottom: 22px;
+    margin-bottom: 21px;
   }
 
   .tedx-hero__message {
@@ -553,17 +658,20 @@
   }
 
   .tedx-hero__actions {
-    margin-top: 19px;
+    margin-top: 18px;
   }
 
   .tedx-hero__meta {
     margin-top: 18px;
   }
+
+  .tedx-hero__event-banner {
+    bottom: 90px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tedx-hero-artwork,
-  .tedx-stage-lights,
+  .tedx-hero__photo,
   .tedx-hero__scroll-icon {
     animation: none !important;
   }
@@ -572,106 +680,5 @@
   .tedx-hero__button > svg,
   .tedx-hero__scroll {
     transition: none !important;
-  }
-}
-
-
-/* 2026-11 campus realism pass: soften black cut-outs and bring out the IIMT evening scene. */
-.tedx-hero {
-  background:
-    radial-gradient(ellipse 48% 58% at 77% 37%, rgba(174, 117, 105, .2), transparent 76%),
-    linear-gradient(118deg, #090E15 0%, #101721 48%, #20232A 100%);
-}
-
-.tedx-hero__atmosphere {
-  background:
-    radial-gradient(ellipse 50% 58% at 78% 43%, rgba(242, 174, 140, .18), transparent 72%),
-    radial-gradient(ellipse 40% 62% at 5% 43%, rgba(125, 25, 47, .14), transparent 76%),
-    linear-gradient(180deg, rgba(11, 17, 25, .04), transparent 46%, rgba(7, 12, 18, .24));
-}
-
-.tedx-hero-artwork {
-  opacity: 1;
-  filter: saturate(1.08) contrast(1.025) brightness(1.08);
-}
-
-.tedx-campus-building {
-  filter: drop-shadow(0 18px 22px rgba(13, 17, 21, .18));
-}
-
-.tedx-campus-palm,
-.tedx-campus-foliage {
-  filter: saturate(.92) brightness(1.08);
-}
-
-.tedx-campus-entry {
-  filter: drop-shadow(0 10px 16px rgba(13, 17, 21, .22));
-}
-
-.tedx-event-truss,
-.tedx-campus-lights {
-  filter: drop-shadow(0 0 8px rgba(255, 209, 166, .2));
-}
-
-.tedx-event-stage {
-  filter: drop-shadow(0 18px 20px rgba(8, 12, 17, .24));
-}
-
-.tedx-hero__vignette {
-  background:
-    linear-gradient(90deg,
-      rgba(7, 11, 17, .95) 0%,
-      rgba(8, 12, 18, .92) 20%,
-      rgba(9, 13, 19, .82) 34%,
-      rgba(10, 14, 20, .56) 47%,
-      rgba(10, 14, 20, .22) 62%,
-      rgba(10, 14, 20, .04) 82%,
-      transparent 100%),
-    linear-gradient(0deg, rgba(7, 12, 18, .5) 0%, rgba(7, 12, 18, .1) 24%, transparent 56%),
-    linear-gradient(180deg, rgba(7, 12, 18, .22) 0%, transparent 24%);
-}
-
-.tedx-hero__grid {
-  opacity: .29;
-  background-image:
-    linear-gradient(90deg, rgba(213, 222, 231, .065) 1px, transparent 1px),
-    linear-gradient(rgba(213, 222, 231, .065) 1px, transparent 1px);
-}
-
-@media (max-width: 1100px) {
-  .tedx-hero__vignette {
-    background:
-      linear-gradient(90deg, rgba(7, 11, 17, .96) 0%, rgba(8, 12, 18, .88) 28%, rgba(9, 13, 19, .62) 49%, rgba(9, 13, 19, .18) 78%, rgba(9, 13, 19, .04)),
-      linear-gradient(0deg, rgba(7, 12, 18, .48), transparent 52%);
-  }
-}
-
-@media (max-width: 720px) {
-  .tedx-hero-artwork {
-    filter: saturate(1.02) contrast(1.02) brightness(1.03);
-  }
-
-  .tedx-hero__atmosphere {
-    background:
-      radial-gradient(ellipse 95% 55% at 82% 68%, rgba(198, 115, 96, .2), transparent 72%),
-      radial-gradient(ellipse 70% 48% at 4% 22%, rgba(112, 13, 34, .15), transparent 76%),
-      linear-gradient(180deg, rgba(7, 11, 17, .1), rgba(7, 12, 18, .3));
-  }
-
-  .tedx-hero__vignette {
-    background:
-      linear-gradient(180deg, rgba(7, 11, 17, .8) 0%, rgba(7, 11, 17, .74) 36%, rgba(7, 11, 17, .28) 64%, rgba(7, 12, 18, .46) 100%),
-      linear-gradient(90deg, rgba(7, 11, 17, .66), rgba(7, 11, 17, .08));
-  }
-
-  .tedx-hero__grid {
-    opacity: .24;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tedx-hero-artwork,
-  .tedx-stage-lights {
-    animation: none !important;
   }
 }
