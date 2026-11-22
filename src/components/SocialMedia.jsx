@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion as Motion } from 'framer-motion';
+import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { Play } from 'lucide-react';
 
 // Keep the four original local TEDxIIMT event clips; do not introduce additional media.
@@ -8,6 +8,7 @@ const reelVideos = ['/1.mp4', '/2.mp4', '/3.mp4', '/4.mp4'];
 const ReelCard = ({ post, index, onPlaybackStart }) => {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   // On touch layouts, stop off-screen reels so scrolling never leaves audio/video running behind the page.
   useEffect(() => {
@@ -61,10 +62,10 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
 
   return (
     <Motion.article
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.6, delay: index * 0.12 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 20, scale: 0.985 }}
+      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.14, margin: '0px 0px -40px 0px' }}
+      transition={{ duration: 0.52, delay: Math.min(index * 0.07, 0.21), ease: [0.22, 1, 0.36, 1] }}
       className="ted-reel-card group overflow-hidden rounded-[24px] border border-white/5 bg-zinc-950 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#EB0028]/70 hover:shadow-[0_24px_70px_-28px_rgba(235,0,40,0.7)]"
     >
       <div className="relative aspect-[9/16] overflow-hidden rounded-3xl bg-black">
@@ -105,6 +106,7 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
 
 const SocialMedia = () => {
   const activeVideoRef = useRef(null);
+  const prefersReducedMotion = useReducedMotion();
 
   const handlePlaybackStart = (video) => {
     if (activeVideoRef.current && activeVideoRef.current !== video) {
@@ -121,10 +123,10 @@ const SocialMedia = () => {
 
       <div className="ted-reels-inner relative mx-auto max-w-7xl">
         <Motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+          whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.14 }}
+          transition={{ duration: 0.56, ease: [0.22, 1, 0.36, 1] }}
           className="ted-reels-heading mb-12 flex flex-col items-center gap-5 text-center md:mb-16"
         >
           <div className="max-w-2xl">
