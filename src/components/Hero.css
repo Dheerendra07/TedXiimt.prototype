@@ -1051,7 +1051,7 @@
   }
 }
 
-/* Compact shades rest on the left edge of T, with one temple arm hanging down. */
+/* Inverted, casually perched shades on T's left edge — a small editorial accent. */
 .tedx-hero__t-shades {
   position: absolute;
   z-index: 7;
@@ -1062,26 +1062,28 @@
   opacity: 0;
   overflow: visible;
   pointer-events: none;
-  transform-origin: 28% 16%;
-  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .42));
-  animation: ted-shades-settle .9s cubic-bezier(.18, .9, .25, 1) 2.45s both;
+  transform-origin: 50% 50%;
+  filter:
+    drop-shadow(0 4px 3px rgba(0, 0, 0, .48))
+    drop-shadow(0 0 5px rgba(184, 204, 220, .12));
+  animation: ted-shades-settle 1.08s cubic-bezier(.18, .9, .25, 1) 2.45s both;
 }
 
 @keyframes ted-shades-settle {
   0% {
     opacity: 0;
-    transform: translate3d(-.12em, -.48em, 0) rotate(-24deg) scale(.62);
+    transform: translate3d(-.13em, -.48em, 0) rotate(112deg) scale(.68);
   }
-  56% {
+  48% {
     opacity: 1;
-    transform: translate3d(.015em, .055em, 0) rotate(13deg) scale(1.04);
+    transform: translate3d(.025em, .035em, 0) rotate(174deg) scale(1.08);
   }
-  78% {
-    transform: translate3d(0, .025em, 0) rotate(7deg) scale(1);
+  72% {
+    transform: translate3d(0, .015em, 0) rotate(148deg) scale(.98);
   }
   100% {
     opacity: 1;
-    transform: translate3d(0, .025em, 0) rotate(7deg) scale(1);
+    transform: translate3d(0, .015em, 0) rotate(154deg) scale(1);
   }
 }
 
@@ -1209,13 +1211,19 @@
 @media (prefers-reduced-motion: reduce) {
   .tedx-hero__letter,
   .tedx-hero__wordmark-x,
-  .tedx-hero__t-shades,
   .tedx-hero__wordmark-x::before,
   .tedx-hero__wordmark-x::after {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;
+  }
+
+  .tedx-hero__t-shades {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: rotate(154deg) !important;
+    filter: drop-shadow(0 4px 3px rgba(0, 0, 0, .48)) !important;
   }
 
   .tedx-hero__wordmark-x::before,
