@@ -162,7 +162,19 @@ const Hero = () => {
 
           <Motion.div variants={itemVariants} className="tedx-hero__identity">
             <div className="tedx-hero__wordmark" aria-label="TEDx">
-              <span>TED</span><sup className="tedx-hero__wordmark-x">x</sup>
+              <span className="tedx-hero__letter tedx-hero__letter--t" data-letter="T" aria-hidden="true">
+                <span className="tedx-hero__letter-part tedx-hero__letter-part--upper">T</span>
+                <span className="tedx-hero__letter-part tedx-hero__letter-part--middle">T</span>
+                <span className="tedx-hero__letter-part tedx-hero__letter-part--lower">T</span>
+              </span><span className="tedx-hero__letter tedx-hero__letter--e" data-letter="E" aria-hidden="true">
+                <span className="tedx-hero__letter-part tedx-hero__letter-part--upper">E</span>
+                <span className="tedx-hero__letter-part tedx-hero__letter-part--middle">E</span>
+                <span className="tedx-hero__letter-part tedx-hero__letter-part--lower">E</span>
+              </span><span className="tedx-hero__letter tedx-hero__letter--d" data-letter="D" aria-hidden="true">
+                <span className="tedx-hero__letter-part tedx-hero__letter-part--upper">D</span>
+                <span className="tedx-hero__letter-part tedx-hero__letter-part--middle">D</span>
+                <span className="tedx-hero__letter-part tedx-hero__letter-part--lower">D</span>
+              </span><sup className="tedx-hero__wordmark-x" aria-hidden="true">x</sup>
             </div>
             <h1>IIMT University</h1>
           </Motion.div>
