@@ -181,6 +181,18 @@ const HomePage = () => {
   const previousPhotoTriggerRef = useRef(null);
 
   useEffect(() => {
+    const themePanel = document.querySelector('.ted-home-edition-theme-panel');
+    if (!themePanel || typeof IntersectionObserver === 'undefined') return undefined;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      themePanel.classList.toggle('is-theme-trajectory-active', entry.isIntersecting);
+    }, { threshold: 0.38, rootMargin: '0px 0px -5% 0px' });
+
+    observer.observe(themePanel);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     if (!isLightboxOpen) {
       const previousTrigger = previousPhotoTriggerRef.current;
       if (previousTrigger?.isConnected) {
@@ -292,7 +304,11 @@ const HomePage = () => {
                 </div>
                 <div className="ted-home-edition-theme-content">
                   <span className="ted-home-edition-theme-overline">TEDxIIMT UNIVERSITY · {editionYear}</span>
-                  <h3>Break <em>the</em><br />Flow<span>.</span></h3>
+                  <div className="ted-home-edition-theme-trajectory" aria-hidden="true">
+                    <span className="ted-home-edition-theme-trajectory-line" />
+                    <span className="ted-home-edition-theme-trajectory-dot" />
+                  </div>
+                  <h3>Break <em>the</em><br />Flow<span className="ted-home-edition-theme-period">.</span></h3>
                   <div className="ted-home-edition-theme-foot">
                     <span>A THEME THAT INVITES A DIFFERENT PERSPECTIVE.</span>
                     <span className="ted-home-edition-theme-mark">TED<span>x</span></span>
