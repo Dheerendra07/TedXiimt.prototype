@@ -2268,3 +2268,662 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
     transform: none;
   }
 }
+
+
+/* ── Edition record: one connected editorial composition, not three generic cards ── */
+.ted-home-edition-showcase {
+  --edition-red: #EB0028;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(82px, 9vw, 126px) 0 clamp(72px, 8vw, 106px);
+  border-top: 1px solid rgba(176, 201, 219, .11);
+  border-bottom: 1px solid rgba(176, 201, 219, .1);
+  background:
+    radial-gradient(ellipse 43% 54% at 7% 78%, rgba(235, 0, 40, .095), transparent 72%),
+    radial-gradient(ellipse 46% 65% at 90% 18%, rgba(103, 137, 158, .095), transparent 75%),
+    linear-gradient(112deg, #090C11 0%, #0B0E13 52%, #0A0C10 100%);
+}
+
+.ted-home-edition-showcase::after {
+  position: absolute;
+  z-index: 0;
+  top: 13%;
+  right: -12%;
+  width: 45%;
+  height: 72%;
+  border: 1px solid rgba(176, 201, 219, .055);
+  border-radius: 50%;
+  content: "";
+  transform: rotate(-18deg);
+  pointer-events: none;
+}
+
+.ted-home-edition-showcase > .ted-home-shell {
+  position: relative;
+  z-index: 1;
+}
+
+.ted-home-edition-intro {
+  margin-bottom: clamp(34px, 4.5vw, 58px);
+}
+
+.ted-home-edition-intro-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid rgba(255, 255, 255, .13);
+}
+
+.ted-home-edition-intro-top .ted-home-kicker {
+  color: #F0526A;
+}
+
+.ted-home-edition-edition-index {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(218, 224, 230, .48);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .17em;
+  white-space: nowrap;
+}
+
+.ted-home-edition-edition-index i {
+  display: block;
+  width: 22px;
+  height: 1px;
+  background: rgba(235, 0, 40, .8);
+}
+
+.ted-home-edition-heading-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(260px, .88fr);
+  align-items: end;
+  gap: clamp(28px, 5vw, 74px);
+  padding-top: 26px;
+}
+
+.ted-home-edition-heading-row h2 {
+  max-width: 820px;
+  margin: 0;
+  color: #F5F4F3;
+  font-size: clamp(2.8rem, 5.15vw, 5.55rem);
+  font-weight: 820;
+  letter-spacing: -.078em;
+  line-height: .94;
+  text-wrap: balance;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.ted-home-edition-heading-row h2 em {
+  color: var(--edition-red);
+  font-style: normal;
+}
+
+.ted-home-edition-lede {
+  max-width: 390px;
+  padding: 3px 0 5px 22px;
+  border-left: 1px solid rgba(235, 0, 40, .72);
+}
+
+.ted-home-edition-lede > span {
+  display: block;
+  margin-bottom: 12px;
+  color: rgba(208, 216, 223, .46);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .19em;
+}
+
+.ted-home-edition-lede p {
+  margin: 0;
+  color: rgba(239, 238, 237, .84);
+  font-size: clamp(14px, 1.35vw, 17px);
+  font-weight: 450;
+  line-height: 1.68;
+  text-wrap: pretty;
+}
+
+.ted-home-edition-showcase-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+  gap: 13px;
+  align-items: stretch;
+}
+
+.ted-home-edition-theme-panel {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 438px;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: clamp(27px, 3.5vw, 48px);
+  border: 1px solid rgba(176, 201, 219, .18);
+  background:
+    radial-gradient(ellipse 70% 72% at 86% 88%, rgba(235, 0, 40, .15), transparent 70%),
+    linear-gradient(138deg, rgba(255, 255, 255, .045), transparent 48%),
+    #0B0F14;
+  isolation: isolate;
+  transition: border-color .45s ease, box-shadow .45s ease, transform .5s cubic-bezier(.2,.7,.2,1);
+}
+
+.ted-home-edition-theme-panel::before {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image:
+    linear-gradient(90deg, rgba(255, 255, 255, .023) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, .023) 1px, transparent 1px);
+  background-size: 36px 36px;
+  content: "";
+  opacity: .6;
+  pointer-events: none;
+  mask-image: linear-gradient(135deg, rgba(0,0,0,.85), transparent 76%);
+}
+
+.ted-home-edition-theme-panel::after {
+  position: absolute;
+  z-index: -1;
+  right: -32px;
+  bottom: -72px;
+  color: rgba(255, 255, 255, .035);
+  content: "BTF";
+  font-size: clamp(10rem, 22vw, 19rem);
+  font-weight: 900;
+  letter-spacing: -.12em;
+  line-height: .8;
+  pointer-events: none;
+  transition: color .45s ease, transform .65s cubic-bezier(.2,.7,.2,1);
+}
+
+.ted-home-edition-theme-panel:hover {
+  border-color: rgba(235, 0, 40, .48);
+  box-shadow: 0 24px 65px rgba(0, 0, 0, .24), 0 0 42px rgba(235, 0, 40, .055);
+  transform: translateY(-3px);
+}
+
+.ted-home-edition-theme-panel:hover::after {
+  color: rgba(235, 0, 40, .075);
+  transform: translate(-7px, -5px);
+}
+
+.ted-home-edition-panel-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: #F0526A;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .17em;
+  line-height: 1.5;
+}
+
+.ted-home-edition-panel-top > span:last-child {
+  color: rgba(213, 220, 226, .46);
+  font-size: 8px;
+  letter-spacing: .15em;
+}
+
+.ted-home-edition-theme-content {
+  position: relative;
+  z-index: 1;
+  margin: auto 0;
+  padding: 45px 0 38px;
+}
+
+.ted-home-edition-theme-overline {
+  display: block;
+  margin-bottom: 17px;
+  color: rgba(214, 221, 227, .54);
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: .19em;
+}
+
+.ted-home-edition-theme-content h3 {
+  margin: 0;
+  color: #F5F3F1;
+  font-size: clamp(4.7rem, 8.7vw, 9rem);
+  font-weight: 850;
+  letter-spacing: -.095em;
+  line-height: .79;
+  text-wrap: balance;
+  -webkit-font-smoothing: antialiased;
+}
+
+.ted-home-edition-theme-content h3 em {
+  display: inline-block;
+  margin-left: .12em;
+  color: var(--edition-red);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: .72em;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -.08em;
+  vertical-align: .11em;
+}
+
+.ted-home-edition-theme-content h3 > span:last-child {
+  display: block;
+  margin-top: 13px;
+}
+
+.ted-home-edition-theme-content h3 > span:last-child > span {
+  color: var(--edition-red);
+}
+
+.ted-home-edition-theme-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, .13);
+}
+
+.ted-home-edition-theme-foot > span:first-child {
+  max-width: 290px;
+  color: rgba(216, 222, 228, .58);
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: .15em;
+  line-height: 1.65;
+}
+
+.ted-home-edition-theme-mark {
+  color: var(--edition-red);
+  font-size: 23px;
+  font-weight: 900;
+  letter-spacing: -.09em;
+  line-height: .9;
+}
+
+.ted-home-edition-theme-mark span {
+  font-size: .62em;
+  vertical-align: .27em;
+}
+
+.ted-home-edition-facts-rail {
+  display: grid;
+  min-width: 0;
+  grid-template-rows: minmax(180px, .82fr) minmax(228px, 1.18fr);
+  gap: 13px;
+}
+
+.ted-home-edition-date-panel,
+.ted-home-edition-venue-panel {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: clamp(22px, 2.55vw, 34px);
+  border: 1px solid rgba(176, 201, 219, .14);
+  background:
+    linear-gradient(142deg, rgba(255, 255, 255, .032), transparent 62%),
+    #0D1116;
+  transition: border-color .38s ease, background-color .38s ease, transform .42s cubic-bezier(.2,.7,.2,1);
+}
+
+.ted-home-edition-date-panel::before,
+.ted-home-edition-venue-panel::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--edition-red);
+  content: "";
+  transition: width .45s cubic-bezier(.2,.7,.2,1);
+}
+
+.ted-home-edition-date-panel:hover,
+.ted-home-edition-venue-panel:hover {
+  border-color: rgba(235, 0, 40, .43);
+  background:
+    linear-gradient(142deg, rgba(235, 0, 40, .055), transparent 64%),
+    #0F1217;
+  transform: translateY(-3px);
+}
+
+.ted-home-edition-date-panel:hover::before,
+.ted-home-edition-venue-panel:hover::before {
+  width: 100%;
+}
+
+.ted-home-edition-date-panel .ted-home-edition-panel-top svg,
+.ted-home-edition-venue-panel .ted-home-edition-panel-top svg {
+  width: 19px;
+  height: 19px;
+  color: rgba(235, 0, 40, .88);
+  stroke-width: 1.6;
+}
+
+.ted-home-edition-date-lockup {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 2.3vw, 34px);
+  margin: 19px 0 12px;
+}
+
+.ted-home-edition-date-day {
+  color: #F5F3F1;
+  font-size: clamp(4.6rem, 7vw, 6.7rem);
+  font-weight: 830;
+  letter-spacing: -.095em;
+  line-height: .8;
+  font-variant-numeric: tabular-nums;
+}
+
+.ted-home-edition-date-lockup > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 18px;
+  border-left: 1px solid rgba(235, 0, 40, .58);
+}
+
+.ted-home-edition-date-lockup strong {
+  color: #EDEBE9;
+  font-size: clamp(13px, 1.4vw, 17px);
+  font-weight: 780;
+  letter-spacing: -.025em;
+  line-height: 1.2;
+}
+
+.ted-home-edition-date-lockup > div > span {
+  color: rgba(210, 216, 222, .48);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+
+.ted-home-edition-panel-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  color: rgba(210, 216, 222, .44);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .15em;
+}
+
+.ted-home-edition-panel-foot i {
+  width: 32px;
+  height: 1px;
+  background: var(--edition-red);
+}
+
+.ted-home-edition-venue-content {
+  margin: 16px 0 18px;
+}
+
+.ted-home-edition-venue-content h3 {
+  margin: 0;
+  color: #F2F0EF;
+  font-size: clamp(1.65rem, 2.3vw, 2.35rem);
+  font-weight: 790;
+  letter-spacing: -.065em;
+  line-height: 1;
+}
+
+.ted-home-edition-venue-floor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 0;
+  color: #F0526A;
+  font-size: 9px;
+  font-weight: 780;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.ted-home-edition-venue-floor i {
+  width: 20px;
+  height: 1px;
+  background: rgba(235, 0, 40, .75);
+}
+
+.ted-home-edition-venue-campus {
+  max-width: 350px;
+  margin: 12px 0 0;
+  color: rgba(223, 226, 230, .7);
+  font-size: 12px;
+  font-weight: 470;
+  line-height: 1.65;
+}
+
+.ted-home-edition-venue-location {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  color: rgba(210, 216, 222, .56);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.ted-home-edition-venue-location svg {
+  width: 15px;
+  height: 15px;
+  color: var(--edition-red);
+}
+
+.ted-home-edition-bottomline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, .12);
+}
+
+.ted-home-edition-bottomline > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(206, 215, 223, .42);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .15em;
+}
+
+.ted-home-edition-bottomline > span i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--edition-red);
+  box-shadow: 0 0 10px rgba(235, 0, 40, .35);
+}
+
+.ted-home-edition-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #F0526A;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .14em;
+  line-height: 1.5;
+  text-decoration: none;
+  transition: color .22s ease;
+}
+
+.ted-home-edition-source svg {
+  width: 14px;
+  height: 14px;
+  transition: transform .22s ease;
+}
+
+.ted-home-edition-source:hover {
+  color: #fff;
+}
+
+.ted-home-edition-source:hover svg {
+  transform: translate(3px, -3px);
+}
+
+@media (max-width: 1050px) {
+  .ted-home-edition-heading-row {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .ted-home-edition-lede {
+    max-width: 520px;
+  }
+
+  .ted-home-edition-showcase-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ted-home-edition-theme-panel {
+    min-height: 360px;
+  }
+
+  .ted-home-edition-theme-content h3 {
+    font-size: clamp(5rem, 10vw, 8rem);
+  }
+
+  .ted-home-edition-facts-rail {
+    grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+    grid-template-rows: minmax(215px, auto);
+  }
+}
+
+@media (max-width: 650px) {
+  .ted-home-edition-showcase {
+    padding: 76px 0 70px;
+  }
+
+  .ted-home-edition-intro-top {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ted-home-edition-heading-row {
+    padding-top: 22px;
+  }
+
+  .ted-home-edition-heading-row h2 {
+    font-size: clamp(2.85rem, 12vw, 4.5rem);
+    line-height: .94;
+  }
+
+  .ted-home-edition-lede {
+    padding-left: 16px;
+  }
+
+  .ted-home-edition-lede p {
+    font-size: 14px;
+  }
+
+  .ted-home-edition-showcase-grid {
+    gap: 10px;
+  }
+
+  .ted-home-edition-theme-panel {
+    min-height: 340px;
+    padding: 23px;
+  }
+
+  .ted-home-edition-theme-content {
+    padding: 42px 0 30px;
+  }
+
+  .ted-home-edition-theme-content h3 {
+    font-size: clamp(4.8rem, 18vw, 6.4rem);
+  }
+
+  .ted-home-edition-theme-foot > span:first-child {
+    max-width: 220px;
+    font-size: 7px;
+  }
+
+  .ted-home-edition-facts-rail {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    gap: 10px;
+  }
+
+  .ted-home-edition-date-panel {
+    min-height: 186px;
+    padding: 22px;
+  }
+
+  .ted-home-edition-venue-panel {
+    min-height: 212px;
+    padding: 22px;
+  }
+
+  .ted-home-edition-date-day {
+    font-size: 5.5rem;
+  }
+
+  .ted-home-edition-date-lockup strong {
+    font-size: 15px;
+  }
+
+  .ted-home-edition-venue-content h3 {
+    font-size: 1.85rem;
+  }
+
+  .ted-home-edition-bottomline {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 370px) {
+  .ted-home-edition-heading-row h2 {
+    font-size: 2.55rem;
+  }
+
+  .ted-home-edition-theme-content h3 {
+    font-size: 4.45rem;
+  }
+
+  .ted-home-edition-date-lockup {
+    gap: 14px;
+  }
+
+  .ted-home-edition-date-lockup > div {
+    padding-left: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-home-edition-theme-panel,
+  .ted-home-edition-theme-panel::after,
+  .ted-home-edition-date-panel,
+  .ted-home-edition-venue-panel,
+  .ted-home-edition-date-panel::before,
+  .ted-home-edition-venue-panel::before,
+  .ted-home-edition-source,
+  .ted-home-edition-source svg {
+    transition-duration: .01ms !important;
+  }
+}
