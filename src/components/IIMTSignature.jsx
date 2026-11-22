@@ -1,76 +1,84 @@
 import React from 'react';
 
 /**
- * Signature 01 uses the native I glyph so it shares the exact font size,
- * cap-height and baseline with the surrounding wordmark. The red angled cap
- * is an absolute overlay and therefore never changes line layout.
+ * Signature 01: each I is its own silver stem and its own red, beveled cap.
+ * The SVG occupies one em and sits on the text baseline, so neither initial
+ * floats above or shrinks relative to the letters beside it.
  */
-const SignatureInitial = () => (
+const SignatureInitial = ({ stemColor = '#E9EDF1' }) => (
   <span
     aria-hidden="true"
     style={{
-      position: 'relative',
       display: 'inline-block',
+      width: '.4em',
+      height: '1em',
+      flex: '0 0 .4em',
       verticalAlign: 'baseline',
-      fontFamily: 'inherit',
-      fontSize: '1em',
-      fontWeight: 'inherit',
-      lineHeight: 'inherit',
-      color: 'transparent',
-      WebkitTextFillColor: 'transparent',
-      backgroundImage: 'linear-gradient(90deg, #BFC6CE 0%, #F7F8F9 48%, #D9DEE4 100%)',
-      backgroundClip: 'text',
-      WebkitBackgroundClip: 'text',
-      marginRight: '-.015em',
+      lineHeight: 1,
+      overflow: 'visible',
     }}
   >
-    I
     <svg
-      viewBox="0 0 48 16"
-      aria-hidden="true"
+      viewBox="0 0 48 100"
+      preserveAspectRatio="none"
       focusable="false"
       style={{
-        position: 'absolute',
-        top: '.045em',
-        left: '-.09em',
-        width: '.72em',
-        height: '.19em',
+        display: 'block',
+        width: '100%',
+        height: '100%',
         overflow: 'visible',
-        pointerEvents: 'none',
       }}
     >
-      <path d="M0 1 H48 V8 L0 15 Z" fill="#EB0028" />
-      <path d="M1.5 1.5 H46" stroke="#FF7186" strokeWidth="1.2" strokeLinecap="round" />
-      <path d="M47 2 V7" stroke="#A90020" strokeWidth="1" />
+      {/* One distinct red cap per I — intentionally separated from its neighbour. */}
+      <path d="M3 7 L45 2 L41 19 L7 23 Z" fill="#B90025" />
+      <path d="M3 7 L45 2 L43 9 L4.5 14 Z" fill="#F12A49" />
+      <path d="M4.5 14 L43 9" fill="none" stroke="#FF8296" strokeWidth="1.25" strokeLinecap="round" />
+      <path d="M7 23 L41 19" fill="none" stroke="#760018" strokeWidth="1.7" />
+
+      {/* Metallic upright and foot complete the I, sharing the same baseline. */}
+      <path d="M17 22 L30 19 V91 H17 Z" fill={stemColor} />
+      <path d="M17 22 L21 21.1 V89 H17 Z" fill="#FFFFFF" opacity=".34" />
+      <path d="M29 19.3 V91" fill="none" stroke="#7C8792" strokeWidth="1.5" opacity=".55" />
+      <path d="M10 90 H37 V100 H10 Z" fill={stemColor} />
+      <path d="M10 90 H37" fill="none" stroke="#FFFFFF" strokeWidth="1.2" opacity=".42" />
+      <path d="M35 92 V99" fill="none" stroke="#7C8792" strokeWidth="1.2" opacity=".65" />
     </svg>
   </span>
 );
 
-const SignatureLetters = ({ stemColor }) => (
+const SignatureLetters = ({ stemColor = '#E9EDF1' }) => (
   <span
     aria-hidden="true"
     style={{
-      display: 'inline',
+      display: 'inline-flex',
+      alignItems: 'baseline',
+      gap: '.035em',
       whiteSpace: 'nowrap',
       font: 'inherit',
       lineHeight: 'inherit',
     }}
   >
-    <SignatureInitial />
-    <SignatureInitial />
+    <SignatureInitial stemColor={stemColor} />
+    <SignatureInitial stemColor={stemColor} />
     <span style={{ letterSpacing: '-.095em', lineHeight: 'inherit' }}>MT</span>
   </span>
 );
 
-/** Both I initials use the same Signature 01 form and the native text baseline. */
-export const IIMTMark = ({ className = '', style = {} }) => (
+/** Both independent I initials use Signature 01 and share the wordmark baseline. */
+export const IIMTMark = ({
+  className = '',
+  stemColor = '#E9EDF1',
+  style = {},
+}) => (
   <span
     className={className}
     role="img"
     aria-label="IIMT"
     style={{
-      display: 'inline',
+      display: 'inline-flex',
+      alignItems: 'baseline',
       verticalAlign: 'baseline',
+      whiteSpace: 'nowrap',
       fontFamily: 'inherit',
       fontSize: 'inherit',
       fontWeight: 'inherit',
@@ -78,7 +86,7 @@ export const IIMTMark = ({ className = '', style = {} }) => (
       ...style,
     }}
   >
-    <SignatureLetters />
+    <SignatureLetters stemColor={stemColor} />
   </span>
 );
 
@@ -90,6 +98,7 @@ export const TEDxIIMTWordmark = ({
   fontSize = 'inherit',
   color = 'currentColor',
   prefixColor = '#EB0028',
+  stemColor = '#E9EDF1',
   sublineColor = 'currentColor',
   style = {},
 }) => (
@@ -114,7 +123,8 @@ export const TEDxIIMTWordmark = ({
     <span
       aria-hidden="true"
       style={{
-        display: 'inline',
+        display: 'inline-flex',
+        alignItems: 'baseline',
         whiteSpace: 'nowrap',
         lineHeight: 'inherit',
       }}
@@ -122,7 +132,7 @@ export const TEDxIIMTWordmark = ({
       <span style={{ color: prefixColor, fontWeight: 900, letterSpacing: '-.11em' }}>
         TED<span style={{ fontSize: '.84em', letterSpacing: '-.07em' }}>x</span>
       </span>
-      <SignatureLetters />
+      <SignatureLetters stemColor={stemColor} />
     </span>
     {subline ? (
       <span

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion as Motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 import { useEdition } from '../context/EditionContext';
+import { IIMTMark } from './IIMTSignature';
 import './Hero.css';
 
 const CAMPUS_PHOTOS = [
@@ -197,7 +198,7 @@ const Hero = () => {
               </span><span className="tedx-hero__letter tedx-hero__letter--e" aria-hidden="true">E</span><span className="tedx-hero__letter tedx-hero__letter--d" aria-hidden="true">D</span><sup className="tedx-hero__wordmark-x" aria-hidden="true">x</sup>
             </div>
             <h1 className="tedx-hero__university">
-              <span className="tedx-hero__university-iimt">IIMT</span>{' '}
+              <IIMTMark className="tedx-hero__university-iimt" stemColor="#FFFFFF" />{' '}
               <span className="tedx-hero__university-name">University</span>
             </h1>
           </Motion.div>
