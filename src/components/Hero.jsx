@@ -503,6 +503,7 @@ const Hero = () => {
                       <stop offset="1" stopColor="#111820" />
                     </linearGradient>
                   </defs>
+                  <g transform="translate(110 0) scale(-1 1)">
                   <g stroke="#070b11" strokeWidth="4" strokeLinejoin="round">
                     <path d="M7 10Q8 5 14 6L38 9Q45 10 43 17L38 34Q36 39 30 38L12 35Q6 34 6 27Z" fill="url(#tedx-shades-glass)" />
                     <path d="M53 15Q54 9 60 10L86 13Q93 14 91 21L85 38Q83 43 77 42L59 39Q53 38 52 31Z" fill="url(#tedx-shades-glass)" />
@@ -513,6 +514,7 @@ const Hero = () => {
                   <path d="M97 62q-1 5-6 6" fill="none" stroke="#111820" strokeWidth="4" strokeLinecap="round" />
                   <circle cx="91" cy="18" r="3.2" fill="#d9e4eb" stroke="#111820" strokeWidth="1.4" />
                   <path d="M96 44 93 57" stroke="#d8e3e9" strokeWidth="1.4" opacity=".65" strokeLinecap="round" />
+                  </g>
                 </svg>
               </span><span className="tedx-hero__letter tedx-hero__letter--e" aria-hidden="true">E</span><span className="tedx-hero__letter tedx-hero__letter--d" aria-hidden="true">D</span><sup className="tedx-hero__wordmark-x" aria-hidden="true">x</sup>
             </div>
