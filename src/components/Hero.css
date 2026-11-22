@@ -954,10 +954,10 @@
 .tedx-hero__transform-scene {
   position: absolute;
   z-index: 3;
-  top: -2.65em;
-  left: 50%;
-  width: clamp(650px, 58vw, 900px);
-  height: clamp(330px, 36vw, 500px);
+  top: -3.15em;
+  left: calc(50vw - 7.2vw);
+  width: min(1200px, 94vw);
+  height: clamp(390px, 46vw, 560px);
   max-width: none;
   overflow: visible;
   pointer-events: none;
@@ -996,159 +996,143 @@
   transform-box: fill-box;
   transform-origin: center;
   will-change: transform, opacity, filter;
-  animation: tedx-car-visibility 5.35s ease var(--car-delay) both;
+  animation: tedx-car-visibility 6.8s ease var(--car-delay) both;
 }
 
 @keyframes tedx-car-visibility {
-  0%, 12% { opacity: 0; }
-  18%, 76% { opacity: 1; }
-  100% { opacity: 0; }
+  0%, 5% { opacity: 0; }
+  11%, 54% { opacity: 1; }
+  66%, 100% { opacity: 0; }
 }
 
+/* All three vehicles land in fixed side-by-side lanes instead of flying out of frame. */
 .tedx-transform-car--t {
-  --car-entry-x: -135%;
-  --car-fall-angle: -7deg;
-  --car-delay: .28s;
+  --car-entry-x: 0%;
+  --car-fall-angle: -5deg;
+  --car-delay: .16s;
 }
 
 .tedx-transform-car--e {
-  --car-entry-x: 138%;
-  --car-fall-angle: 5deg;
-  --car-delay: .55s;
+  --car-entry-x: 0%;
+  --car-fall-angle: 3deg;
+  --car-delay: .34s;
 }
 
 .tedx-transform-car--d {
-  --car-entry-x: 152%;
-  --car-fall-angle: -5deg;
-  --car-delay: .82s;
+  --car-entry-x: 0%;
+  --car-fall-angle: -3deg;
+  --car-delay: .52s;
 }
 
 .tedx-transform-car__motion {
   transform-box: fill-box;
   transform-origin: center;
-  animation: tedx-car-drop-drive 5.35s cubic-bezier(.19, .86, .22, 1) var(--car-delay) both;
+  animation: tedx-car-drop-drive 6.8s cubic-bezier(.18, .84, .22, 1) var(--car-delay) both;
 }
 
 .tedx-transform-car__body {
   transform-origin: center;
   transform-box: fill-box;
-  animation: tedx-car-panel-fold 1.18s cubic-bezier(.2, .8, .22, 1) calc(var(--car-delay) + 4.05s) both;
+  animation: tedx-car-panel-fold 1.48s cubic-bezier(.2, .8, .22, 1) calc(var(--car-delay) + 3.05s) both;
 }
 
 .tedx-transform-car__wheel {
   transform-box: fill-box;
   transform-origin: center;
-  animation:
-    tedx-wheel-spin .72s linear calc(var(--car-delay) + 2.25s) 3,
-    tedx-wheel-fold 1s cubic-bezier(.2, .78, .22, 1) calc(var(--car-delay) + 3.95s) both;
+  animation: tedx-wheel-to-fold 4.1s cubic-bezier(.2, .78, .22, 1) calc(var(--car-delay) + .42s) both;
 }
 
 .tedx-transform-car__dust {
   opacity: 0;
   transform-box: fill-box;
   transform-origin: center;
-  animation:
-    tedx-dust-impact 1.55s ease-out calc(var(--car-delay) + 1.08s) both,
-    tedx-dust-trail 1.45s ease-in-out calc(var(--car-delay) + 2.75s) both;
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 13px rgba(225, 202, 180, .3));
+  animation: tedx-dust-impact-trail 3.35s cubic-bezier(.16, .72, .2, 1) calc(var(--car-delay) + .48s) both;
 }
 
 @keyframes tedx-car-drop-drive {
   0% {
     opacity: 0;
-    transform: translate(var(--car-entry-x), -820%) rotate(var(--car-fall-angle)) scale(.78);
+    transform: translate(var(--car-entry-x), -440%) rotate(var(--car-fall-angle)) scale(.82);
     filter: blur(8px) brightness(1.45);
   }
-  17% {
+  10% {
     opacity: 1;
-    transform: translate(var(--car-entry-x), 0) rotate(2deg) scale(1.12, .78);
-    filter: blur(0) brightness(1.3);
+    transform: translate(var(--car-entry-x), 0) rotate(2deg) scale(1.1, .82);
+    filter: blur(0) brightness(1.25);
   }
-  24% {
-    transform: translate(var(--car-entry-x), -17%) rotate(-1deg) scale(.94, 1.1);
+  16% {
+    transform: translate(var(--car-entry-x), -2.5%) rotate(-1.2deg) scale(.95, 1.08);
   }
-  31% {
+  23%, 51% {
     transform: translate(var(--car-entry-x), 0) rotate(0) scale(1);
     filter: none;
   }
-  43% {
-    transform: translate(var(--car-entry-x), 0) rotate(0) scale(1);
+  61% {
+    transform: translate(var(--car-entry-x), 0) rotate(.5deg) scale(1.015, .985);
   }
-  69% {
-    transform: translate(0, 0) rotate(0) scale(1);
-  }
-  80% {
-    transform: translate(0, 0) rotate(0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(0, 0) rotate(0) scale(.78);
-    filter: blur(3px);
+  72%, 100% {
+    transform: translate(var(--car-entry-x), 0) rotate(0) scale(.98);
+    filter: blur(1px);
   }
 }
 
-@keyframes tedx-wheel-spin {
-  from { transform: rotate(0); }
-  to { transform: rotate(1080deg); }
-}
-
-@keyframes tedx-wheel-fold {
-  0% { opacity: 1; transform: rotate(0) translateY(0) scale(1); }
-  52% { opacity: .88; transform: rotate(54deg) translateY(20%) scale(.78); }
-  100% { opacity: 0; transform: rotate(118deg) translateY(42%) scale(.08); }
+@keyframes tedx-wheel-to-fold {
+  0% { opacity: 1; transform: rotate(0) scale(1); }
+  42% { opacity: 1; transform: rotate(760deg) scale(1); }
+  65% { opacity: .88; transform: rotate(980deg) translateY(12%) scale(.82); }
+  84% { opacity: .42; transform: rotate(1080deg) translateY(26%) scale(.42); }
+  100% { opacity: 0; transform: rotate(1180deg) translateY(40%) scale(.04); }
 }
 
 @keyframes tedx-car-panel-fold {
   0% { opacity: 1; transform: rotateY(0) translateY(0) scale(1); }
-  28% { opacity: 1; transform: rotateY(-28deg) translateY(-7%) scale(1.04, .92); }
-  63% { opacity: .68; transform: rotateY(46deg) translateY(-23%) scale(.58, .84); }
-  100% { opacity: 0; transform: rotateY(88deg) translateY(-38%) scale(.08, .72); }
+  28% { opacity: 1; transform: rotateY(-18deg) translateY(-5%) scale(1.04, .94); }
+  62% { opacity: .76; transform: rotateY(34deg) translateY(-18%) scale(.72, .82); }
+  100% { opacity: 0; transform: rotateY(78deg) translateY(-34%) scale(.12, .2); }
 }
 
-@keyframes tedx-dust-impact {
-  0% { opacity: 0; transform: scale(.22) translateY(20%); }
-  18% { opacity: .92; transform: scale(1.05) translateY(0); }
-  52% { opacity: .6; transform: scale(1.42) translateY(-8%); }
-  100% { opacity: 0; transform: scale(1.95) translateY(-26%); }
+@keyframes tedx-dust-impact-trail {
+  0% { opacity: 0; transform: translateY(14%) scale(.32); }
+  13% { opacity: .98; transform: translateY(0) scale(.92); }
+  29% { opacity: .92; transform: translateY(-5%) scale(1.22); }
+  50% { opacity: .66; transform: translateY(-12%) scale(1.5); }
+  73% { opacity: .3; transform: translateY(-20%) scale(1.78); }
+  100% { opacity: 0; transform: translateY(-27%) scale(2.04); }
 }
 
-@keyframes tedx-dust-trail {
-  0% { opacity: 0; transform: translateX(12%) scale(.34); }
-  18% { opacity: .76; transform: translateX(-8%) scale(.8); }
-  58% { opacity: .46; transform: translateX(-26%) scale(1.42); }
-  100% { opacity: 0; transform: translateX(-48%) scale(1.9); }
-}
-
-/* Each car opens into a distinct full-height mechanical silhouette. */
+/* Each original mech opens at full scale while the three vehicles fold away. */
 .tedx-transform-robot {
   opacity: 0;
   transform-box: fill-box;
   transform-origin: center bottom;
   will-change: opacity, filter;
-  animation: tedx-robot-visibility 5.05s ease var(--robot-delay) both;
+  animation: tedx-robot-visibility 5.55s ease var(--robot-delay) both;
 }
 
-.tedx-transform-robot--t { --robot-delay: 4.25s; }
-.tedx-transform-robot--e { --robot-delay: 4.55s; }
-.tedx-transform-robot--d { --robot-delay: 4.85s; }
+.tedx-transform-robot--t { --robot-delay: 3.12s; }
+.tedx-transform-robot--e { --robot-delay: 3.27s; }
+.tedx-transform-robot--d { --robot-delay: 3.42s; }
 
 .tedx-transform-robot__pose {
   transform-box: fill-box;
   transform-origin: center bottom;
   will-change: transform, filter;
-  animation: tedx-robot-transform 5.05s cubic-bezier(.2, .78, .22, 1) var(--robot-delay) both;
+  animation: tedx-robot-transform 5.55s cubic-bezier(.2, .78, .22, 1) var(--robot-delay) both;
 }
 
 @keyframes tedx-robot-visibility {
-  0%, 13% { opacity: 0; }
-  20%, 75% { opacity: 1; }
-  88% { opacity: .88; }
+  0%, 10% { opacity: 0; }
+  18%, 70% { opacity: 1; }
+  84% { opacity: .9; }
   100% { opacity: 0; }
 }
 
 .tedx-transform-robot__head {
   transform-box: fill-box;
   transform-origin: center bottom;
-  animation: tedx-robot-head-check 1.32s ease-in-out calc(var(--robot-delay) + 1.7s) 1;
+  animation: tedx-robot-head-check 1.32s ease-in-out calc(var(--robot-delay) + 1.45s) 1;
 }
 
 .tedx-transform-robot__arm {
@@ -1157,44 +1141,44 @@
 }
 
 .tedx-transform-robot__arm--left {
-  animation: tedx-robot-arm-left 1.45s cubic-bezier(.2, .8, .2, 1) calc(var(--robot-delay) + 1.78s) 1;
+  animation: tedx-robot-arm-left 1.45s cubic-bezier(.2, .8, .2, 1) calc(var(--robot-delay) + 1.5s) 1;
 }
 
 .tedx-transform-robot__arm--right {
-  animation: tedx-robot-arm-right 1.45s cubic-bezier(.2, .8, .2, 1) calc(var(--robot-delay) + 1.78s) 1;
+  animation: tedx-robot-arm-right 1.45s cubic-bezier(.2, .8, .2, 1) calc(var(--robot-delay) + 1.5s) 1;
 }
 
 .tedx-transform-robot__legs {
   transform-box: fill-box;
   transform-origin: center top;
-  animation: tedx-robot-stance .94s ease-out calc(var(--robot-delay) + 1.34s) 1;
+  animation: tedx-robot-stance .94s ease-out calc(var(--robot-delay) + 1.08s) 1;
 }
 
 @keyframes tedx-robot-transform {
   0% {
-    transform: translateY(28%) scale(.28, .12) rotateX(66deg);
-    filter: blur(10px) brightness(1.9);
+    transform: translateY(18%) scale(.34, .16) rotateX(68deg);
+    filter: blur(10px) brightness(1.85);
   }
-  18% {
-    transform: translateY(-5%) scale(.82, 1.12) rotateX(0);
-    filter: blur(0) brightness(1.4);
+  20% {
+    transform: translateY(-2%) scale(1.08, 1.08) rotateX(0);
+    filter: blur(0) brightness(1.3);
   }
-  30% {
-    transform: translateY(0) scale(1);
+  31% {
+    transform: translateY(0) scale(1.1, 1.08);
     filter: none;
   }
   43% {
-    transform: translateY(-2%) scale(1.035);
+    transform: translateY(-1.5%) scale(1.12, 1.1);
   }
-  58%, 72% {
-    transform: translateY(0) scale(1);
+  52%, 70% {
+    transform: translateY(0) scale(1.1, 1.08);
   }
-  84% {
-    transform: translateY(12%) scale(.84, .24) rotateX(76deg);
-    filter: brightness(1.75);
+  82% {
+    transform: translateY(10%) scale(.9, .34) rotateX(72deg);
+    filter: brightness(1.6);
   }
   100% {
-    transform: translateY(15%) scale(.12, .04) rotateX(90deg);
+    transform: translateY(15%) scale(.08, .035) rotateX(90deg);
     filter: blur(9px);
   }
 }
@@ -1270,36 +1254,33 @@
   }
 }
 
-/* The T keeps its shades on the finished logo — the final frame retains them. */
+/* Premium side-hung shades: the frame rests on the T while one arm drops down its edge. */
 .tedx-hero__t-shades {
   position: absolute;
   z-index: 6;
-  top: .13em;
-  left: -.08em;
-  width: .84em;
-  height: .31em;
+  top: -.14em;
+  left: .31em;
+  width: .9em;
+  height: .58em;
   opacity: 0;
   overflow: visible;
   pointer-events: none;
-  animation: tedx-t-shades 1.55s cubic-bezier(.16, .82, .25, 1) 9.45s both;
+  transform-origin: 76% 15%;
+  animation: tedx-t-shades 1.8s cubic-bezier(.16, .82, .25, 1) 9.45s both;
 }
 
 @keyframes tedx-t-shades {
   0% {
     opacity: 0;
-    transform: translate3d(0, -1.4em, 0) rotate(-18deg) scale(.62);
+    transform: translate3d(-.04em, -1.1em, 0) rotate(-28deg) scale(.55);
   }
-  42% {
+  40% {
     opacity: 1;
-    transform: translate3d(0, .04em, 0) rotate(3deg) scale(1.1);
+    transform: translate3d(.08em, .09em, 0) rotate(16deg) scale(1.08);
   }
-  58% {
+  58%, 100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0) rotate(0) scale(1);
-  }
-  78%, 100% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) rotate(0) scale(1);
+    transform: translate3d(.08em, .08em, 0) rotate(9deg) scale(1);
   }
 }
 
@@ -1416,39 +1397,45 @@
 
 @media (max-width: 1150px) and (min-width: 721px) {
   .tedx-hero__transform-scene {
-    width: clamp(570px, 70vw, 760px);
-    height: clamp(300px, 42vw, 420px);
-    top: -2.35em;
+    top: -3.05em;
+    left: calc(50vw - 5vw);
+    width: 94vw;
+    height: 46vw;
+    max-height: 520px;
   }
 }
 
 @media (max-width: 720px) {
   .tedx-hero__transform-scene {
-    top: -2.5em;
-    left: 50%;
-    width: 116vw;
-    height: 74vw;
-    min-height: 300px;
-    max-height: 390px;
+    top: -2.9em;
+    left: calc(50vw - 6vw);
+    width: 145vw;
+    height: clamp(245px, 65vw, 340px);
+    min-height: 245px;
+    max-height: 340px;
     transform: translateX(-50%);
   }
 
   .tedx-hero__t-shades {
-    width: .8em;
-    height: .3em;
-    top: .12em;
+    top: -.14em;
+    left: .29em;
+    width: .88em;
+    height: .56em;
   }
 }
 
 @media (max-width: 380px) {
   .tedx-hero__transform-scene {
-    width: 124vw;
-    height: 80vw;
-    min-height: 285px;
+    top: -2.85em;
+    left: calc(50vw - 6vw);
+    width: 150vw;
+    height: clamp(225px, 62vw, 285px);
+    min-height: 225px;
+    max-height: 285px;
   }
 
   .tedx-hero__t-shades {
-    width: .76em;
+    width: .86em;
   }
 }
 
