@@ -386,7 +386,10 @@ const HomePage = () => {
         <section className="ted-home-origin" aria-labelledby="home-origin-heading">
           <div className="ted-home-shell ted-home-origin-grid">
             <Reveal className="ted-home-origin-mark">
-              <div className="ted-home-origin-logo"><span className="ted">TED</span><span className="x">x</span></div>
+              <div className="ted-home-origin-lockup">
+                <div className="ted-home-origin-logo"><span className="ted">TED</span><span className="x">x</span></div>
+                <span className="ted-home-origin-university">IIMT University</span>
+              </div>
               <div className="ted-home-origin-caption"><span>INDEPENDENTLY ORGANIZED</span><span>MEERUT / INDIA</span></div>
               <a className="ted-home-origin-hit" href="/about" aria-label="Learn more about TEDxIIMT University" />
             </Reveal>
