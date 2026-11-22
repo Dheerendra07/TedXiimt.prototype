@@ -419,6 +419,13 @@ const Hero = () => {
               <span className="tedx-hero__letter-wrap tedx-hero__letter-wrap--t">
                 <span className="tedx-hero__letter tedx-hero__letter--t" aria-hidden="true">T</span>
                 <svg className="tedx-hero__t-shades" viewBox="0 0 92 34" aria-hidden="true" focusable="false">
+                  <defs>
+                    <linearGradient id="tedx-shades-glass" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stopColor="#425466" />
+                      <stop offset=".46" stopColor="#101a25" />
+                      <stop offset="1" stopColor="#05080d" />
+                    </linearGradient>
+                  </defs>
                   <path d="M4 8Q4 4 9 4H37Q42 4 42 9L39 22Q38 27 32 27H14Q9 27 8 22Z" fill="url(#tedx-shades-glass)" stroke="#070b11" strokeWidth="3" />
                   <path d="M50 9Q50 4 55 4H83Q88 4 88 8L84 22Q83 27 77 27H60Q54 27 53 22Z" fill="url(#tedx-shades-glass)" stroke="#070b11" strokeWidth="3" />
                   <path d="M42 10Q46 7 50 10M2 8 8 10M88 8l3-2" fill="none" stroke="#080d14" strokeWidth="3" strokeLinecap="round" />
