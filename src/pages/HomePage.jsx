@@ -464,7 +464,7 @@ const HomePage = () => {
             <Reveal className="ted-home-discover-head">
               <div>
                 <span className="ted-home-kicker">EXPLORE</span>
-                <h2 id="home-discover-heading" className="ted-home-section-heading">TEDxIIMT University</h2>
+                <h2 id="home-discover-heading" className="ted-home-section-heading">TEDxIIMT <em>University</em></h2>
               </div>
               <p>Meet the voices, people and partners behind the TEDxIIMT experience.</p>
             </Reveal>
