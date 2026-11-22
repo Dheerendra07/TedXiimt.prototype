@@ -3575,43 +3575,15 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
   overflow-wrap: normal;
 }
 
-/* Signature treatment for the first I in the IIMT lockup only.
-   The next I and all other letters retain their original typography. */
+/* Explicit, scoped signature glyph for the first I in IIMT only. */
 .ted-home-origin-university-initial {
-  position: relative;
   display: inline-block;
   width: .68em;
-  height: 1.14em;
+  height: 1.12em;
   margin-right: .015em;
-  color: transparent;
-  vertical-align: -.115em;
-  text-shadow: none;
-  isolation: isolate;
-}
-
-.ted-home-origin-university-initial::before {
-  position: absolute;
-  right: .205em;
-  bottom: .045em;
-  left: .205em;
-  height: .94em;
-  background: linear-gradient(90deg, #BFC6CE 0%, #F7F8F9 48%, #D9DEE4 100%);
-  box-shadow:
-    inset 1px 0 rgba(255, 255, 255, .42),
-    0 1px 9px rgba(226, 233, 239, .12);
-  content: "";
-}
-
-.ted-home-origin-university-initial::after {
-  position: absolute;
-  top: .025em;
-  left: .025em;
-  width: .635em;
-  height: .205em;
-  background: linear-gradient(105deg, #F02A49 0%, #EB0028 58%, #B90020 100%);
-  clip-path: polygon(0 0, 100% 0, 100% 62%, 0 100%);
-  filter: drop-shadow(0 2px 5px rgba(235, 0, 40, .28));
-  content: "";
+  overflow: visible;
+  vertical-align: -.13em;
+  flex: 0 0 auto;
 }
 
 @media (max-width: 600px) {
@@ -3697,11 +3669,7 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .ted-home-origin-university-initial::after {
-    filter: none;
-  }
-}
+
 
 
 /* 2026-11: unify the IDEAS and TEDx background wordmarks.
