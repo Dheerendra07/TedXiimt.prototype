@@ -992,6 +992,13 @@
   transform-box: fill-box;
   transform-origin: center;
   will-change: transform, opacity, filter;
+  animation: tedx-car-visibility 4.65s ease var(--car-delay) both;
+}
+
+@keyframes tedx-car-visibility {
+  0%, 12% { opacity: 0; }
+  20%, 82% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 .tedx-transform-car--t {
@@ -1089,8 +1096,8 @@
   opacity: 0;
   transform-box: fill-box;
   transform-origin: center bottom;
-  will-change: transform, opacity, filter;
-  animation: tedx-robot-transform 4.15s cubic-bezier(.2, .78, .22, 1) var(--robot-delay) both;
+  will-change: opacity, filter;
+  animation: tedx-robot-visibility 4.15s ease var(--robot-delay) both;
 }
 
 .tedx-transform-robot--t { --robot-delay: 3.35s; }
@@ -1100,6 +1107,15 @@
 .tedx-transform-robot__pose {
   transform-box: fill-box;
   transform-origin: center bottom;
+  will-change: transform, filter;
+  animation: tedx-robot-transform 4.15s cubic-bezier(.2, .78, .22, 1) var(--robot-delay) both;
+}
+
+@keyframes tedx-robot-visibility {
+  0%, 12% { opacity: 0; }
+  18%, 70% { opacity: 1; }
+  84% { opacity: .9; }
+  100% { opacity: 0; }
 }
 
 .tedx-transform-robot__head {
@@ -1129,12 +1145,10 @@
 
 @keyframes tedx-robot-transform {
   0% {
-    opacity: 0;
     transform: translateY(25%) scale(.42, .2) rotateX(62deg);
     filter: blur(8px) brightness(1.8);
   }
   18% {
-    opacity: 1;
     transform: translateY(-3%) scale(.88, 1.08) rotateX(0);
     filter: blur(0) brightness(1.35);
   }
@@ -1143,24 +1157,16 @@
     filter: none;
   }
   43% {
-    opacity: 1;
     transform: translateY(-2%) scale(1.035);
   }
-  58% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  70% {
-    opacity: 1;
+  58%, 70% {
     transform: translateY(0) scale(1);
   }
   84% {
-    opacity: .94;
     transform: translateY(10%) scale(.82, .22) rotateX(72deg);
     filter: brightness(1.7);
   }
   100% {
-    opacity: 0;
     transform: translateY(12%) scale(.18, .05) rotateX(90deg);
     filter: blur(7px);
   }
@@ -1249,10 +1255,6 @@
   overflow: visible;
   pointer-events: none;
   animation: tedx-t-shades 1.85s cubic-bezier(.16, .82, .25, 1) 7.52s both;
-}
-
-#tedx-shades-glass {
-  fill: url("#tedx-glass");
 }
 
 @keyframes tedx-t-shades {
