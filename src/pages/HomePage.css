@@ -1726,3 +1726,192 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
     transform: none;
   }
 }
+
+
+/* 2026-11: calm cool atmosphere + a consistent, readable 72px grid.
+   Keep the hero/mosaic and all card content untouched; light belongs in the open space. */
+.ted-home {
+  background-color: #07090C;
+}
+
+.ted-home-statement {
+  background-color: #07090C;
+  background-image:
+    radial-gradient(ellipse 58% 62% at 13% 17%, rgba(111, 151, 177, .065), transparent 72%),
+    radial-gradient(ellipse 48% 58% at 82% 52%, rgba(235, 0, 40, .055), transparent 74%),
+    linear-gradient(180deg, #07090C 0%, #090A0D 100%);
+}
+
+.ted-home-pillars {
+  background-color: #090B0E;
+  background-image:
+    radial-gradient(ellipse 54% 66% at 12% 14%, rgba(111, 151, 177, .07), transparent 74%),
+    radial-gradient(ellipse 46% 62% at 90% 86%, rgba(235, 0, 40, .035), transparent 76%),
+    linear-gradient(145deg, #090B0E 0%, #090A0D 56%, #080A0D 100%);
+}
+
+.ted-home-origin {
+  background-color: #07090C;
+  background-image:
+    linear-gradient(90deg, rgba(176, 201, 219, .034) 1px, transparent 1px),
+    linear-gradient(rgba(176, 201, 219, .034) 1px, transparent 1px),
+    radial-gradient(ellipse 52% 72% at 15% 18%, rgba(111, 151, 177, .07), transparent 74%),
+    radial-gradient(ellipse 44% 58% at 85% 84%, rgba(235, 0, 40, .035), transparent 76%),
+    linear-gradient(145deg, #07090C, #080A0D);
+  background-size: 72px 72px, 72px 72px, auto, auto, auto;
+  background-repeat: repeat, repeat, no-repeat, no-repeat, no-repeat;
+}
+
+.ted-home-origin::before {
+  z-index: 0;
+}
+
+.ted-home-origin-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.ted-home-stage {
+  background-color: #080A0D;
+  background-image:
+    radial-gradient(ellipse 54% 72% at 12% 18%, rgba(111, 151, 177, .065), transparent 74%),
+    radial-gradient(ellipse 52% 68% at 72% 112%, rgba(235, 0, 40, .14), transparent 76%),
+    linear-gradient(180deg, #090B0E 0%, #080A0D 100%);
+}
+
+.ted-home-gallery,
+.ted-home-discover {
+  position: relative;
+  background-color: #080A0D;
+  background-image:
+    linear-gradient(90deg, rgba(176, 201, 219, .033) 1px, transparent 1px),
+    linear-gradient(rgba(176, 201, 219, .033) 1px, transparent 1px),
+    radial-gradient(ellipse 52% 62% at 13% 18%, rgba(111, 151, 177, .075), transparent 74%),
+    radial-gradient(ellipse 46% 62% at 88% 88%, rgba(235, 0, 40, .035), transparent 76%),
+    linear-gradient(145deg, #080A0D 0%, #090B0E 52%, #07090C 100%);
+  background-size: 72px 72px, 72px 72px, auto, auto, auto;
+  background-repeat: repeat, repeat, no-repeat, no-repeat, no-repeat;
+}
+
+.ted-home-speakers {
+  background-color: #07090C;
+  background-image:
+    radial-gradient(ellipse 54% 64% at 14% 16%, rgba(111, 151, 177, .07), transparent 74%),
+    radial-gradient(ellipse 48% 58% at 88% 84%, rgba(235, 0, 40, .045), transparent 76%),
+    linear-gradient(160deg, #07090C 0%, #080A0D 100%);
+}
+
+.ted-home-close {
+  background-color: #090B0E;
+  background-image:
+    radial-gradient(ellipse 56% 64% at 15% 14%, rgba(111, 151, 177, .065), transparent 74%),
+    radial-gradient(ellipse 50% 62% at 78% 46%, rgba(235, 0, 40, .14), transparent 76%),
+    linear-gradient(145deg, #090B0E 0%, #080A0D 100%);
+}
+
+/* Raise the established overlay above each section's own background so the grid
+   stays legible, while the content shell remains on top of it. */
+.ted-home-grid-surface::before {
+  z-index: 0;
+  background-image:
+    linear-gradient(90deg, rgba(176, 201, 219, .034) 1px, transparent 1px),
+    linear-gradient(rgba(176, 201, 219, .034) 1px, transparent 1px),
+    radial-gradient(
+      ellipse 48% 68% at var(--home-grid-glow-primary, 12% 78%),
+      rgba(235, 0, 40, .055) 0%,
+      rgba(111, 0, 26, .025) 38%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 46% 62% at var(--home-grid-glow-secondary, 88% 24%),
+      rgba(111, 151, 177, .055) 0%,
+      rgba(80, 112, 132, .022) 42%,
+      transparent 76%
+    );
+  background-size: 72px 72px, 72px 72px, auto, auto;
+  background-repeat: repeat, repeat, no-repeat, no-repeat;
+}
+
+/* Give the negative space between cards a quiet tonal lift; card faces remain dark. */
+.ted-home-edition-card,
+.ted-home-speaker-card,
+.ted-home-discover-card,
+.ted-home-pillar {
+  border-color: rgba(176, 201, 219, .13);
+}
+
+.ted-home-edition-card,
+.ted-home-speaker-card,
+.ted-home-discover-card {
+  background-image: linear-gradient(145deg, rgba(126, 160, 183, .035), transparent 62%);
+  background-color: #0D1014;
+}
+
+.ted-home-gallery-card {
+  border-color: rgba(176, 201, 219, .15);
+}
+
+.ted-home-edition-card:hover,
+.ted-home-speaker-card:hover,
+.ted-home-discover-card:hover,
+.ted-home-pillar:hover,
+.ted-home-gallery-card:hover,
+.ted-home-gallery-card:focus-visible {
+  border-color: rgba(235, 0, 40, .72);
+}
+
+/* The social highlights section uses its own component; give it the same grid
+   and restrained cool light without changing the reel layout or playback. */
+#home-highlights > section {
+  background-color: #07090C !important;
+  background-image:
+    linear-gradient(90deg, rgba(176, 201, 219, .033) 1px, transparent 1px),
+    linear-gradient(rgba(176, 201, 219, .033) 1px, transparent 1px),
+    radial-gradient(ellipse 54% 62% at 13% 18%, rgba(111, 151, 177, .075), transparent 74%),
+    radial-gradient(ellipse 46% 60% at 88% 84%, rgba(235, 0, 40, .04), transparent 76%),
+    linear-gradient(145deg, #07090C, #080A0D) !important;
+  background-size: 72px 72px, 72px 72px, auto, auto, auto;
+  background-repeat: repeat, repeat, no-repeat, no-repeat, no-repeat;
+}
+
+/* API-fed partner and editorial sections inherit the exact same surface language. */
+.ted-home-dynamic > section {
+  background-color: #080A0D !important;
+  background-image:
+    linear-gradient(90deg, rgba(176, 201, 219, .032) 1px, transparent 1px),
+    linear-gradient(rgba(176, 201, 219, .032) 1px, transparent 1px),
+    radial-gradient(ellipse 52% 62% at 14% 16%, rgba(111, 151, 177, .07), transparent 74%),
+    radial-gradient(ellipse 48% 58% at 86% 88%, rgba(235, 0, 40, .035), transparent 76%),
+    linear-gradient(145deg, #080A0D, #090B0E) !important;
+  background-size: 72px 72px, 72px 72px, auto, auto, auto;
+  background-repeat: repeat, repeat, no-repeat, no-repeat, no-repeat;
+}
+
+/* Hairline separators make section transitions deliberate, not boxed-in. */
+.ted-home-gallery,
+.ted-home-discover,
+#home-highlights > section,
+.ted-home-dynamic > section {
+  border-top-color: rgba(176, 201, 219, .09) !important;
+}
+
+@media (max-width: 600px) {
+  .ted-home-origin,
+  .ted-home-gallery,
+  .ted-home-discover,
+  #home-highlights > section,
+  .ted-home-dynamic > section {
+    background-size: 64px 64px, 64px 64px, auto, auto, auto;
+  }
+
+  .ted-home-grid-surface::before {
+    background-size: 64px 64px, 64px 64px, auto, auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-home-grid-surface::before {
+    animation: none !important;
+    transform: none !important;
+  }
+}
