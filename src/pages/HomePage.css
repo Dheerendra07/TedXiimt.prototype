@@ -1617,34 +1617,51 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
   animation: ted-home-grid-ambience 34s ease-in-out infinite alternate;
 }
 
-.ted-home-grid-surface::after {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
+
+/* Keep the existing statement/closing watermarks intact: grid lines live in the light layer. */
+.ted-home-grid-surface::before {
   background-image:
+    radial-gradient(
+      ellipse 48% 68% at var(--home-grid-glow-primary, 12% 78%),
+      rgba(235, 0, 40, 0.075) 0%,
+      rgba(111, 0, 26, 0.035) 38%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 42% 62% at var(--home-grid-glow-secondary, 88% 24%),
+      rgba(151, 0, 34, 0.052) 0%,
+      rgba(80, 0, 20, 0.022) 42%,
+      transparent 76%
+    ),
     linear-gradient(90deg, rgba(255, 255, 255, 0.017) 1px, transparent 1px),
     linear-gradient(rgba(255, 255, 255, 0.017) 1px, transparent 1px);
-  background-position: 0 0;
-  background-size: 72px 72px;
-  content: "";
-  opacity: 0.62;
-  pointer-events: none;
-  -webkit-mask-image: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(0, 0, 0, 0.82) 13%,
-    #000 50%,
-    rgba(0, 0, 0, 0.82) 87%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(0, 0, 0, 0.82) 13%,
-    #000 50%,
-    rgba(0, 0, 0, 0.82) 87%,
-    transparent 100%
-  );
+  background-position: center, center, 0 0, 0 0;
+  background-size: auto, auto, 72px 72px, 72px 72px;
+  background-repeat: no-repeat, no-repeat, repeat, repeat;
+}
+.ted-home-statement::before,
+.ted-home-pillars::before,
+.ted-home-stage::before,
+.ted-home-speakers::before,
+.ted-home-close::before {
+  background-size: auto, auto, 72px 72px, 72px 72px;
+}
+.ted-home-origin::before {
+  background-image:
+    radial-gradient(
+      ellipse 48% 68% at var(--home-grid-glow-primary, 12% 78%),
+      rgba(235, 0, 40, 0.075) 0%,
+      rgba(111, 0, 26, 0.035) 38%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 42% 62% at var(--home-grid-glow-secondary, 88% 24%),
+      rgba(151, 0, 34, 0.052) 0%,
+      rgba(80, 0, 20, 0.022) 42%,
+      transparent 76%
+    );
+  background-size: auto, auto;
+  background-repeat: no-repeat, no-repeat;
 }
 
 /* Let already-red sections breathe; put the light where the dark areas need it. */
@@ -1652,41 +1669,47 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
   --home-grid-glow-primary: 9% 78%;
   --home-grid-glow-secondary: 91% 18%;
   --home-grid-glow-opacity: 0.38;
+  --home-grid-glow-start-opacity: 0.31;
 }
 
 .ted-home-pillars {
   --home-grid-glow-primary: 8% 82%;
   --home-grid-glow-secondary: 88% 21%;
   --home-grid-glow-opacity: 0.92;
+  --home-grid-glow-start-opacity: 0.75;
 }
 
 .ted-home-origin {
   --home-grid-glow-primary: 14% 52%;
   --home-grid-glow-secondary: 86% 82%;
   --home-grid-glow-opacity: 0.72;
+  --home-grid-glow-start-opacity: 0.59;
 }
 
 .ted-home-stage {
   --home-grid-glow-primary: 88% 82%;
   --home-grid-glow-secondary: 12% 20%;
   --home-grid-glow-opacity: 0.28;
+  --home-grid-glow-start-opacity: 0.23;
 }
 
 .ted-home-speakers {
   --home-grid-glow-primary: 88% 72%;
   --home-grid-glow-secondary: 12% 24%;
   --home-grid-glow-opacity: 0.82;
+  --home-grid-glow-start-opacity: 0.67;
 }
 
 .ted-home-close {
   --home-grid-glow-primary: 10% 72%;
   --home-grid-glow-secondary: 91% 24%;
   --home-grid-glow-opacity: 0.3;
+  --home-grid-glow-start-opacity: 0.25;
 }
 
 @keyframes ted-home-grid-ambience {
   from {
-    opacity: calc(var(--home-grid-glow-opacity, 0.7) * 0.82);
+    opacity: var(--home-grid-glow-start-opacity, 0.55);
     transform: scale(1.005);
   }
   to {
