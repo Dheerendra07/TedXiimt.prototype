@@ -1,63 +1,84 @@
 import React from 'react';
 
-const SignatureGlyph = ({ stemColor = 'currentColor' }) => (
-  <svg
-    viewBox="0 0 42 72"
-    aria-hidden="true"
-    focusable="false"
-    style={{
-      display: 'inline-block',
-      width: '0.43em',
-      height: '1.08em',
-      marginRight: '-0.025em',
-      verticalAlign: '-0.13em',
-      flex: '0 0 auto',
-      overflow: 'visible',
-    }}
-  >
-    {/* Signature 01: the red angled cap is the only transformed initial. */}
-    <path d="M8 23 L33 16 V68 H8 Z" fill={stemColor} />
-    <path d="M8 7 H34 V18 L8 26 Z" fill="#EB0028" />
-    <path d="M8 7 H34" stroke="#FF7186" strokeWidth="1.25" strokeLinecap="round" />
-    <path d="M10.8 28 V65" stroke="#FFFFFF" strokeOpacity=".24" strokeWidth="1.2" />
-    <path d="M32.5 17 V68" stroke="#000000" strokeOpacity=".2" strokeWidth="1.25" />
-    <path d="M8 23 L33 16" stroke="#A90020" strokeOpacity=".72" strokeWidth=".8" />
-  </svg>
-);
-
-const SignatureLetters = ({ stemColor = 'currentColor' }) => (
+/**
+ * Signature 01 uses the native I glyph so it shares the exact font size,
+ * cap-height and baseline with the surrounding wordmark. The red angled cap
+ * is an absolute overlay and therefore never changes line layout.
+ */
+const SignatureInitial = () => (
   <span
     aria-hidden="true"
     style={{
-      display: 'inline-flex',
-      alignItems: 'baseline',
+      position: 'relative',
+      display: 'inline-block',
+      verticalAlign: 'baseline',
+      fontFamily: 'inherit',
+      fontSize: '1em',
+      fontWeight: 'inherit',
+      lineHeight: 'inherit',
+      color: 'transparent',
+      WebkitTextFillColor: 'transparent',
+      backgroundImage: 'linear-gradient(90deg, #BFC6CE 0%, #F7F8F9 48%, #D9DEE4 100%)',
+      backgroundClip: 'text',
+      WebkitBackgroundClip: 'text',
+      marginRight: '-.015em',
+    }}
+  >
+    I
+    <svg
+      viewBox="0 0 48 16"
+      aria-hidden="true"
+      focusable="false"
+      style={{
+        position: 'absolute',
+        top: '.045em',
+        left: '-.09em',
+        width: '.72em',
+        height: '.19em',
+        overflow: 'visible',
+        pointerEvents: 'none',
+      }}
+    >
+      <path d="M0 1 H48 V8 L0 15 Z" fill="#EB0028" />
+      <path d="M1.5 1.5 H46" stroke="#FF7186" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M47 2 V7" stroke="#A90020" strokeWidth="1" />
+    </svg>
+  </span>
+);
+
+const SignatureLetters = ({ stemColor }) => (
+  <span
+    aria-hidden="true"
+    style={{
+      display: 'inline',
       whiteSpace: 'nowrap',
       font: 'inherit',
       lineHeight: 'inherit',
     }}
   >
-    <SignatureGlyph stemColor={stemColor} />
-    <span style={{ letterSpacing: '-.095em', lineHeight: 1 }}>IMT</span>
+    <SignatureInitial />
+    <SignatureInitial />
+    <span style={{ letterSpacing: '-.095em', lineHeight: 'inherit' }}>MT</span>
   </span>
 );
 
-/** First I in IIMT uses Signature 01; the second I remains ordinary typography. */
-export const IIMTMark = ({ className = '', stemColor = 'currentColor', style = {} }) => (
+/** Both I initials use the same Signature 01 form and the native text baseline. */
+export const IIMTMark = ({ className = '', style = {} }) => (
   <span
     className={className}
     role="img"
     aria-label="IIMT"
     style={{
-      display: 'inline-flex',
-      alignItems: 'baseline',
-      whiteSpace: 'nowrap',
+      display: 'inline',
       verticalAlign: 'baseline',
+      fontFamily: 'inherit',
+      fontSize: 'inherit',
       fontWeight: 'inherit',
       lineHeight: 'inherit',
       ...style,
     }}
   >
-    <SignatureLetters stemColor={stemColor} />
+    <SignatureLetters />
   </span>
 );
 
@@ -69,7 +90,6 @@ export const TEDxIIMTWordmark = ({
   fontSize = 'inherit',
   color = 'currentColor',
   prefixColor = '#EB0028',
-  stemColor = 'currentColor',
   sublineColor = 'currentColor',
   style = {},
 }) => (
@@ -94,16 +114,15 @@ export const TEDxIIMTWordmark = ({
     <span
       aria-hidden="true"
       style={{
-        display: 'inline-flex',
-        alignItems: 'baseline',
+        display: 'inline',
         whiteSpace: 'nowrap',
-        lineHeight: 1,
+        lineHeight: 'inherit',
       }}
     >
       <span style={{ color: prefixColor, fontWeight: 900, letterSpacing: '-.11em' }}>
         TED<span style={{ fontSize: '.84em', letterSpacing: '-.07em' }}>x</span>
       </span>
-      <SignatureLetters stemColor={stemColor} />
+      <SignatureLetters />
     </span>
     {subline ? (
       <span
