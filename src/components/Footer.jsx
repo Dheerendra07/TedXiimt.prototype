@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { TEDxIIMTWordmark } from './IIMTSignature';
+import { AccentIText, TEDxIIMTWordmark } from './IIMTSignature';
 import './Footer.css';
 
 const footerGroups = [
@@ -593,7 +593,7 @@ const Footer = () => {
 
           <div className="ted-footer-content">
             <div className="ted-footer-brand">
-              <p className="ted-footer-brand__eyebrow">Ideas worth sharing</p>
+              <p className="ted-footer-brand__eyebrow"><AccentIText>Ideas worth sharing</AccentIText></p>
               <a
                 href="/"
                 className="ted-footer-logo-link"
@@ -621,7 +621,7 @@ const Footer = () => {
                 >
                   <div className="ted-footer-group__intro">
                     <p className="ted-footer-group__eyebrow">Section {group.number}</p>
-                    <h2 className="ted-footer-group__title">{group.title}</h2>
+                    <h2 className="ted-footer-group__title"><AccentIText>{group.title}</AccentIText></h2>
                     <p className="ted-footer-group__description">{group.description}</p>
                   </div>
                   <ul className="ted-footer-link-list">
@@ -656,7 +656,7 @@ const Footer = () => {
               </div>
               <p className="ted-footer-hover-card__place">{hoveredMonument.name}</p>
               <p className="ted-footer-hover-card__theme">{hoveredMonument.theme}</p>
-              <h3>{hoveredMonument.title}</h3>
+              <h3><AccentIText>{hoveredMonument.title}</AccentIText></h3>
               <p className="ted-footer-hover-card__message">{hoveredMonument.message}</p>
               <div className="ted-footer-hover-card__foot">
                 <span className="ted-footer-hover-card__pulse" />

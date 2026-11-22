@@ -166,3 +166,28 @@ export const TEDxIIMTWordmark = ({
 );
 
 export default IIMTMark;
+
+
+// Red-dot treatment for lowercase i in selected white branding and headings.
+const accentIChildren = (children, prefix = 'accent-i') =>
+  React.Children.map(children, (child, index) => {
+    if (typeof child === 'string' || typeof child === 'number') {
+      return String(child).split(/(i)/g).map((part, partIndex) =>
+        part === 'i'
+          ? <span className="tedx-red-i-dot" key={prefix + '-' + index + '-' + partIndex}>i</span>
+          : part
+      );
+    }
+    if (React.isValidElement(child) && child.props?.children) {
+      return React.cloneElement(child, {
+        children: accentIChildren(child.props.children, prefix + '-' + index),
+      });
+    }
+    return child;
+  });
+
+export const AccentIText = ({ children, className = '' }) => (
+  <span className={className ? 'tedx-accent-i-text ' + className : 'tedx-accent-i-text'}>
+    {accentIChildren(children)}
+  </span>
+);

@@ -1,4 +1,4 @@
-import { IIMTMark, TEDxIIMTWordmark } from '../components/IIMTSignature';
+import { AccentIText, IIMTMark, TEDxIIMTWordmark } from '../components/IIMTSignature';
 import React, { useEffect, useRef, useState } from 'react';
 import { useEdition } from '../context/EditionContext';
 import { ARCHIVE_EDITIONS } from '../data/archiveData';
@@ -317,9 +317,9 @@ const HomePage = () => {
           <div className="ted-home-shell ted-home-statement-grid">
             <Reveal variant="left">
               <span className="ted-home-kicker"><TEDxIIMTWordmark /> UNIVERSITY / IDEAS WORTH SPREADING</span>
-              <h2 id="home-statement-heading" className="ted-home-statement-title">
+              <h2 id="home-statement-heading" className="ted-home-statement-title"><AccentIText>
                 <span>IDEAS</span><span className="accent">DON'T</span><span>STAND STILL.</span>
-              </h2>
+              </AccentIText></h2>
             </Reveal>
             <Reveal className="ted-home-statement-aside" variant="right" delay={0.1}>
               <p>A local stage for original thinking, unexpected perspectives and conversations that can move an idea beyond the room.</p>
@@ -336,7 +336,7 @@ const HomePage = () => {
                 <span className="ted-home-edition-edition-index">01 — 01 <i aria-hidden="true" /> ARCHIVE</span>
               </div>
               <div className="ted-home-edition-heading-row">
-                <h2 id="home-pillars-heading"><TEDxIIMTWordmark /> University <em>{editionYear}.</em></h2>
+                <h2 id="home-pillars-heading"><AccentIText><TEDxIIMTWordmark /> University <em>{editionYear}.</em></AccentIText></h2>
                 <div className="ted-home-edition-lede">
                   <span>THE IDEA BEHIND THE EDITION</span>
                   <p>{homepageEdition?.tagline || homepageEdition?.description || <>Ideas worth spreading from <IIMTMark /> University, Meerut.</>}</p>
@@ -356,7 +356,7 @@ const HomePage = () => {
                     <span className="ted-home-edition-theme-trajectory-line" />
                     <span className="ted-home-edition-theme-trajectory-dot" />
                   </div>
-                  <h3>Break <em>the</em><br />Flow<span className="ted-home-edition-theme-period">.</span></h3>
+                  <h3><AccentIText>Break <em>the</em><br />Flow<span className="ted-home-edition-theme-period">.</span></AccentIText></h3>
                   <div className="ted-home-edition-theme-foot">
                     <span>A THEME THAT INVITES A DIFFERENT PERSPECTIVE.</span>
                     <span className="ted-home-edition-theme-mark">TED<span>x</span></span>
@@ -425,7 +425,7 @@ const HomePage = () => {
             </Reveal>
             <Reveal className="ted-home-origin-copy" variant="right" delay={0.1}>
               <span className="ted-home-kicker">A GLOBAL IDEA / A LOCAL STAGE</span>
-              <h2 id="home-origin-heading">What is <span>TEDx?</span></h2>
+              <h2 id="home-origin-heading"><AccentIText>What is <span>TEDx?</span></AccentIText></h2>
               <p>TEDx is a program of local, independently organized events that bring people together to share a TED-like experience. Each event is organized under a license from TED.</p>
               <p>At <IIMTMark /> University in Meerut, <TEDxIIMTWordmark /> creates a space for students, educators and curious minds to encounter ideas worth spreading.</p>
               <div className="ted-home-origin-note"><span>INDEPENDENTLY ORGANIZED</span><span>IDEAS WORTH SPREADING</span><span><IIMTMark /> UNIVERSITY</span></div>
@@ -438,7 +438,7 @@ const HomePage = () => {
           <div className="ted-home-shell ted-home-stage-inner">
             <Reveal variant="left">
               <span className="ted-home-kicker">THE STAGE / THE NEXT PERSPECTIVE</span>
-              <h2 id="home-stage-heading">A stage for ideas that <span>move people.</span></h2>
+              <h2 id="home-stage-heading"><AccentIText>A stage for ideas that <span>move people.</span></AccentIText></h2>
               <p>Every talk begins with a thought. Explore the voices behind the ideas—or take the first step towards sharing an idea of your own.</p>
             </Reveal>
             <Reveal className="ted-home-stage-actions" variant="right" delay={0.1}>
@@ -453,7 +453,7 @@ const HomePage = () => {
             <Reveal className="ted-home-gallery-head" variant="left">
               <div>
                 <span className="ted-home-kicker">THE EVENT / DOCUMENTED MOMENTS</span>
-                <h2 id="home-gallery-heading" className="ted-home-section-heading">A few moments. <em>A thousand ideas.</em></h2>
+                <h2 id="home-gallery-heading" className="ted-home-section-heading"><AccentIText>A few moments. <em>A thousand ideas.</em></AccentIText></h2>
               </div>
               <div className="ted-home-gallery-intro">
                 <p>Real moments from <TEDxIIMTWordmark /> University and the campus that brings this community together.</p>
@@ -497,7 +497,7 @@ const HomePage = () => {
             <Reveal className="ted-home-discover-head" variant="right">
               <div>
                 <span className="ted-home-kicker">EXPLORE</span>
-                <h2 id="home-discover-heading" className="ted-home-section-heading"><TEDxIIMTWordmark /> <em>University</em></h2>
+                <h2 id="home-discover-heading" className="ted-home-section-heading"><AccentIText><TEDxIIMTWordmark /> <em>University</em></AccentIText></h2>
               </div>
               <p>Meet the voices, people and partners behind the <TEDxIIMTWordmark /> experience.</p>
             </Reveal>
@@ -542,7 +542,7 @@ const HomePage = () => {
             <Reveal className="ted-home-benefits-head" variant="left">
               <div>
                 <span className="ted-home-kicker">THE STAGE / {homepageSpeakers.length} SPEAKERS</span>
-                <h2 id="home-speakers-heading" className="ted-home-section-heading">{editionYear === 2025 ? 'Eight voices.' : 'The voices.'} <em>Different worlds.</em></h2>
+                <h2 id="home-speakers-heading" className="ted-home-section-heading"><AccentIText>{editionYear === 2025 ? 'Eight voices.' : 'The voices.'} <em>Different worlds.</em></AccentIText></h2>
               </div>
               <p>The speakers documented in <IIMTMark /> University’s official recap of <TEDxIIMTWordmark /> University {editionYear}.</p>
             </Reveal>
@@ -605,7 +605,7 @@ const HomePage = () => {
           <div className="ted-home-shell ted-home-close-inner">
             <Reveal variant="left">
               <span className="ted-home-kicker">YOUR IDEA / YOUR NEXT STEP</span>
-              <h2 id="home-close-heading">Make room for <span>what's next.</span></h2>
+              <h2 id="home-close-heading"><AccentIText>Make room for <span>what's next.</span></AccentIText></h2>
               <p>Join the <TEDxIIMTWordmark /> community, discover ideas worth spreading and be part of the next conversation.</p>
             </Reveal>
             <Reveal className="ted-home-close-actions" variant="right" delay={0.1}>

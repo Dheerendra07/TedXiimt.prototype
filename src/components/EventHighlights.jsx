@@ -1,4 +1,4 @@
-import { IIMTMark, TEDxIIMTWordmark } from './IIMTSignature';
+import { AccentIText, IIMTMark, TEDxIIMTWordmark } from './IIMTSignature';
 import React from 'react';
 import { motion } from 'framer-motion';
 
@@ -42,9 +42,9 @@ const EventHighlights = () => {
           <span className="text-sm font-semibold uppercase tracking-[0.25em] text-[#EB0028]">
             Explore
           </span>
-          <h2 id="discover-heading" className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
+          <h2 id="discover-heading" className="mt-4 text-4xl font-bold tracking-tight md:text-5xl"><AccentIText>
             <TEDxIIMTWordmark /> University 
-          </h2>
+          </AccentIText></h2>
         </AnimatedDiv>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -76,9 +76,9 @@ const EventHighlights = () => {
 
                 <div className="absolute inset-x-0 bottom-0 p-6 md:p-7">
                   <div className="mb-4 h-1 w-10 bg-[#EB0028] transition-all duration-300 group-hover:w-16" />
-                  <h3 className="mb-2 text-2xl font-bold transition-colors duration-300 group-hover:text-[#ff3150]">
+                  <h3 className="mb-2 text-2xl font-bold transition-colors duration-300 group-hover:text-[#ff3150]"><AccentIText>
                     {card.title}
-                  </h3>
+                  </AccentIText></h3>
                   <p className="max-w-sm text-sm leading-relaxed text-gray-300 md:text-base">
                     {card.description}
                   </p>
