@@ -943,86 +943,107 @@
   }
 }
 
-/* TED assembles first: three clean letter slices rise into alignment, then X takes over. */
+/* TED drops one letter at a time, lands, then steps into its final wordmark position. */
+.tedx-hero__wordmark {
+  position: relative;
+}
+
 .tedx-hero__letter {
   position: relative;
   display: inline-block;
-  vertical-align: baseline;
   color: var(--ted-red);
+  transform-origin: 50% 100%;
   text-shadow: 0 4px 24px rgba(235, 0, 40, .12);
-  isolation: isolate;
-}
-
-.tedx-hero__letter::before {
-  display: block;
-  visibility: hidden;
-  content: attr(data-letter);
-}
-
-.tedx-hero__letter--t { --letter-delay: .34s; }
-.tedx-hero__letter--e { --letter-delay: .58s; }
-.tedx-hero__letter--d { --letter-delay: .82s; }
-
-.tedx-hero__letter-part {
-  position: absolute;
-  inset: 0;
-  display: block;
-  color: var(--ted-red);
-  pointer-events: none;
   will-change: transform, opacity, filter;
-  animation: tedx-letter-assemble 1.12s cubic-bezier(.16, 1, .3, 1)
-    calc(var(--letter-delay) + var(--piece-delay)) both;
+  animation: tedx-letter-drop-and-walk 1.72s cubic-bezier(.2, .78, .22, 1)
+    var(--letter-delay) both;
 }
 
-.tedx-hero__letter-part--upper {
-  --piece-delay: .12s;
-  --piece-x: -.16em;
-  --piece-y: -.46em;
-  --piece-rotate: -11deg;
-  clip-path: polygon(0 0, 100% 0, 100% 37%, 0 37%);
+.tedx-hero__letter--t {
+  --letter-delay: .78s;
+  --fall-angle: -7deg;
+  --walk-x: -.2em;
 }
 
-.tedx-hero__letter-part--middle {
-  --piece-delay: .04s;
-  --piece-x: .25em;
-  --piece-y: .08em;
-  --piece-rotate: 8deg;
-  clip-path: polygon(0 32%, 100% 32%, 100% 69%, 0 69%);
+.tedx-hero__letter--e {
+  --letter-delay: .96s;
+  --fall-angle: 5deg;
+  --walk-x: .045em;
 }
 
-.tedx-hero__letter-part--lower {
-  --piece-delay: 0s;
-  --piece-x: -.12em;
-  --piece-y: .48em;
-  --piece-rotate: -7deg;
-  clip-path: polygon(0 64%, 100% 64%, 100% 100%, 0 100%);
+.tedx-hero__letter--d {
+  --letter-delay: 1.14s;
+  --fall-angle: -4deg;
+  --walk-x: .2em;
 }
 
-@keyframes tedx-letter-assemble {
+.tedx-hero__letter::after {
+  position: absolute;
+  right: 8%;
+  bottom: -.12em;
+  left: 8%;
+  height: .085em;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 54, 83, .8), rgba(235, 0, 40, .08) 68%, transparent 76%);
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transform: scaleX(.2);
+  animation: tedx-letter-impact .66s ease-out calc(var(--letter-delay) + .72s) both;
+}
+
+@keyframes tedx-letter-drop-and-walk {
   0% {
     opacity: 0;
-    transform: translate3d(var(--piece-x), var(--piece-y), 0)
-      rotate(var(--piece-rotate)) scale(.88);
-    filter: blur(5px) brightness(1.7);
+    transform: translate3d(0, -82svh, 0) rotate(var(--fall-angle)) scale(.78);
+    filter: blur(7px) brightness(1.5);
   }
-  48% {
+  30% {
     opacity: 1;
-    transform: translate3d(0, -.035em, 0) rotate(0) scale(1.035);
-    filter: blur(0) brightness(1.3);
+    transform: translate3d(0, -.28em, 0) rotate(calc(var(--fall-angle) * .55)) scale(.96, 1.04);
+    filter: blur(1px) brightness(1.25);
   }
-  73% {
+  39% {
     opacity: 1;
-    transform: translate3d(0, .012em, 0) scale(.99);
+    transform: translate3d(0, .73em, 0) rotate(0) scale(1.04, .94);
+    filter: blur(0) brightness(1.12);
+  }
+  45% {
+    transform: translate3d(0, .83em, 0) scale(1.13, .78);
     filter: none;
+  }
+  53% {
+    transform: translate3d(0, .62em, 0) scale(.94, 1.06);
+  }
+  60% {
+    transform: translate3d(var(--walk-x), .72em, 0) rotate(calc(var(--fall-angle) * -.55)) scale(1, .98);
+  }
+  69% {
+    transform: translate3d(calc(var(--walk-x) * .78), .55em, 0) rotate(calc(var(--fall-angle) * .32));
+  }
+  78% {
+    transform: translate3d(calc(var(--walk-x) * .52), .7em, 0) rotate(calc(var(--fall-angle) * -.2));
+  }
+  87% {
+    transform: translate3d(calc(var(--walk-x) * .22), .34em, 0) rotate(1deg);
+  }
+  94% {
+    transform: translate3d(0, -.055em, 0) rotate(0) scale(1.025, .99);
   }
   100% {
     opacity: 1;
-    transform: none;
+    transform: translate3d(0, 0, 0) rotate(0) scale(1);
     filter: none;
   }
 }
 
-/* The X begins only after all TED fragments have joined and settled. */
+@keyframes tedx-letter-impact {
+  0%, 34% { opacity: 0; transform: scaleX(.2); }
+  48% { opacity: .82; transform: scaleX(1.18); }
+  100% { opacity: 0; transform: scaleX(1.8); }
+}
+
+/* X waits for the three letters to settle, drops onto the superscript slot, then performs its 3D reveal. */
 .tedx-hero__wordmark-x {
   position: relative;
   display: inline-block;
@@ -1031,7 +1052,7 @@
   transform-origin: 50% 55%;
   transform-style: preserve-3d;
   backface-visibility: visible;
-  animation: tedx-wordmark-x-flight 2.55s cubic-bezier(.16, .84, .22, 1) 2.28s both;
+  animation: tedx-wordmark-x-flight 2.55s cubic-bezier(.16, .84, .22, 1) 3.02s both;
   will-change: transform, filter, opacity;
 }
 
@@ -1051,7 +1072,7 @@
   opacity: 0;
   pointer-events: none;
   transform: translate(-50%, -50%) rotate(-24deg) scale(.38);
-  animation: tedx-wordmark-x-orbit 1.8s cubic-bezier(.18, .72, .22, 1) 2.48s both;
+  animation: tedx-wordmark-x-orbit 1.8s cubic-bezier(.18, .72, .22, 1) 3.22s both;
 }
 
 .tedx-hero__wordmark-x::after {
@@ -1064,20 +1085,24 @@
   opacity: 0;
   filter: blur(7px);
   pointer-events: none;
-  animation: tedx-wordmark-x-aura 1.7s ease-out 2.28s both;
+  animation: tedx-wordmark-x-aura 1.7s ease-out 3.02s both;
 }
 
 @keyframes tedx-wordmark-x-flight {
   0% {
     opacity: 0;
-    transform: translate3d(0, .15em, 0) rotateY(-90deg) scale(.52);
-    filter: blur(4px);
+    transform: translate3d(.08em, -1.1em, 0) rotateY(-100deg) rotateZ(10deg) scale(.42);
+    filter: blur(5px);
     text-shadow: none;
   }
   14% {
     opacity: 1;
-    transform: translate3d(0, 0, 0) rotateY(0deg) scale(1);
+    transform: translate3d(0, .025em, 0) rotateY(0deg) rotateZ(-4deg) scale(1.1);
     filter: blur(0);
+    text-shadow: 0 0 12px rgba(235, 0, 40, .28);
+  }
+  24% {
+    transform: translate3d(0, 0, 0) rotateY(0deg) rotateZ(0) scale(1);
     text-shadow: none;
   }
   39% {
@@ -1141,7 +1166,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tedx-hero__letter-part,
+  .tedx-hero__letter,
   .tedx-hero__wordmark-x {
     animation: none !important;
     transform: none !important;
@@ -1149,6 +1174,7 @@
     opacity: 1 !important;
   }
 
+  .tedx-hero__letter::after,
   .tedx-hero__wordmark-x::before,
   .tedx-hero__wordmark-x::after {
     animation: none !important;
