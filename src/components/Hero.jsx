@@ -490,18 +490,29 @@ const Hero = () => {
               <TEDVehicleSequence />
               <span className="tedx-hero__letter-wrap tedx-hero__letter-wrap--t">
                 <span className="tedx-hero__letter tedx-hero__letter--t" aria-hidden="true">T</span>
-                <svg className="tedx-hero__t-shades" viewBox="0 0 92 34" aria-hidden="true" focusable="false">
+                <svg className="tedx-hero__t-shades" viewBox="0 0 110 72" aria-hidden="true" focusable="false">
                   <defs>
                     <linearGradient id="tedx-shades-glass" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0" stopColor="#425466" />
-                      <stop offset=".46" stopColor="#101a25" />
-                      <stop offset="1" stopColor="#05080d" />
+                      <stop offset="0" stopColor="#718092" />
+                      <stop offset=".28" stopColor="#263444" />
+                      <stop offset="1" stopColor="#080d14" />
+                    </linearGradient>
+                    <linearGradient id="tedx-shades-metal" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0" stopColor="#dce5eb" />
+                      <stop offset=".45" stopColor="#657381" />
+                      <stop offset="1" stopColor="#111820" />
                     </linearGradient>
                   </defs>
-                  <path d="M4 8Q4 4 9 4H37Q42 4 42 9L39 22Q38 27 32 27H14Q9 27 8 22Z" fill="url(#tedx-shades-glass)" stroke="#070b11" strokeWidth="3" />
-                  <path d="M50 9Q50 4 55 4H83Q88 4 88 8L84 22Q83 27 77 27H60Q54 27 53 22Z" fill="url(#tedx-shades-glass)" stroke="#070b11" strokeWidth="3" />
-                  <path d="M42 10Q46 7 50 10M2 8 8 10M88 8l3-2" fill="none" stroke="#080d14" strokeWidth="3" strokeLinecap="round" />
-                  <path d="m13 8 13 0m39 0h13" stroke="#d9e5ed" strokeWidth="2" opacity=".68" strokeLinecap="round" />
+                  <g stroke="#070b11" strokeWidth="4" strokeLinejoin="round">
+                    <path d="M7 10Q8 5 14 6L38 9Q45 10 43 17L38 34Q36 39 30 38L12 35Q6 34 6 27Z" fill="url(#tedx-shades-glass)" />
+                    <path d="M53 15Q54 9 60 10L86 13Q93 14 91 21L85 38Q83 43 77 42L59 39Q53 38 52 31Z" fill="url(#tedx-shades-glass)" />
+                    <path d="M43 15Q48 12 53 16M4 11 1 10" fill="none" />
+                  </g>
+                  <path d="m13 11 18 3m31 1 19 3" fill="none" stroke="#e5f0f7" strokeWidth="2.2" opacity=".76" strokeLinecap="round" />
+                  <path d="M90 17Q105 18 105 30L101 44 97 63" fill="none" stroke="url(#tedx-shades-metal)" strokeWidth="5" strokeLinecap="round" />
+                  <path d="M97 62q-1 5-6 6" fill="none" stroke="#111820" strokeWidth="4" strokeLinecap="round" />
+                  <circle cx="91" cy="18" r="3.2" fill="#d9e4eb" stroke="#111820" strokeWidth="1.4" />
+                  <path d="M96 44 93 57" stroke="#d8e3e9" strokeWidth="1.4" opacity=".65" strokeLinecap="round" />
                 </svg>
               </span><span className="tedx-hero__letter tedx-hero__letter--e" aria-hidden="true">E</span><span className="tedx-hero__letter tedx-hero__letter--d" aria-hidden="true">D</span><sup className="tedx-hero__wordmark-x" aria-hidden="true">x</sup>
             </div>
