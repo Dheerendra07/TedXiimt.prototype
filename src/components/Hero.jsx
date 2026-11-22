@@ -1,16 +1,107 @@
-import React, { useMemo } from 'react';
-import { motion as Motion, useReducedMotion } from 'framer-motion';
-import { ArrowRight, CalendarDays, ChevronDown, MapPin } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion as Motion, useReducedMotion } from 'framer-motion';
+import { ArrowRight, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 import { useEdition } from '../context/EditionContext';
 import './Hero.css';
 
-const CAMPUS_PHOTO = 'https://upload.wikimedia.org/wikipedia/commons/7/72/IIMT_University%2C_Meerut.jpg';
-const CAMPUS_PHOTO_SOURCE = 'https://commons.wikimedia.org/wiki/File:IIMT_University,_Meerut.jpg';
-const PHOTO_LICENSE = 'https://creativecommons.org/licenses/by-sa/4.0/';
+const CAMPUS_PHOTOS = [
+  {
+    id: 'main-campus-4k',
+    src: 'https://upload.wikimedia.org/wikipedia/commons/7/72/IIMT_University%2C_Meerut.jpg',
+    alt: 'Original high-resolution photograph of IIMT University campus, Meerut, with its academic buildings and entrance.',
+    label: 'THE UNIVERSITY',
+    detail: 'The campus, from the main approach',
+    credit: 'Ravi Dwivedi · CC BY-SA 4.0',
+    source: 'https://commons.wikimedia.org/wiki/File:IIMT_University,_Meerut.jpg',
+    position: 'center 48%',
+  },
+  {
+    id: 'campus-approach',
+    src: 'https://iimtu.edu.in/blog/wp-content/uploads/2022/10/PHOTO-2022-07-10-21-47-52.jpg',
+    alt: 'IIMT University approach road, pink academic building, landscaped entrance and campus sign.',
+    label: 'CAMPUS LIFE',
+    detail: 'A familiar view of the university entrance',
+    credit: 'IIMT University',
+    source: 'https://iimtu.edu.in/blog/iimt-university-gets-appreciation-by-mgncre/',
+    position: 'center 52%',
+  },
+  {
+    id: 'aerial-campus',
+    src: 'https://iimtu.edu.in/blog/wp-content/uploads/2024/02/11.35.56-AM.png',
+    alt: 'Aerial photograph of IIMT University showing the entrance gate, academic blocks and campus grounds.',
+    label: 'THE BIGGER PICTURE',
+    detail: 'The university from above',
+    credit: 'IIMT University',
+    source: 'https://iimtu.edu.in/blog/exploring-the-best-pharmacy-college/',
+    position: 'center 50%',
+  },
+  {
+    id: 'academic-entrance',
+    src: 'https://image-static.collegedunia.com/public/college_data/images/campusimage/1746012490SET.jpg',
+    alt: 'Red-brick IIMT University academic building with a curved entrance canopy and landscaped courtyard.',
+    label: 'ACADEMIC SPACES',
+    detail: 'Architecture, light and open campus spaces',
+    credit: 'CollegeDunia campus gallery',
+    source: 'https://collegedunia.com/university/59031-iimt-university-iimtu-meerut/gallery',
+    position: 'center 48%',
+  },
+  {
+    id: 'glass-campus-block',
+    src: 'https://image-static.collegedunia.com/public/college_data/images/campusimage/1684133021artboard-3-8_20230309104811_0.jpg',
+    alt: 'IIMT campus building with a glass facade, red architectural accents and a landscaped fountain courtyard.',
+    label: 'CAMPUS DETAILS',
+    detail: 'A closer look at the university architecture',
+    credit: 'CollegeDunia campus gallery',
+    source: 'https://collegedunia.com/university/59031-iimt-university-iimtu-meerut/gallery',
+    position: 'center 50%',
+  },
+];
 
 const Hero = () => {
   const prefersReducedMotion = useReducedMotion();
   const { activeEdition, loading } = useEdition();
+  const [photos, setPhotos] = useState(CAMPUS_PHOTOS);
+  const [activePhoto, setActivePhoto] = useState(0);
+  const [photosReady, setPhotosReady] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const preloadPhoto = (photo) => new Promise((resolve) => {
+      const image = new Image();
+      image.decoding = 'async';
+      image.onload = () => resolve(photo);
+      image.onerror = () => resolve(null);
+      image.src = photo.src;
+
+      if (image.complete && image.naturalWidth > 0) {
+        resolve(photo);
+      }
+    });
+
+    Promise.all(CAMPUS_PHOTOS.map(preloadPhoto)).then((results) => {
+      if (cancelled) return;
+
+      const availablePhotos = results.filter(Boolean);
+      setPhotos(availablePhotos.length ? availablePhotos : [CAMPUS_PHOTOS[0]]);
+      setActivePhoto(0);
+      setPhotosReady(true);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!photosReady || photos.length < 2 || prefersReducedMotion) return undefined;
+
+    const rotation = window.setInterval(() => {
+      setActivePhoto((current) => (current + 1) % photos.length);
+    }, 3800);
+
+    return () => window.clearInterval(rotation);
+  }, [photos, photosReady, prefersReducedMotion]);
 
   const formattedEventDate = useMemo(() => {
     if (loading || !activeEdition?.date) return null;
@@ -30,38 +121,33 @@ const Hero = () => {
     }).format(date);
   }, [activeEdition, loading]);
 
+  const currentPhoto = photos[activePhoto] || photos[0];
+  const goToPhoto = (direction) => {
+    setActivePhoto((current) => (current + direction + photos.length) % photos.length);
+  };
+
   const containerVariants = {
     hidden: {},
     visible: {
-      transition: { staggerChildren: 0.13, delayChildren: 0.22 },
+      transition: { staggerChildren: 0.12, delayChildren: 0.2 },
     },
   };
+
   const itemVariants = {
-    hidden: { opacity: 0, y: 18, filter: 'blur(5px)' },
+    hidden: { opacity: 0, y: 18, filter: 'blur(4px)' },
     visible: {
       opacity: 1,
       y: 0,
       filter: 'blur(0px)',
-      transition: { duration: 0.72, ease: [0.22, 1, 0.36, 1] },
+      transition: { duration: 0.68, ease: [0.22, 1, 0.36, 1] },
     },
   };
 
   return (
     <section className="tedx-hero" aria-label="TEDxIIMT University — Break the Flow">
-      <div className="tedx-hero__photo-frame" aria-hidden="true">
-        <img
-          className="tedx-hero__photo"
-          src={CAMPUS_PHOTO}
-          alt=""
-          fetchPriority="high"
-          loading="eager"
-          decoding="async"
-          draggable="false"
-        />
-      </div>
-      <div className="tedx-hero__photo-shade" aria-hidden="true" />
+      <div className="tedx-hero__ambient" aria-hidden="true" />
       <div className="tedx-hero__grid" aria-hidden="true" />
-      <div className="tedx-hero__top-rule" aria-hidden="true" />
+      <div className="tedx-hero__split-line" aria-hidden="true" />
 
       <div className="tedx-hero__content-wrap">
         <Motion.div
@@ -105,37 +191,86 @@ const Hero = () => {
             )}
             <span><MapPin aria-hidden="true" />IIMT University, Meerut</span>
           </Motion.div>
+
+          <Motion.div variants={itemVariants} className="tedx-hero__signature">
+            <span className="tedx-hero__signature-mark">TED<span>x</span></span>
+            <span className="tedx-hero__signature-divider" aria-hidden="true" />
+            <span className="tedx-hero__signature-copy">INDEPENDENTLY ORGANIZED<br />TED EVENT</span>
+          </Motion.div>
         </Motion.div>
       </div>
 
-      <Motion.div
-        className="tedx-hero__event-banner"
-        initial={prefersReducedMotion ? false : { opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.85, delay: 0.62, ease: [0.22, 1, 0.36, 1] }}
-        aria-label="TEDx IIMT University, Break the Flow"
-      >
-        <div className="tedx-hero__event-banner-brand">
-          <span>TED<span className="tedx-hero__banner-x">x</span></span>
-          <i aria-hidden="true" />
-          <strong>IIMT UNIVERSITY</strong>
-        </div>
-        <div className="tedx-hero__event-banner-detail">
-          <span>BREAK THE FLOW</span>
-          <span>INDEPENDENTLY ORGANIZED TED EVENT</span>
-        </div>
-      </Motion.div>
+      <div className="tedx-hero__visual-wrap">
+        <div className="tedx-hero__photo-frame">
+          <AnimatePresence initial={false} mode="sync">
+            <Motion.img
+              key={currentPhoto.id}
+              className="tedx-hero__photo"
+              src={currentPhoto.src}
+              alt={currentPhoto.alt}
+              fetchPriority={activePhoto === 0 ? 'high' : 'auto'}
+              loading="eager"
+              decoding="async"
+              draggable="false"
+              initial={prefersReducedMotion ? false : { opacity: 0, scale: 1.035 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.012 }}
+              transition={{
+                opacity: { duration: prefersReducedMotion ? 0 : 1.05, ease: [0.22, 1, 0.36, 1] },
+                scale: { duration: prefersReducedMotion ? 0 : 4.6, ease: 'linear' },
+              }}
+              style={{ objectPosition: currentPhoto.position }}
+            />
+          </AnimatePresence>
 
-      <div className="tedx-hero__photo-credit">
-        Campus photograph by <a href={CAMPUS_PHOTO_SOURCE} target="_blank" rel="noreferrer">Ravi Dwivedi</a>
-        <span aria-hidden="true">·</span>
-        <a href={PHOTO_LICENSE} target="_blank" rel="noreferrer">CC BY-SA 4.0</a>
+          <div className="tedx-hero__photo-shade" aria-hidden="true" />
+          <div className="tedx-hero__photo-topline">
+            <span>TEDxIIMT UNIVERSITY</span>
+            <span>MEERUT · INDIA</span>
+          </div>
+
+          <div className="tedx-hero__photo-caption" aria-live="off">
+            <div className="tedx-hero__photo-caption-copy">
+              <span>{currentPhoto.label}</span>
+              <strong>{currentPhoto.detail}</strong>
+            </div>
+            <div className="tedx-hero__photo-credit">
+              <span>PHOTO</span>
+              <a href={currentPhoto.source} target="_blank" rel="noreferrer">{currentPhoto.credit}</a>
+            </div>
+          </div>
+
+          <div className="tedx-hero__photo-controls" aria-label="Campus photo carousel controls">
+            <div className="tedx-hero__photo-count">
+              <strong>{String(activePhoto + 1).padStart(2, '0')}</strong>
+              <span>/ {String(photos.length).padStart(2, '0')}</span>
+            </div>
+            <div className="tedx-hero__photo-progress" aria-hidden="true">
+              {photos.map((photo, index) => (
+                <span key={photo.id} className={index === activePhoto ? 'is-active' : ''}>
+                  {index === activePhoto && !prefersReducedMotion && <i />}
+                </span>
+              ))}
+            </div>
+            <div className="tedx-hero__photo-arrows">
+              <button type="button" onClick={() => goToPhoto(-1)} aria-label="Previous campus photo">
+                <ChevronLeft aria-hidden="true" />
+              </button>
+              <button type="button" onClick={() => goToPhoto(1)} aria-label="Next campus photo">
+                <ChevronRight aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="tedx-hero__visual-foot">
+          <span>THE CAMPUS, THROUGH DIFFERENT PERSPECTIVES</span>
+          <span>01 — 05 / IIMT UNIVERSITY</span>
+        </div>
       </div>
 
       <a className="tedx-hero__scroll" href="#home-statement-heading" aria-label="Scroll to explore the homepage">
         <span className="tedx-hero__scroll-icon"><ChevronDown aria-hidden="true" /></span>
         <span>SCROLL TO EXPLORE</span>
-        <i aria-hidden="true" />
       </a>
     </section>
   );
