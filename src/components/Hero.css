@@ -941,3 +941,104 @@
     width: 100%;
   }
 }
+
+/* One-time TEDx mark reveal: a controlled flip, close-up and clean settle. */
+.tedx-hero__wordmark-x {
+  position: relative;
+  display: inline-block;
+  transform-origin: 50% 55%;
+  transform-style: preserve-3d;
+  backface-visibility: visible;
+  animation: tedx-wordmark-x-flight 2.55s cubic-bezier(.16, .84, .22, 1) .78s both;
+  will-change: transform, filter, opacity;
+}
+
+.tedx-hero__wordmark-x::after {
+  position: absolute;
+  z-index: -1;
+  inset: -.75em -.72em;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 65, 91, .42) 0%, rgba(235, 0, 40, .18) 34%, transparent 72%);
+  content: "";
+  opacity: 0;
+  filter: blur(7px);
+  pointer-events: none;
+  animation: tedx-wordmark-x-aura 1.7s ease-out .78s both;
+}
+
+@keyframes tedx-wordmark-x-flight {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, .15em, 0) rotateY(-90deg) scale(.52);
+    filter: blur(4px);
+    text-shadow: none;
+  }
+  14% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotateY(0deg) scale(1);
+    filter: blur(0);
+    text-shadow: none;
+  }
+  39% {
+    opacity: 1;
+    transform: translate3d(0, -.025em, 0) rotateY(175deg) scale(2.6);
+    filter: blur(0);
+    text-shadow:
+      0 0 8px rgba(255, 255, 255, .42),
+      0 0 22px rgba(235, 0, 40, .7),
+      0 0 42px rgba(235, 0, 40, .28);
+  }
+  53% {
+    transform: translate3d(0, -.015em, 0) rotateY(252deg) scale(1.72);
+    text-shadow:
+      0 0 7px rgba(255, 255, 255, .26),
+      0 0 18px rgba(235, 0, 40, .48);
+  }
+  75% {
+    transform: translate3d(0, 0, 0) rotateY(345deg) scale(1.04);
+    text-shadow: 0 0 10px rgba(235, 0, 40, .22);
+  }
+  86% {
+    transform: rotateY(360deg) scale(.965);
+    text-shadow: none;
+  }
+  93% {
+    transform: rotateY(360deg) scale(1.025);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    text-shadow: none;
+  }
+}
+
+@keyframes tedx-wordmark-x-aura {
+  0% {
+    opacity: 0;
+    transform: scale(.25);
+  }
+  36% {
+    opacity: .82;
+    transform: scale(.62);
+  }
+  62% {
+    opacity: .2;
+    transform: scale(1.32);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tedx-hero__wordmark-x,
+  .tedx-hero__wordmark-x::after {
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+  }
+}
+
