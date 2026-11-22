@@ -3575,13 +3575,38 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
   overflow-wrap: normal;
 }
 
+/* Signature treatment for the first I in the IIMT lockup only.
+   The following I and every other letter elsewhere keep their native type. */
 .ted-home-origin-university-initial {
+  position: relative;
   display: inline-block;
+  width: .43em;
+  height: .9em;
   margin-right: .025em;
-  color: #EB0028;
-  font-weight: 820;
-  text-shadow: 0 4px 20px rgba(235, 0, 40, .18);
-  transform: translateY(-.015em);
+  color: transparent;
+  vertical-align: -.08em;
+  text-shadow: none;
+}
+
+.ted-home-origin-university-initial::before {
+  position: absolute;
+  right: .105em;
+  bottom: .045em;
+  left: .105em;
+  height: .72em;
+  background: linear-gradient(90deg, #C7CDD3 0%, #F5F6F7 48%, #DDE1E5 100%);
+  content: "";
+}
+
+.ted-home-origin-university-initial::after {
+  position: absolute;
+  top: .025em;
+  left: .045em;
+  width: .39em;
+  height: .15em;
+  background: #EB0028;
+  clip-path: polygon(0 0, 100% 0, 100% 64%, 0 100%);
+  content: "";
 }
 
 @media (max-width: 600px) {
@@ -3668,9 +3693,8 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ted-home-origin-university-initial {
-    text-shadow: none;
-    transform: none;
+  .ted-home-origin-university-initial::after {
+    box-shadow: none;
   }
 }
 
