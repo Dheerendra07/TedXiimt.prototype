@@ -3262,3 +3262,302 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
     background-color: rgba(0, 0, 0, .4) !important;
   }
 }
+
+
+/* ── Premium finish pass: stronger editorial depth, precise edges, quiet interactions. ── */
+.ted-home {
+  --home-line: rgba(188, 205, 219, .14);
+  --home-line-strong: rgba(220, 231, 239, .22);
+  --home-panel: #0B0E12;
+  --home-panel-raised: #10151B;
+}
+
+.ted-home .ted-home-kicker {
+  text-shadow: 0 0 18px rgba(235, 0, 40, .12);
+}
+
+.ted-home .ted-home-section-heading em,
+.ted-home .ted-home-stage h2 span,
+.ted-home .ted-home-close h2 span {
+  text-shadow: 0 8px 30px rgba(235, 0, 40, .14);
+}
+
+.ted-home-statement,
+.ted-home-origin,
+.ted-home-gallery,
+.ted-home-speakers,
+.ted-home-close {
+  isolation: isolate;
+}
+
+.ted-home-statement::before,
+.ted-home-origin::before,
+.ted-home-gallery::before,
+.ted-home-speakers::before,
+.ted-home-close::before {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(176, 201, 219, .12) 18%,
+    rgba(235, 0, 40, .42) 50%,
+    rgba(176, 201, 219, .12) 82%,
+    transparent 100%
+  );
+  content: "";
+  pointer-events: none;
+}
+
+.ted-home-edition-showcase-grid,
+.ted-home-edition-bottomline,
+.ted-home-origin-grid,
+.ted-home-gallery-grid,
+.ted-home-speaker-grid,
+.ted-home-close-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.ted-home-edition-theme-panel,
+.ted-home-edition-date-panel,
+.ted-home-edition-venue-panel {
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, .16),
+    inset 0 1px 0 rgba(255, 255, 255, .035);
+}
+
+.ted-home-edition-theme-panel::after {
+  position: absolute;
+  inset: 12px;
+  z-index: -1;
+  border: 1px solid rgba(214, 226, 235, .055);
+  content: "";
+  pointer-events: none;
+}
+
+.ted-home-edition-date-panel,
+.ted-home-edition-venue-panel {
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, .14),
+    inset 0 1px 0 rgba(255, 255, 255, .035);
+}
+
+.ted-home-origin-mark {
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, .24),
+    inset 0 0 0 8px rgba(255, 255, 255, .012);
+}
+
+.ted-home-origin-mark::after {
+  box-shadow: 0 0 44px rgba(235, 0, 40, .055);
+}
+
+.ted-home-gallery-card {
+  border-radius: 4px;
+  box-shadow: 0 15px 38px rgba(0, 0, 0, .2);
+}
+
+.ted-home-gallery-card::after {
+  position: absolute;
+  z-index: 3;
+  inset: 9px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  content: "";
+  opacity: 0;
+  transform: scale(.985);
+  transition: opacity .38s ease, transform .48s cubic-bezier(.2, .75, .25, 1), border-color .38s ease;
+  pointer-events: none;
+}
+
+.ted-home-gallery-count {
+  top: 17px;
+  left: 18px;
+  padding: 7px 9px;
+  border: 1px solid rgba(255, 255, 255, .2);
+  background: rgba(4, 6, 9, .46);
+  font-variant-numeric: tabular-nums;
+}
+
+.ted-home-gallery-card:focus-visible {
+  outline: 2px solid #EB0028;
+  outline-offset: 4px;
+}
+
+.ted-home-gallery-card:focus-visible::after {
+  opacity: .75;
+  transform: scale(1);
+}
+
+.ted-home-speaker-card__surface {
+  border-color: rgba(176, 201, 219, .2);
+  box-shadow:
+    0 17px 42px rgba(0, 0, 0, .24),
+    inset 0 1px 0 rgba(255, 255, 255, .045);
+}
+
+.ted-home-speaker-card-copy {
+  border-top: 1px solid rgba(255, 255, 255, .055);
+}
+
+.ted-home-speaker-card-copy h3 {
+  text-wrap: pretty;
+}
+
+.ted-home-speaker-image-corner {
+  filter: drop-shadow(0 1px 5px rgba(0, 0, 0, .35));
+}
+
+.ted-home-speaker-card:focus-within .ted-home-speaker-card__surface {
+  border-color: rgba(235, 0, 40, .62);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, .28), 0 0 0 1px rgba(235, 0, 40, .12);
+}
+
+.ted-home-dynamic > section {
+  position: relative;
+  isolation: isolate;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .025);
+}
+
+.ted-home-dynamic article {
+  border-color: rgba(176, 201, 219, .16) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .2);
+}
+
+.ted-home-dynamic article img {
+  backface-visibility: hidden;
+}
+
+.ted-home-dynamic a:focus-visible,
+.ted-home-link:focus-visible,
+.ted-home-edition-source:focus-visible,
+.ted-home-gallery-all:focus-visible {
+  outline: 2px solid #EB0028;
+  outline-offset: 4px;
+}
+
+.ted-home-close-inner {
+  padding-block: 2px;
+}
+
+.ted-home-close-actions .ted-home-link {
+  min-height: 52px;
+  padding-inline: 22px;
+  letter-spacing: .045em;
+}
+
+.ted-home .ted-home-link,
+.ted-home .ted-home-gallery-card,
+.ted-home .ted-home-speaker-card__surface,
+.ted-home .ted-home-edition-theme-panel,
+.ted-home .ted-home-edition-date-panel,
+.ted-home .ted-home-edition-venue-panel {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ted-home-edition-theme-panel:hover {
+    border-color: rgba(235, 0, 40, .48);
+    box-shadow: 0 26px 58px rgba(0, 0, 0, .27), 0 0 34px rgba(235, 0, 40, .055);
+    transform: translateY(-3px);
+  }
+
+  .ted-home-edition-theme-panel:hover::after {
+    border-color: rgba(235, 0, 40, .13);
+  }
+
+  .ted-home-gallery-card:hover::after {
+    border-color: rgba(255, 255, 255, .32);
+    opacity: .72;
+    transform: scale(1);
+  }
+
+  .ted-home-speaker-card:hover .ted-home-speaker-card__surface {
+    border-color: rgba(235, 0, 40, .46);
+    box-shadow: 0 24px 54px rgba(0, 0, 0, .32), 0 0 28px rgba(235, 0, 40, .055);
+    transform: translateY(-4px);
+  }
+
+  .ted-home-speaker-card:hover .ted-home-speaker-portrait img {
+    filter: saturate(.94) contrast(1.06) brightness(.94);
+    transform: scale(1.035);
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .ted-home-gallery-card:hover,
+  .ted-home-speaker-card:hover .ted-home-speaker-card__surface,
+  .ted-home-edition-theme-panel:hover,
+  .ted-home-edition-date-panel:hover,
+  .ted-home-edition-venue-panel:hover {
+    transform: none;
+  }
+
+  .ted-home-gallery-card:hover img,
+  .ted-home-speaker-card:hover .ted-home-speaker-portrait img {
+    transform: none;
+    filter: saturate(.86) contrast(1.04) brightness(.84);
+  }
+
+  .ted-home-gallery-card:hover::after {
+    opacity: 0;
+  }
+
+  .ted-home-edition-date-panel:hover::before,
+  .ted-home-edition-venue-panel:hover::before {
+    width: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .ted-home-statement::before,
+  .ted-home-origin::before,
+  .ted-home-gallery::before,
+  .ted-home-speakers::before,
+  .ted-home-close::before {
+    background: linear-gradient(90deg, transparent, rgba(235, 0, 40, .34) 50%, transparent);
+  }
+
+  .ted-home-gallery-card {
+    border-radius: 3px;
+  }
+
+  .ted-home-gallery-card::after {
+    inset: 6px;
+  }
+
+  .ted-home-gallery-count {
+    top: 12px;
+    left: 12px;
+    padding: 6px 8px;
+    font-size: 8px;
+  }
+
+  .ted-home-gallery-card:active {
+    border-color: rgba(235, 0, 40, .7);
+  }
+
+  .ted-home-speaker-card__surface {
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .22);
+  }
+
+  .ted-home-close-actions .ted-home-link {
+    min-height: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-home-gallery-card::after,
+  .ted-home-gallery-card img,
+  .ted-home-speaker-card__surface,
+  .ted-home-speaker-portrait img,
+  .ted-home-edition-theme-panel,
+  .ted-home-edition-date-panel,
+  .ted-home-edition-venue-panel {
+    transition: none !important;
+  }
+}
