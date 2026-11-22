@@ -328,7 +328,7 @@ const HomePage = () => {
                   <div className="ted-home-edition-venue-content">
                     <h3>Seminar Hall</h3>
                     <p className="ted-home-edition-venue-floor">2nd Floor <i aria-hidden="true" /> B Block</p>
-                    <p className="ted-home-edition-venue-campus">{homepageEdition?.venue || 'IIMT University, Meerut'}</p>
+                    <p className="ted-home-edition-venue-campus">IIMT University, Meerut</p>
                   </div>
                   <div className="ted-home-edition-venue-location">
                     <MapPin aria-hidden="true" />
