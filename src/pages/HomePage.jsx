@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useEdition } from '../context/EditionContext';
 import { ARCHIVE_EDITIONS } from '../data/archiveData';
-import { AnimatePresence, motion as Motion } from 'framer-motion';
+import { AnimatePresence, motion as Motion, useReducedMotion } from 'framer-motion';
 import {
   ArrowRight, ArrowUpRight, CalendarDays, Camera, ChevronLeft, ChevronRight,
   MapPin, X,
@@ -165,18 +165,47 @@ const galleryItems = [
   },
 ];
 
-const Reveal = ({ children, className = '', delay = 0, ...props }) => (
-  <Motion.div
-    {...props}
-    className={className}
-    initial={{ opacity: 0, y: 26 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, amount: 0.16 }}
-    transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
-  >
-    {children}
-  </Motion.div>
-);
+const REVEAL_PRESETS = {
+  lift: {
+    hidden: { opacity: 0, y: 18 },
+    visible: { opacity: 1, y: 0 },
+  },
+  left: {
+    hidden: { opacity: 0, x: -22 },
+    visible: { opacity: 1, x: 0 },
+  },
+  right: {
+    hidden: { opacity: 0, x: 22 },
+    visible: { opacity: 1, x: 0 },
+  },
+  card: {
+    hidden: { opacity: 0, y: 18, scale: 0.982 },
+    visible: { opacity: 1, y: 0, scale: 1 },
+  },
+  image: {
+    hidden: { opacity: 0, scale: 0.975 },
+    visible: { opacity: 1, scale: 1 },
+  },
+};
+
+const Reveal = ({ children, className = '', delay = 0, variant = 'lift', ...props }) => {
+  const prefersReducedMotion = useReducedMotion();
+  const selectedPreset = REVEAL_PRESETS[variant] || REVEAL_PRESETS.lift;
+
+  return (
+    <Motion.div
+      {...props}
+      className={className}
+      initial={prefersReducedMotion ? false : 'hidden'}
+      whileInView={prefersReducedMotion ? undefined : 'visible'}
+      variants={selectedPreset}
+      viewport={{ once: true, amount: 0.14, margin: '0px 0px -36px 0px' }}
+      transition={{ duration: 0.56, delay, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </Motion.div>
+  );
+};
 
 const HomePage = () => {
   const { activeEdition } = useEdition();
@@ -285,13 +314,13 @@ const HomePage = () => {
 
         <section className="ted-home-statement ted-home-grid-surface" aria-labelledby="home-statement-heading">
           <div className="ted-home-shell ted-home-statement-grid">
-            <Reveal>
+            <Reveal variant="left">
               <span className="ted-home-kicker">TEDxIIMT UNIVERSITY / IDEAS WORTH SPREADING</span>
               <h2 id="home-statement-heading" className="ted-home-statement-title">
                 <span>IDEAS</span><span className="accent">DON'T</span><span>STAND STILL.</span>
               </h2>
             </Reveal>
-            <Reveal className="ted-home-statement-aside" delay={0.12}>
+            <Reveal className="ted-home-statement-aside" variant="right" delay={0.1}>
               <p>A local stage for original thinking, unexpected perspectives and conversations that can move an idea beyond the room.</p>
               <div className="ted-home-statement-meta">IIMT UNIVERSITY · MEERUT</div>
             </Reveal>
@@ -300,7 +329,7 @@ const HomePage = () => {
 
         <section className="ted-home-pillars ted-home-grid-surface ted-home-edition-showcase" aria-labelledby="home-pillars-heading">
           <div className="ted-home-shell ted-home-edition-shell">
-            <Reveal className="ted-home-edition-intro">
+            <Reveal className="ted-home-edition-intro" variant="left">
               <div className="ted-home-edition-intro-top">
                 <span className="ted-home-kicker">THE EDITION / OFFICIAL EVENT RECORD</span>
                 <span className="ted-home-edition-edition-index">01 — 01 <i aria-hidden="true" /> ARCHIVE</span>
@@ -315,7 +344,7 @@ const HomePage = () => {
             </Reveal>
 
             <div className="ted-home-edition-showcase-grid">
-              <Reveal className="ted-home-edition-theme-panel" delay={0.08}>
+              <Reveal className="ted-home-edition-theme-panel" variant="card" delay={0.06}>
                 <div className="ted-home-edition-panel-top">
                   <span>01 / THE THEME</span>
                   <span>THE CENTRAL IDEA</span>
@@ -336,7 +365,7 @@ const HomePage = () => {
               </Reveal>
 
               <div className="ted-home-edition-facts-rail">
-                <Reveal className="ted-home-edition-date-panel" delay={0.17}>
+                <Reveal className="ted-home-edition-date-panel" variant="lift" delay={0.12}>
                   <div className="ted-home-edition-panel-top">
                     <span>02 / THE DATE</span>
                     <CalendarDays aria-hidden="true" />
@@ -354,7 +383,7 @@ const HomePage = () => {
                   </div>
                 </Reveal>
 
-                <Reveal className="ted-home-edition-venue-panel" delay={0.25}>
+                <Reveal className="ted-home-edition-venue-panel" variant="right" delay={0.18}>
                   <div className="ted-home-edition-panel-top">
                     <span>03 / THE VENUE</span>
                     <MapPin aria-hidden="true" />
@@ -385,7 +414,7 @@ const HomePage = () => {
 
         <section className="ted-home-origin" aria-labelledby="home-origin-heading">
           <div className="ted-home-shell ted-home-origin-grid">
-            <Reveal className="ted-home-origin-mark">
+            <Reveal className="ted-home-origin-mark" variant="image">
               <div className="ted-home-origin-lockup">
                 <div className="ted-home-origin-logo"><span className="ted">TED</span><span className="x">x</span></div>
                 <span className="ted-home-origin-university">IIMT University</span>
@@ -393,7 +422,7 @@ const HomePage = () => {
               <div className="ted-home-origin-caption"><span>INDEPENDENTLY ORGANIZED</span><span>MEERUT / INDIA</span></div>
               <a className="ted-home-origin-hit" href="/about" aria-label="Learn more about TEDxIIMT University" />
             </Reveal>
-            <Reveal className="ted-home-origin-copy" delay={0.12}>
+            <Reveal className="ted-home-origin-copy" variant="right" delay={0.1}>
               <span className="ted-home-kicker">A GLOBAL IDEA / A LOCAL STAGE</span>
               <h2 id="home-origin-heading">What is <span>TEDx?</span></h2>
               <p>TEDx is a program of local, independently organized events that bring people together to share a TED-like experience. Each event is organized under a license from TED.</p>
@@ -406,12 +435,12 @@ const HomePage = () => {
 
         <section className="ted-home-stage ted-home-grid-surface" aria-labelledby="home-stage-heading">
           <div className="ted-home-shell ted-home-stage-inner">
-            <Reveal>
+            <Reveal variant="left">
               <span className="ted-home-kicker">THE STAGE / THE NEXT PERSPECTIVE</span>
               <h2 id="home-stage-heading">A stage for ideas that <span>move people.</span></h2>
               <p>Every talk begins with a thought. Explore the voices behind the ideas—or take the first step towards sharing an idea of your own.</p>
             </Reveal>
-            <Reveal className="ted-home-stage-actions" delay={0.15}>
+            <Reveal className="ted-home-stage-actions" variant="right" delay={0.1}>
               <a className="ted-home-link ted-home-link--red" href="/speakers">Explore speakers <ArrowUpRight aria-hidden="true" /></a>
               <a className="ted-home-link" href="/speaker-apply">Apply to speak <ArrowUpRight aria-hidden="true" /></a>
             </Reveal>
@@ -420,7 +449,7 @@ const HomePage = () => {
 
         <section className="ted-home-gallery" aria-labelledby="home-gallery-heading">
           <div className="ted-home-shell">
-            <Reveal className="ted-home-gallery-head">
+            <Reveal className="ted-home-gallery-head" variant="left">
               <div>
                 <span className="ted-home-kicker">THE EVENT / DOCUMENTED MOMENTS</span>
                 <h2 id="home-gallery-heading" className="ted-home-section-heading">A few moments. <em>A thousand ideas.</em></h2>
@@ -433,7 +462,7 @@ const HomePage = () => {
 
             <div className="ted-home-gallery-grid">
               {galleryItems.map((photo, index) => (
-                <Reveal key={photo.id} className={'ted-home-gallery-slot ' + photo.className} delay={index * 0.07}>
+                <Reveal key={photo.id} className={'ted-home-gallery-slot ' + photo.className} variant="image" delay={Math.min(index * 0.055, 0.22)}>
                   <button
                     type="button"
                     className="ted-home-gallery-card"
@@ -464,7 +493,7 @@ const HomePage = () => {
 
         <section className="ted-home-discover ted-home-grid-surface" aria-labelledby="home-discover-heading">
           <div className="ted-home-shell">
-            <Reveal className="ted-home-discover-head">
+            <Reveal className="ted-home-discover-head" variant="right">
               <div>
                 <span className="ted-home-kicker">EXPLORE</span>
                 <h2 id="home-discover-heading" className="ted-home-section-heading">TEDxIIMT <em>University</em></h2>
@@ -473,7 +502,7 @@ const HomePage = () => {
             </Reveal>
             <div className="ted-home-discover-grid">
               {discovery.map(({ index, label, title, description, href, action, image, imageAlt, imagePosition }, cardIndex) => (
-                <Reveal key={index} delay={cardIndex * 0.08}>
+                <Reveal key={index} variant="card" delay={cardIndex * 0.07}>
                   <a className="ted-home-discover-card" data-index={index} href={href}>
                     <img
                       className="ted-home-discover-image"
@@ -509,7 +538,7 @@ const HomePage = () => {
 
         <section className="ted-home-speakers ted-home-grid-surface" aria-labelledby="home-speakers-heading">
           <div className="ted-home-shell">
-            <Reveal className="ted-home-benefits-head">
+            <Reveal className="ted-home-benefits-head" variant="left">
               <div>
                 <span className="ted-home-kicker">THE STAGE / {homepageSpeakers.length} SPEAKERS</span>
                 <h2 id="home-speakers-heading" className="ted-home-section-heading">{editionYear === 2025 ? 'Eight voices.' : 'The voices.'} <em>Different worlds.</em></h2>
@@ -521,7 +550,8 @@ const HomePage = () => {
                 <Reveal
                   key={speaker.id}
                   className="ted-home-speaker-card"
-                  delay={speakerIndex * 0.065}
+                  variant="card"
+                  delay={(speakerIndex % 4) * 0.05}
                 >
                   <article className="ted-home-speaker-card__surface">
                     <div className="ted-home-speaker-portrait">
@@ -572,12 +602,12 @@ const HomePage = () => {
 
         <section className="ted-home-close ted-home-grid-surface" aria-labelledby="home-close-heading">
           <div className="ted-home-shell ted-home-close-inner">
-            <Reveal>
+            <Reveal variant="left">
               <span className="ted-home-kicker">YOUR IDEA / YOUR NEXT STEP</span>
               <h2 id="home-close-heading">Make room for <span>what's next.</span></h2>
               <p>Join the TEDxIIMT community, discover ideas worth spreading and be part of the next conversation.</p>
             </Reveal>
-            <Reveal className="ted-home-close-actions" delay={0.15}>
+            <Reveal className="ted-home-close-actions" variant="right" delay={0.1}>
               <a className="ted-home-link ted-home-link--red" href="/register">Be part of the experience <ArrowRight aria-hidden="true" /></a>
               <a className="ted-home-link" href="/speaker-apply">Share an idea <ArrowUpRight aria-hidden="true" /></a>
             </Reveal>
