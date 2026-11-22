@@ -435,18 +435,18 @@ const HomePage = () => {
                 >
                   <article className="ted-home-speaker-card__surface">
                     <div className="ted-home-speaker-portrait">
-                      {speaker.image ? (
+                      <div className="ted-home-speaker-portrait-fallback" aria-hidden="true">
+                        {speaker.name.split(/\s+/).slice(0, 2).map((part) => part[0]).join('')}
+                      </div>
+                      {speaker.image && (
                         <img
                           src={speaker.image}
                           alt={speaker.imageAlt || ('Portrait of ' + speaker.name)}
                           loading="lazy"
                           decoding="async"
+                          onError={(event) => { event.currentTarget.style.display = 'none'; }}
                           style={{ objectPosition: speaker.imagePosition || 'center 24%' }}
                         />
-                      ) : (
-                        <div className="ted-home-speaker-portrait-fallback" aria-hidden="true">
-                          {speaker.name.split(/\\s+/).slice(0, 2).map((part) => part[0]).join('')}
-                        </div>
                       )}
                       <span className="ted-home-speaker-image-wash" aria-hidden="true" />
                       <div className="ted-home-speaker-image-top">
