@@ -1,25 +1,25 @@
 import React from 'react';
 
 /**
- * Signature 01: each I is its own silver stem and its own red, beveled cap.
- * The SVG occupies one em and sits on the text baseline, so neither initial
- * floats above or shrinks relative to the letters beside it.
+ * Signature 01: a clean silver I with a solid TEDx-red cap.
+ * The cap has a single diagonal lower edge, exactly like the supplied reference.
+ * Each I is a separate glyph; no shared cap, bevel, roof or extra foot.
  */
-const SignatureInitial = ({ stemColor = '#E9EDF1' }) => (
+const SignatureInitial = ({ stemColor = '#E3E6EB' }) => (
   <span
     aria-hidden="true"
     style={{
       display: 'inline-block',
-      width: '.4em',
+      width: '.5em',
       height: '1em',
-      flex: '0 0 .4em',
+      flex: '0 0 .5em',
       verticalAlign: 'baseline',
       lineHeight: 1,
       overflow: 'visible',
     }}
   >
     <svg
-      viewBox="0 0 48 100"
+      viewBox="0 0 100 200"
       preserveAspectRatio="none"
       focusable="false"
       style={{
@@ -29,24 +29,16 @@ const SignatureInitial = ({ stemColor = '#E9EDF1' }) => (
         overflow: 'visible',
       }}
     >
-      {/* One distinct red cap per I — intentionally separated from its neighbour. */}
-      <path d="M3 7 L45 2 L41 19 L7 23 Z" fill="#B90025" />
-      <path d="M3 7 L45 2 L43 9 L4.5 14 Z" fill="#F12A49" />
-      <path d="M4.5 14 L43 9" fill="none" stroke="#FF8296" strokeWidth="1.25" strokeLinecap="round" />
-      <path d="M7 23 L41 19" fill="none" stroke="#760018" strokeWidth="1.7" />
+      {/* Solid red cap: flat top, vertical sides, one rising diagonal lower edge. */}
+      <path d="M0 0 H100 V38 L0 70 Z" fill="#EC002B" />
 
-      {/* Metallic upright and foot complete the I, sharing the same baseline. */}
-      <path d="M17 22 L30 19 V91 H17 Z" fill={stemColor} />
-      <path d="M17 22 L21 21.1 V89 H17 Z" fill="#FFFFFF" opacity=".34" />
-      <path d="M29 19.3 V91" fill="none" stroke="#7C8792" strokeWidth="1.5" opacity=".55" />
-      <path d="M10 90 H37 V100 H10 Z" fill={stemColor} />
-      <path d="M10 90 H37" fill="none" stroke="#FFFFFF" strokeWidth="1.2" opacity=".42" />
-      <path d="M35 92 V99" fill="none" stroke="#7C8792" strokeWidth="1.2" opacity=".65" />
+      {/* One uninterrupted silver stem, cut cleanly along the cap's diagonal. */}
+      <path d="M0 70 L100 38 V200 H0 Z" fill={stemColor} />
     </svg>
   </span>
 );
 
-const SignatureLetters = ({ stemColor = '#E9EDF1' }) => (
+const SignatureLetters = ({ stemColor = '#E3E6EB' }) => (
   <span
     aria-hidden="true"
     style={{
@@ -67,7 +59,7 @@ const SignatureLetters = ({ stemColor = '#E9EDF1' }) => (
 /** Both independent I initials use Signature 01 and share the wordmark baseline. */
 export const IIMTMark = ({
   className = '',
-  stemColor = '#E9EDF1',
+  stemColor = '#E3E6EB',
   style = {},
 }) => (
   <span
@@ -98,7 +90,7 @@ export const TEDxIIMTWordmark = ({
   fontSize = 'inherit',
   color = 'currentColor',
   prefixColor = '#EB0028',
-  stemColor = '#E9EDF1',
+  stemColor = '#E3E6EB',
   sublineColor = 'currentColor',
   style = {},
 }) => (
