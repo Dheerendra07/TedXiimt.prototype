@@ -1032,14 +1032,24 @@
 .tedx-transform-car__wheel {
   transform-box: fill-box;
   transform-origin: center;
-  animation: tedx-wheel-spin .72s linear calc(var(--car-delay) + 2.25s) 3;
+  animation:
+    tedx-wheel-spin .72s linear calc(var(--car-delay) + 1.95s) 2,
+    tedx-wheel-fold .95s cubic-bezier(.2, .78, .22, 1) calc(var(--car-delay) + 3.45s) both;
+}
+
+.tedx-transform-car__body {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tedx-car-panel-fold 1.12s cubic-bezier(.2, .8, .22, 1) calc(var(--car-delay) + 3.5s) both;
 }
 
 .tedx-transform-car__dust {
   opacity: 0;
   transform-box: fill-box;
   transform-origin: center;
-  animation: tedx-dust-burst 1.35s ease-out calc(var(--car-delay) + 1.08s) both;
+  animation:
+    tedx-dust-burst 1.35s ease-out calc(var(--car-delay) + 1.08s) both,
+    tedx-dust-trail 1.25s ease-in-out calc(var(--car-delay) + 2.48s) both;
 }
 
 @keyframes tedx-car-drop-drive {
@@ -1081,7 +1091,20 @@
 
 @keyframes tedx-wheel-spin {
   from { transform: rotate(0); }
-  to { transform: rotate(1080deg); }
+  to { transform: rotate(720deg); }
+}
+
+@keyframes tedx-wheel-fold {
+  0% { opacity: 1; transform: rotate(0) translateY(0) scale(1); }
+  55% { opacity: .82; transform: rotate(38deg) translateY(18%) scale(.72); }
+  100% { opacity: 0; transform: rotate(92deg) translateY(34%) scale(.18); }
+}
+
+@keyframes tedx-car-panel-fold {
+  0% { opacity: 1; transform: rotateY(0) translateY(0) scale(1); }
+  34% { opacity: 1; transform: rotateY(-22deg) translateY(-5%) scale(1.04, .92); }
+  70% { opacity: .56; transform: rotateY(38deg) translateY(-18%) scale(.55, .8); }
+  100% { opacity: 0; transform: rotateY(68deg) translateY(-32%) scale(.14, .7); }
 }
 
 @keyframes tedx-dust-burst {
@@ -1089,6 +1112,13 @@
   18% { opacity: .88; transform: scale(1) translateY(0); }
   52% { opacity: .52; transform: scale(1.28) translateY(-5%); }
   100% { opacity: 0; transform: scale(1.82) translateY(-18%); }
+}
+
+@keyframes tedx-dust-trail {
+  0% { opacity: 0; transform: translateX(8%) scale(.38); }
+  18% { opacity: .72; transform: translateX(-7%) scale(.76); }
+  58% { opacity: .48; transform: translateX(-22%) scale(1.24); }
+  100% { opacity: 0; transform: translateX(-38%) scale(1.72); }
 }
 
 /* Three original mechanical characters unfold from the vehicles. */
