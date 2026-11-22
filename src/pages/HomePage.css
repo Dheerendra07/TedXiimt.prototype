@@ -3561,3 +3561,115 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
     transition: none !important;
   }
 }
+
+
+/* Statement clarity pass: keep the headline fully readable on narrow screens. */
+.ted-home-statement-title {
+  width: 100%;
+  max-width: 930px;
+  text-wrap: balance;
+}
+
+.ted-home-statement-title span {
+  max-width: 100%;
+  overflow-wrap: normal;
+}
+
+.ted-home-origin-university-initial {
+  display: inline-block;
+  margin-right: .025em;
+  color: #EB0028;
+  font-weight: 820;
+  text-shadow: 0 4px 20px rgba(235, 0, 40, .18);
+  transform: translateY(-.015em);
+}
+
+@media (max-width: 600px) {
+  .ted-home-statement {
+    padding-top: 76px;
+    padding-bottom: 68px;
+  }
+
+  .ted-home-statement-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 29px;
+  }
+
+  .ted-home-statement > .ted-home-shell {
+    width: calc(100% - 40px);
+  }
+
+  .ted-home-statement .ted-home-kicker {
+    max-width: 100%;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: clamp(8px, 2.15vw, 9px);
+    letter-spacing: .115em;
+    line-height: 1.65;
+    white-space: normal;
+  }
+
+  .ted-home-statement .ted-home-kicker::before {
+    flex: 0 0 18px;
+    width: 18px;
+    margin-top: .58em;
+  }
+
+  .ted-home-statement-title {
+    margin-top: 22px;
+    font-size: clamp(3rem, 14.8vw, 5.35rem);
+    letter-spacing: -.078em;
+    line-height: .9;
+    text-wrap: balance;
+  }
+
+  .ted-home-statement-title span {
+    width: 100%;
+    white-space: normal;
+  }
+
+  .ted-home-statement:after {
+    right: -13vw;
+    opacity: .012;
+    font-size: 25vw;
+  }
+
+  .ted-home-statement-aside {
+    max-width: 100%;
+    padding: 0 0 0 16px;
+  }
+
+  .ted-home-statement-aside p {
+    max-width: 34ch;
+    font-size: 14px;
+    line-height: 1.72;
+  }
+
+  .ted-home-statement-meta {
+    margin-top: 17px;
+    font-size: 8px;
+    letter-spacing: .15em;
+  }
+}
+
+@media (max-width: 360px) {
+  .ted-home-statement > .ted-home-shell {
+    width: calc(100% - 36px);
+  }
+
+  .ted-home-statement-title {
+    font-size: clamp(2.85rem, 14.6vw, 3.25rem);
+    letter-spacing: -.075em;
+  }
+
+  .ted-home-statement-aside p {
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-home-origin-university-initial {
+    text-shadow: none;
+    transform: none;
+  }
+}
