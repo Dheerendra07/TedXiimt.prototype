@@ -968,7 +968,7 @@
   stroke-width: 1.2;
   stroke-dasharray: 3 6;
   opacity: 0;
-  animation: tedx-floor-ignite .9s ease-out .45s both;
+  animation: tedx-floor-ignite 8.2s ease-out .45s both;
 }
 
 .tedx-transform-floor-glow {
@@ -977,13 +977,14 @@
   stroke-width: 2.2;
   filter: url("#tedx-mech-glow");
   opacity: 0;
-  animation: tedx-floor-ignite .9s ease-out .62s both;
+  animation: tedx-floor-ignite 8.2s ease-out .62s both;
 }
 
 @keyframes tedx-floor-ignite {
   0% { opacity: 0; stroke-dashoffset: 180; }
-  60% { opacity: .9; }
-  100% { opacity: .44; stroke-dashoffset: 0; }
+  8% { opacity: .86; stroke-dashoffset: 0; }
+  68% { opacity: .5; stroke-dashoffset: 0; }
+  100% { opacity: 0; stroke-dashoffset: 0; }
 }
 
 /* Each car drops from above, compresses its suspension on impact, then drives into its own letter slot. */
