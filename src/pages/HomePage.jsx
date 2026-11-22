@@ -32,14 +32,62 @@ const discovery = [
 ];
 
 const featuredSpeakers2025 = [
-  { id: '2025-yogesh-mohanji-gupta', index: '01', name: 'Yogesh Mohanji Gupta', role: 'Chancellor, IIMT University' },
-  { id: '2025-deepa-sharma', index: '02', name: 'Dr. Deepa Sharma', role: 'Vice-Chancellor, IIMT University' },
-  { id: '2025-siddharth-sagar', index: '03', name: 'Siddharth Sagar', role: 'Comedian and performer' },
-  { id: '2025-alka-tomar', index: '04', name: 'Alka Tomar', role: 'Arjuna Award-winning wrestler' },
-  { id: '2025-miriam-chandy-menacherry', index: '05', name: 'Miriam Chandy Menacherry', role: 'Documentary filmmaker and founder, Filament Pictures' },
-  { id: '2025-piyush-sharma', index: '06', name: 'Piyush Sharma', role: 'Education influencer and founder, Tricky Man' },
-  { id: '2025-nishtha-mishra', index: '07', name: 'Nishtha Mishra', role: 'Founder, FirstShot Technologies' },
-  { id: '2025-sparsh-agarwal', index: '08', name: 'Sparsh Agarwal', role: 'CEO, AP Mobility India Pvt. Ltd.' },
+  {
+    id: '2025-yogesh-mohanji-gupta', index: '01', name: 'Yogesh Mohanji Gupta',
+    role: 'Chancellor, IIMT University',
+    image: 'https://iimtu.edu.in/uploads/images/16656521121.jpg',
+    imageAlt: 'Official IIMT University portrait of Chancellor Yogesh Mohanji Gupta.',
+    imagePosition: 'center 30%',
+  },
+  {
+    id: '2025-deepa-sharma', index: '02', name: 'Dr. Deepa Sharma',
+    role: 'Vice-Chancellor, IIMT University',
+    image: 'https://iimtu.edu.in/uploads/images/16656521221.jpg',
+    imageAlt: 'Official IIMT University portrait of Vice-Chancellor Dr. Deepa Sharma.',
+    imagePosition: 'center 26%',
+  },
+  {
+    id: '2025-siddharth-sagar', index: '03', name: 'Siddharth Sagar',
+    role: 'Comedian and performer',
+    image: 'https://blackhattalent.com/wp-content/uploads/2024/01/Sidharth-Sagar.jpg',
+    imageAlt: 'Promotional portrait of comedian Siddharth Sagar.',
+    imagePosition: 'center 24%',
+  },
+  {
+    id: '2025-alka-tomar', index: '04', name: 'Alka Tomar',
+    role: 'Arjuna Award-winning wrestler',
+    image: 'https://ss-i.thgim.com/public/photos/article32125154.ece/alternates/FREE_1200/alkajpg',
+    imageAlt: 'Published portrait of wrestler Alka Tomar.',
+    imagePosition: 'center 24%',
+  },
+  {
+    id: '2025-miriam-chandy-menacherry', index: '05', name: 'Miriam Chandy Menacherry',
+    role: 'Documentary filmmaker and founder, Filament Pictures',
+    image: '/assets/Miriam.jpg',
+    imageAlt: 'Portrait of documentary filmmaker Miriam Chandy Menacherry.',
+    imagePosition: 'center 22%',
+  },
+  {
+    id: '2025-piyush-sharma', index: '06', name: 'Piyush Sharma',
+    role: 'Education influencer and founder, Tricky Man',
+    image: '/assets/Piyush.jpg',
+    imageAlt: 'Portrait of educator and creator Piyush Sharma.',
+    imagePosition: 'center 22%',
+  },
+  {
+    id: '2025-nishtha-mishra', index: '07', name: 'Nishtha Mishra',
+    role: 'Founder, FirstShot Technologies',
+    image: '/assets/Nishtha.png',
+    imageAlt: 'Portrait of entrepreneur Nishtha Mishra.',
+    imagePosition: 'center 22%',
+  },
+  {
+    id: '2025-sparsh-agarwal', index: '08', name: 'Sparsh Agarwal',
+    role: 'CEO, AP Mobility India Pvt. Ltd.',
+    image: '/assets/Sparsh.png',
+    imageAlt: 'Portrait of AP Mobility India CEO Sparsh Agarwal.',
+    imagePosition: 'center 22%',
+  },
 ];
 
 const formatEditionDate = (value) => {
@@ -379,14 +427,40 @@ const HomePage = () => {
               <p>The speakers documented in IIMT University’s official recap of TEDxIIMT University {editionYear}.</p>
             </Reveal>
             <div className="ted-home-speaker-grid">
-              {homepageSpeakers.map((speaker) => (
-                <Reveal key={speaker.id} className="ted-home-speaker-card">
-                  <span className="ted-home-speaker-index">{speaker.index} / SPEAKER</span>
-                  <div>
-                    <h3>{speaker.name}</h3>
-                    <p>{speaker.role}</p>
-                  </div>
-                  <span className="ted-home-speaker-rule" aria-hidden="true" />
+              {homepageSpeakers.map((speaker, speakerIndex) => (
+                <Reveal
+                  key={speaker.id}
+                  className="ted-home-speaker-card"
+                  delay={speakerIndex * 0.065}
+                >
+                  <article className="ted-home-speaker-card__surface">
+                    <div className="ted-home-speaker-portrait">
+                      {speaker.image ? (
+                        <img
+                          src={speaker.image}
+                          alt={speaker.imageAlt || ('Portrait of ' + speaker.name)}
+                          loading="lazy"
+                          decoding="async"
+                          style={{ objectPosition: speaker.imagePosition || 'center 24%' }}
+                        />
+                      ) : (
+                        <div className="ted-home-speaker-portrait-fallback" aria-hidden="true">
+                          {speaker.name.split(/\\s+/).slice(0, 2).map((part) => part[0]).join('')}
+                        </div>
+                      )}
+                      <span className="ted-home-speaker-image-wash" aria-hidden="true" />
+                      <div className="ted-home-speaker-image-top">
+                        <span>{speaker.index} / SPEAKER</span>
+                        <span>TEDxIIMT · 2025</span>
+                      </div>
+                      <span className="ted-home-speaker-image-corner" aria-hidden="true" />
+                    </div>
+                    <div className="ted-home-speaker-card-copy">
+                      <h3>{speaker.name}</h3>
+                      <p>{speaker.role}</p>
+                      <span className="ted-home-speaker-card-rule" aria-hidden="true" />
+                    </div>
+                  </article>
                 </Reveal>
               ))}
             </div>
