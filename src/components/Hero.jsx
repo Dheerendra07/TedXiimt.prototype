@@ -162,7 +162,7 @@ const Hero = () => {
 
           <Motion.div variants={itemVariants} className="tedx-hero__identity">
             <div className="tedx-hero__wordmark" aria-label="TEDx">
-              <span>TED</span><sup>x</sup>
+              <span>TED</span><sup className="tedx-hero__wordmark-x">x</sup>
             </div>
             <h1>IIMT University</h1>
           </Motion.div>
