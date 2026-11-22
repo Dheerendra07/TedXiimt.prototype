@@ -48,8 +48,9 @@ const FOOTER_MONUMENT_REGIONS = [
     bounds: { left: 0, top: 0.61, right: 0.275, bottom: 1 },
     palette: ['#D5E0E5', '#BCCACD', '#788B98'],
     highlight: '#EDF3F2',
-    title: 'Ideas grow when we stay open.',
-    message: 'A more meaningful conversation begins when different voices are welcomed — and allowed to challenge what we think we know.',
+    theme: 'OPENNESS / WELCOME NEW VOICES',
+    title: 'Make room for a different point of view.',
+    message: 'The best conversations do more than confirm what we believe. They invite unfamiliar voices in, leave room for questions and let a better idea take shape.',
   },
   {
     id: 'qutub',
@@ -58,8 +59,9 @@ const FOOTER_MONUMENT_REGIONS = [
     bounds: { left: 0.275, top: 0.29, right: 0.35, bottom: 1 },
     palette: ['#C27A52', '#A85C3C', '#623A2A'],
     highlight: '#FFD1A6',
-    title: 'Build with patience. Leave with impact.',
-    message: 'Lasting ideas are shaped layer by layer: by practice, persistence and the people who keep improving the work.',
+    theme: 'PERSISTENCE / BUILD WITH INTENT',
+    title: 'Ideas worth spreading are built, layer by layer.',
+    message: 'A strong idea rarely arrives fully formed. Curiosity, steady work and the courage to keep refining it turn a first thought into something that lasts.',
   },
   {
     id: 'humayun',
@@ -68,8 +70,9 @@ const FOOTER_MONUMENT_REGIONS = [
     bounds: { left: 0.35, top: 0.64, right: 0.48, bottom: 1 },
     palette: ['#D5D3C7', '#B87961', '#754B43'],
     highlight: '#F2DED0',
-    title: 'A new perspective can reshape the old.',
-    message: 'Progress does not erase what came before. It sees familiar stories differently and carries the most meaningful parts forward.',
+    theme: 'PERSPECTIVE / QUESTION THE FAMILIAR',
+    title: 'A new lens can make an old story matter again.',
+    message: 'Perspective changes what we notice. When we revisit familiar experiences with fresh questions, we find meaning that can move the conversation forward.',
   },
   {
     id: 'india-gate',
@@ -78,8 +81,9 @@ const FOOTER_MONUMENT_REGIONS = [
     bounds: { left: 0.48, top: 0.42, right: 0.68, bottom: 1 },
     palette: ['#CFA17B', '#AA7452', '#674B3A'],
     highlight: '#F2C9A3',
-    title: 'Make every contribution visible.',
-    message: 'Big change is never a solo act. It is made possible by people whose ideas, effort and courage deserve to be heard.',
+    theme: 'COLLECTIVE IMPACT / EVERY VOICE COUNTS',
+    title: 'Progress is a story written together.',
+    message: 'Meaningful change belongs to more than one voice. It grows when people contribute their experience, share responsibility and make space for others to be heard.',
   },
   {
     id: 'akshardham',
@@ -88,8 +92,9 @@ const FOOTER_MONUMENT_REGIONS = [
     bounds: { left: 0.68, top: 0.52, right: 1, bottom: 1 },
     palette: ['#D8B091', '#BD8468', '#764D3F'],
     highlight: '#F4D0AD',
-    title: 'Let purpose guide the details.',
-    message: 'An idea becomes meaningful when care, craft and conviction turn it into something people can experience.',
+    theme: 'PURPOSE / CARE IN THE DETAILS',
+    title: 'Purpose gives every detail its place.',
+    message: 'An idea earns its impact through the care behind it. Thoughtful craft, clear intent and consistent action turn inspiration into an experience people remember.',
   },
 ];
 
@@ -99,6 +104,7 @@ const Footer = () => {
   const [isActive, setIsActive] = useState(false);
   const [flowStep, setFlowStep] = useState(0);
   const [hoveredMonument, setHoveredMonument] = useState(null);
+  const [hoverSequence, setHoverSequence] = useState(0);
   const [hoverCardPosition, setHoverCardPosition] = useState({ left: 24, top: 360 });
 
   useEffect(() => {
@@ -459,12 +465,14 @@ const Footer = () => {
       activeReveals.clear();
       activeReveals.set(region.id, { startedAt: performance.now() });
       requestRevealDraw();
+      // A new key re-mounts the card so every genuine re-entry replays its full sequence.
+      setHoverSequence((current) => current + 1);
       setHoveredMonument(region);
 
       const imageRect = imageLayer.getBoundingClientRect();
       const artTop = imageRect.top - bounds.top;
-      const cardWidth = Math.min(356, Math.max(250, width - 36));
-      const cardHeight = 174;
+      const cardWidth = Math.min(372, Math.max(250, width - 36));
+      const cardHeight = 238;
       const cardLeft = localX < width * 0.5
         ? Math.max(18, width - cardWidth - 22)
         : 22;
@@ -633,7 +641,7 @@ const Footer = () => {
 
           {hoveredMonument && (
             <aside
-              key={hoveredMonument.id}
+              key={hoveredMonument.id + '-' + hoverSequence}
               className="ted-footer-hover-card"
               style={{
                 left: hoverCardPosition.left + 'px',
@@ -647,6 +655,7 @@ const Footer = () => {
                 <span>{hoveredMonument.number} / 05</span>
               </div>
               <p className="ted-footer-hover-card__place">{hoveredMonument.name}</p>
+              <p className="ted-footer-hover-card__theme">{hoveredMonument.theme}</p>
               <h3>{hoveredMonument.title}</h3>
               <p className="ted-footer-hover-card__message">{hoveredMonument.message}</p>
               <div className="ted-footer-hover-card__foot">
