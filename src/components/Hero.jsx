@@ -2,14 +2,10 @@ import React, { useMemo } from 'react';
 import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, CalendarDays, ChevronDown, MapPin } from 'lucide-react';
 import { useEdition } from '../context/EditionContext';
-import stageImage0 from '../assets/tedx-hero-photo-0.b64?raw';
-import stageImage1 from '../assets/tedx-hero-photo-1.b64?raw';
-import stageImage2 from '../assets/tedx-hero-photo-2.b64?raw';
-import stageImage3 from '../assets/tedx-hero-photo-3.b64?raw';
-import stageImage4 from '../assets/tedx-hero-photo-4.b64?raw';
+
 import './Hero.css';
 
-const HERO_PHOTO = `data:image/webp;base64,${stageImage0}${stageImage1}${stageImage2}${stageImage3}${stageImage4}`;
+const HERO_PHOTO = '/assets/tedx-hero-stage.webp';
 
 const Hero = () => {
   const prefersReducedMotion = useReducedMotion();
