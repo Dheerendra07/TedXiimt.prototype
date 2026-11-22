@@ -7,7 +7,7 @@ import {
   Ticket, ChevronDown, Menu, X, Library, User, LogOut, LayoutDashboard, Scale
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import logo from './logo-white.png';
+import { IIMTMark, TEDxIIMTWordmark } from './IIMTSignature';
 import './Header.css';
 
 const Header = () => {
@@ -107,7 +107,7 @@ const Header = () => {
       submenu: [
         { label: 'About TEDx', href: '/about', desc: 'Our mission & TED philosophy', Icon: Info },
         { label: 'Organizing Team', href: '/team', desc: 'Meet the curators and team', Icon: Users },
-        { label: 'Venue & Directions', href: '/venue', desc: 'Seminar Hall, IIMT Meerut', Icon: MapPin },
+        { label: 'Venue & Directions', href: '/venue', desc: <>Seminar Hall, <IIMTMark /> Meerut</>, Icon: MapPin },
         { label: 'What to Expect', href: '/what-to-expect', desc: 'Attendee guide & experience', Icon: Sparkles },
         { label: 'Accessibility', href: '/accessibility', desc: 'Inclusive accommodations', Icon: AccessibilityIcon },
         { label: 'Code of Conduct', href: '/code-of-conduct', desc: 'Community safety & event rules', Icon: Scale },
@@ -144,7 +144,7 @@ const Header = () => {
         
         {/* Logo Lockup */}
         <a href="/" aria-label="TEDxIIMT University home" className="group flex shrink-0 flex-col items-start gap-1 rounded-lg p-1 focus:outline-none focus:ring-2 focus:ring-[#EB0028]">
-          <img src={logo} alt="TEDxIIMT University Logo" className="h-12 w-auto max-w-[270px] object-contain object-left transition-transform duration-300 group-hover:scale-[1.015] sm:h-14" />
+          <TEDxIIMTWordmark subline="UNIVERSITY" stacked fontSize="clamp(1.45rem, 2vw, 1.7rem)" style={{ color: "#fff", minHeight: "48px" }} />
         </a>
 
         {/* Desktop Nav Items */}

@@ -1,3 +1,4 @@
+import { IIMTMark, TEDxIIMTWordmark } from './IIMTSignature';
 import React from 'react';
 import { motion } from 'framer-motion';
 
@@ -27,7 +28,7 @@ const EventInfo = () => {
           >
             <h3 className="text-xl font-semibold text-red-500 mb-4">Event Details</h3>
             <div className="space-y-3 text-gray-300">
-              <p><span className="text-white font-medium">Event:</span> TEDxIIMT UNIVERSITY</p>
+              <p><span className="text-white font-medium">Event:</span> <TEDxIIMTWordmark /> UNIVERSITY</p>
               <p><span className="text-white font-medium">Date:</span> Coming Soon</p>
               <p><span className="text-white font-medium">Theme:</span> Ideas Worth Spreading</p>
               <p><span className="text-white font-medium">Time:</span> To be announced</p>
@@ -44,7 +45,7 @@ const EventInfo = () => {
           >
             <h3 className="text-xl font-semibold text-red-500 mb-4">Venue</h3>
             <div className="space-y-3 text-gray-300">
-              <p><span className="text-white font-medium">Location:</span> IIMT UNIVERSITY</p>
+              <p><span className="text-white font-medium">Location:</span> <IIMTMark /> UNIVERSITY</p>
               <p><span className="text-white font-medium">City:</span> Meerut, India</p>
               <p><span className="text-white font-medium">Address:</span> Knowledge Park III, Greater Noida</p>
               <p><span className="text-white font-medium">Capacity:</span> To be announced</p>
@@ -61,8 +62,8 @@ const EventInfo = () => {
           >
             <h3 className="text-xl font-semibold text-red-500 mb-4">Our Team</h3>
             <div className="space-y-3 text-gray-300">
-              <p><span className="text-white font-medium">Organizer:</span> TEDxIIMT UNIVERSITY Team</p>
-              <p><span className="text-white font-medium">University:</span> IIMT UNIVERSITY</p>
+              <p><span className="text-white font-medium">Organizer:</span> <TEDxIIMTWordmark /> UNIVERSITY Team</p>
+              <p><span className="text-white font-medium">University:</span> <IIMTMark /> UNIVERSITY</p>
               <p><span className="text-white font-medium">Contact:</span> tedxIIMT UNIVERSITY@IIMT UNIVERSITY.ac.in</p>
               <p><span className="text-white font-medium">Phone:</span> +91 12345 67890</p>
             </div>

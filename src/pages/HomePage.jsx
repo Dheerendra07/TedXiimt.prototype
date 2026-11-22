@@ -1,3 +1,4 @@
+import { IIMTMark, TEDxIIMTWordmark } from '../components/IIMTSignature';
 import React, { useEffect, useRef, useState } from 'react';
 import { useEdition } from '../context/EditionContext';
 import { ARCHIVE_EDITIONS } from '../data/archiveData';
@@ -315,14 +316,14 @@ const HomePage = () => {
         <section className="ted-home-statement ted-home-grid-surface" aria-labelledby="home-statement-heading">
           <div className="ted-home-shell ted-home-statement-grid">
             <Reveal variant="left">
-              <span className="ted-home-kicker">TEDxIIMT UNIVERSITY / IDEAS WORTH SPREADING</span>
+              <span className="ted-home-kicker"><TEDxIIMTWordmark /> UNIVERSITY / IDEAS WORTH SPREADING</span>
               <h2 id="home-statement-heading" className="ted-home-statement-title">
                 <span>IDEAS</span><span className="accent">DON'T</span><span>STAND STILL.</span>
               </h2>
             </Reveal>
             <Reveal className="ted-home-statement-aside" variant="right" delay={0.1}>
               <p>A local stage for original thinking, unexpected perspectives and conversations that can move an idea beyond the room.</p>
-              <div className="ted-home-statement-meta">IIMT UNIVERSITY · MEERUT</div>
+              <div className="ted-home-statement-meta"><IIMTMark /> UNIVERSITY · MEERUT</div>
             </Reveal>
           </div>
         </section>
@@ -335,10 +336,10 @@ const HomePage = () => {
                 <span className="ted-home-edition-edition-index">01 — 01 <i aria-hidden="true" /> ARCHIVE</span>
               </div>
               <div className="ted-home-edition-heading-row">
-                <h2 id="home-pillars-heading">TEDxIIMT University <em>{editionYear}.</em></h2>
+                <h2 id="home-pillars-heading"><TEDxIIMTWordmark /> University <em>{editionYear}.</em></h2>
                 <div className="ted-home-edition-lede">
                   <span>THE IDEA BEHIND THE EDITION</span>
-                  <p>{homepageEdition?.tagline || homepageEdition?.description || 'Ideas worth spreading from IIMT University, Meerut.'}</p>
+                  <p>{homepageEdition?.tagline || homepageEdition?.description || <>Ideas worth spreading from <IIMTMark /> University, Meerut.</>}</p>
                 </div>
               </div>
             </Reveal>
@@ -350,7 +351,7 @@ const HomePage = () => {
                   <span>THE CENTRAL IDEA</span>
                 </div>
                 <div className="ted-home-edition-theme-content">
-                  <span className="ted-home-edition-theme-overline">TEDxIIMT UNIVERSITY · {editionYear}</span>
+                  <span className="ted-home-edition-theme-overline"><TEDxIIMTWordmark /> UNIVERSITY · {editionYear}</span>
                   <div className="ted-home-edition-theme-trajectory" aria-hidden="true">
                     <span className="ted-home-edition-theme-trajectory-line" />
                     <span className="ted-home-edition-theme-trajectory-dot" />
@@ -391,7 +392,7 @@ const HomePage = () => {
                   <div className="ted-home-edition-venue-content">
                     <h3>Seminar Hall</h3>
                     <p className="ted-home-edition-venue-floor">2nd Floor <i aria-hidden="true" /> B Block</p>
-                    <p className="ted-home-edition-venue-campus">IIMT University, Meerut</p>
+                    <p className="ted-home-edition-venue-campus"><IIMTMark /> University, Meerut</p>
                   </div>
                   <div className="ted-home-edition-venue-location">
                     <MapPin aria-hidden="true" />
@@ -402,10 +403,10 @@ const HomePage = () => {
             </div>
 
             <div className="ted-home-edition-bottomline">
-              <span><i aria-hidden="true" /> OFFICIAL 2025 EDITION / IIMT UNIVERSITY, MEERUT</span>
+              <span><i aria-hidden="true" /> OFFICIAL 2025 EDITION / <IIMTMark /> UNIVERSITY, MEERUT</span>
               {editionYear === 2025 && (
                 <a className="ted-home-edition-source" href="https://iimtu.edu.in/news-event-details/tedx-iimt-university-break-the-flow" target="_blank" rel="noreferrer">
-                  VIEW THE OFFICIAL IIMT EVENT RECORD <ArrowUpRight aria-hidden="true" />
+                  VIEW THE OFFICIAL <IIMTMark /> EVENT RECORD <ArrowUpRight aria-hidden="true" />
                 </a>
               )}
             </div>
@@ -417,17 +418,7 @@ const HomePage = () => {
             <Reveal className="ted-home-origin-mark" variant="image">
               <div className="ted-home-origin-lockup">
                 <div className="ted-home-origin-logo"><span className="ted">TED</span><span className="x">x</span></div>
-                <span className="ted-home-origin-university"><svg className="ted-home-origin-university-initial" viewBox="0 0 40 68" role="img" aria-label="I" focusable="false">
-                    <path d="M5 25 L35 14 V64 H5 Z" fill="url(#iimt-signature-stem)" />
-                    <path d="M5 4 H35 V15 L5 26 Z" fill="#EB0028" />
-                    <defs>
-                      <linearGradient id="iimt-signature-stem" x1="0" x2="1" y1="0" y2="0">
-                        <stop offset="0" stopColor="#BFC6CE" />
-                        <stop offset=".48" stopColor="#F7F8F9" />
-                        <stop offset="1" stopColor="#D9DEE4" />
-                      </linearGradient>
-                    </defs>
-                  </svg>IMT University</span>
+                <span className="ted-home-origin-university"><IIMTMark /> University</span>
               </div>
               <div className="ted-home-origin-caption"><span>INDEPENDENTLY ORGANIZED</span><span>MEERUT / INDIA</span></div>
               <a className="ted-home-origin-hit" href="/about" aria-label="Learn more about TEDxIIMT University" />
@@ -436,8 +427,8 @@ const HomePage = () => {
               <span className="ted-home-kicker">A GLOBAL IDEA / A LOCAL STAGE</span>
               <h2 id="home-origin-heading">What is <span>TEDx?</span></h2>
               <p>TEDx is a program of local, independently organized events that bring people together to share a TED-like experience. Each event is organized under a license from TED.</p>
-              <p>At IIMT University in Meerut, TEDxIIMT creates a space for students, educators and curious minds to encounter ideas worth spreading.</p>
-              <div className="ted-home-origin-note"><span>INDEPENDENTLY ORGANIZED</span><span>IDEAS WORTH SPREADING</span><span>IIMT UNIVERSITY</span></div>
+              <p>At <IIMTMark /> University in Meerut, <TEDxIIMTWordmark /> creates a space for students, educators and curious minds to encounter ideas worth spreading.</p>
+              <div className="ted-home-origin-note"><span>INDEPENDENTLY ORGANIZED</span><span>IDEAS WORTH SPREADING</span><span><IIMTMark /> UNIVERSITY</span></div>
               <a className="ted-home-link mt-8" href="/about">Discover the TEDx story <ArrowUpRight aria-hidden="true" /></a>
             </Reveal>
           </div>
@@ -465,7 +456,7 @@ const HomePage = () => {
                 <h2 id="home-gallery-heading" className="ted-home-section-heading">A few moments. <em>A thousand ideas.</em></h2>
               </div>
               <div className="ted-home-gallery-intro">
-                <p>Real moments from TEDxIIMT University and the campus that brings this community together.</p>
+                <p>Real moments from <TEDxIIMTWordmark /> University and the campus that brings this community together.</p>
                 <a href="/gallery" className="ted-home-gallery-all">EXPLORE FULL GALLERY <ArrowUpRight aria-hidden="true" /></a>
               </div>
             </Reveal>
@@ -497,7 +488,7 @@ const HomePage = () => {
                 </Reveal>
               ))}
             </div>
-            <p className="ted-home-gallery-credit">EVENT AND CAMPUS IMAGERY · IIMT UNIVERSITY OFFICIAL SOURCES</p>
+            <p className="ted-home-gallery-credit">EVENT AND CAMPUS IMAGERY · <IIMTMark /> UNIVERSITY OFFICIAL SOURCES</p>
           </div>
         </section>
 
@@ -506,9 +497,9 @@ const HomePage = () => {
             <Reveal className="ted-home-discover-head" variant="right">
               <div>
                 <span className="ted-home-kicker">EXPLORE</span>
-                <h2 id="home-discover-heading" className="ted-home-section-heading">TEDxIIMT <em>University</em></h2>
+                <h2 id="home-discover-heading" className="ted-home-section-heading"><TEDxIIMTWordmark /> <em>University</em></h2>
               </div>
-              <p>Meet the voices, people and partners behind the TEDxIIMT experience.</p>
+              <p>Meet the voices, people and partners behind the <TEDxIIMTWordmark /> experience.</p>
             </Reveal>
             <div className="ted-home-discover-grid">
               {discovery.map(({ index, label, title, description, href, action, image, imageAlt, imagePosition }, cardIndex) => (
@@ -553,7 +544,7 @@ const HomePage = () => {
                 <span className="ted-home-kicker">THE STAGE / {homepageSpeakers.length} SPEAKERS</span>
                 <h2 id="home-speakers-heading" className="ted-home-section-heading">{editionYear === 2025 ? 'Eight voices.' : 'The voices.'} <em>Different worlds.</em></h2>
               </div>
-              <p>The speakers documented in IIMT University’s official recap of TEDxIIMT University {editionYear}.</p>
+              <p>The speakers documented in <IIMTMark /> University’s official recap of <TEDxIIMTWordmark /> University {editionYear}.</p>
             </Reveal>
             <div className="ted-home-speaker-grid">
               {homepageSpeakers.map((speaker, speakerIndex) => (
@@ -581,7 +572,7 @@ const HomePage = () => {
                       <span className="ted-home-speaker-image-wash" aria-hidden="true" />
                       <div className="ted-home-speaker-image-top">
                         <span>{speaker.index} / SPEAKER</span>
-                        <span>TEDxIIMT · 2025</span>
+                        <span><TEDxIIMTWordmark /> · 2025</span>
                       </div>
                       <span className="ted-home-speaker-image-corner" aria-hidden="true" />
                     </div>
@@ -602,7 +593,7 @@ const HomePage = () => {
             )}
             {editionYear === 2025 && (
               <a className="ted-home-speaker-source" href="https://iimtu.edu.in/blog/ideas-that-ignited-the-stage-highlights-from-tedx-iimt-university-2025/" target="_blank" rel="noreferrer">
-                READ THE OFFICIAL IIMT UNIVERSITY RECAP <ArrowUpRight aria-hidden="true" />
+                READ THE OFFICIAL <IIMTMark /> UNIVERSITY RECAP <ArrowUpRight aria-hidden="true" />
               </a>
             )}
           </div>
@@ -615,7 +606,7 @@ const HomePage = () => {
             <Reveal variant="left">
               <span className="ted-home-kicker">YOUR IDEA / YOUR NEXT STEP</span>
               <h2 id="home-close-heading">Make room for <span>what's next.</span></h2>
-              <p>Join the TEDxIIMT community, discover ideas worth spreading and be part of the next conversation.</p>
+              <p>Join the <TEDxIIMTWordmark /> community, discover ideas worth spreading and be part of the next conversation.</p>
             </Reveal>
             <Reveal className="ted-home-close-actions" variant="right" delay={0.1}>
               <a className="ted-home-link ted-home-link--red" href="/register">Be part of the experience <ArrowRight aria-hidden="true" /></a>
@@ -665,7 +656,7 @@ const HomePage = () => {
                   <p id="ted-home-lightbox-description">{selectedPhoto.detail}</p>
                 </div>
                 <a href={selectedPhoto.sourcePage} target="_blank" rel="noopener noreferrer">
-                  IIMT OFFICIAL SOURCE <ArrowUpRight aria-hidden="true" />
+                  <IIMTMark /> OFFICIAL SOURCE <ArrowUpRight aria-hidden="true" />
                 </a>
               </div>
             </div>

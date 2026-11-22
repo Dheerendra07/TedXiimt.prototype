@@ -1,3 +1,4 @@
+import { IIMTMark, TEDxIIMTWordmark } from '../components/IIMTSignature';
 import React from 'react';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
@@ -28,11 +29,11 @@ const AboutPage = () => {
                   <br />
                   <span className="text-[#EB0028] inline-block">
                     TEDx
-                  </span>IIMT UNIVERSITY
+                  </span><IIMTMark /> UNIVERSITY
                 </h1>
                 
                 <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
-                  A platform for ideas worth spreading, connecting minds, and inspiring change in the IIMT UNIVERSITY community
+                  A platform for ideas worth spreading, connecting minds, and inspiring change in the <IIMTMark /> UNIVERSITY community
                 </p>
               </motion.div>
             </div>
@@ -79,7 +80,7 @@ const AboutPage = () => {
                   <div className="space-y-8 md:space-y-10">
                     <div className="space-y-6">
                       <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
-                        TEDxIIMT UNIVERSITY was born from a simple belief: that powerful ideas have the 
+                        <TEDxIIMTWordmark /> UNIVERSITY was born from a simple belief: that powerful ideas have the 
                         ability to transform perspectives, inspire action, and create lasting change. 
                         As an independently organized TED event, we bring together thinkers, 
                         innovators, and dreamers from diverse backgrounds.
@@ -396,7 +397,7 @@ const AboutPage = () => {
                       </p>
                       
                       <p className="text-gray-400 leading-relaxed">
-                        Through TEDxIIMT UNIVERSITY, we're not just spreading ideas—we're cultivating 
+                        Through <TEDxIIMTWordmark /> UNIVERSITY, we're not just spreading ideas—we're cultivating 
                         a culture of lifelong learning, critical thinking, and purposeful action 
                         that extends far beyond a single day.
                       </p>

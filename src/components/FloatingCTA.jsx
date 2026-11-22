@@ -1,3 +1,4 @@
+import { TEDxIIMTWordmark } from './IIMTSignature';
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Award, ChevronRight, Mic, Ticket, X } from 'lucide-react';
@@ -76,7 +77,7 @@ const FloatingCTA = () => {
           >
             <div className="rounded-xl border border-white/10 bg-[#101012] p-4 shadow-2xl shadow-black/50">
               <div className="mb-4 border-b border-white/10 pb-4">
-                <h3 className="text-lg font-bold text-white">TEDxIIMT UNIVERSITY</h3>
+                <h3 className="text-lg font-bold text-white"><TEDxIIMTWordmark /> UNIVERSITY</h3>
                 <p className="mt-1 text-sm text-gray-400">Ideas worth spreading</p>
               </div>
 

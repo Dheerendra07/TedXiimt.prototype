@@ -1,3 +1,4 @@
+import { IIMTMark, TEDxIIMTWordmark } from './IIMTSignature';
 import React from 'react';
 import { motion } from 'framer-motion';
 
@@ -42,7 +43,7 @@ const EventHighlights = () => {
             Explore
           </span>
           <h2 id="discover-heading" className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
-            <span className="text-[#EB0028]">TEDx</span>IIMT University 
+            <TEDxIIMTWordmark /> University 
           </h2>
         </AnimatedDiv>
 

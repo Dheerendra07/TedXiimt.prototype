@@ -1,3 +1,4 @@
+import { TEDxIIMTWordmark } from '../components/IIMTSignature';
 import React, { useId, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
@@ -153,7 +154,7 @@ const LoginPage = () => {
           ) : (
             <div className="rounded-3xl border border-white/10 bg-zinc-950/95 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.5)] sm:p-9">
               <div className="mb-8">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#EB0028]">TEDxIIMT University</p>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#EB0028]"><TEDxIIMTWordmark /> University</p>
                 <h2 id="login-heading" className="mt-2 text-3xl font-black tracking-tight">Welcome back</h2>
                 <p className="mt-2 text-sm leading-6 text-zinc-400">Sign in to continue to your member portal.</p>
               </div>

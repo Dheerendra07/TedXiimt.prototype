@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import logo from './logo-white.png';
+import { TEDxIIMTWordmark } from './IIMTSignature';
 import './Footer.css';
 
 const footerGroups = [
@@ -599,7 +599,7 @@ const Footer = () => {
                 className="ted-footer-logo-link"
                 aria-label="TEDxIIMT University home"
               >
-                <img src={logo} alt="TEDxIIMT University" className="ted-footer-logo" />
+                <TEDxIIMTWordmark subline="UNIVERSITY" stacked fontSize="1.45rem" className="ted-footer-logo" style={{ color: "#fff", width: "176px", minHeight: "48px" }} />
               </a>
               <p className="ted-footer-brand__copy">
                 A platform for curious minds, courageous ideas and conversations
@@ -651,7 +651,7 @@ const Footer = () => {
               aria-label={'TEDxIIMT perspective for ' + hoveredMonument.name}
             >
               <div className="ted-footer-hover-card__topline">
-                <span>TEDxIIMT PERSPECTIVE</span>
+                <span><TEDxIIMTWordmark /> PERSPECTIVE</span>
                 <span>{hoveredMonument.number} / 05</span>
               </div>
               <p className="ted-footer-hover-card__place">{hoveredMonument.name}</p>
@@ -670,7 +670,7 @@ const Footer = () => {
           <p className="ted-footer-legal__disclaimer">
             This independent <strong>TEDx</strong> event is operated under license from{' '}
             <a href="https://www.ted.com/tedx" target="_blank" rel="noopener noreferrer">TED</a>.
-            © {new Date().getFullYear()} TEDxIIMT University. All rights reserved.
+            © {new Date().getFullYear()} <TEDxIIMTWordmark /> University. All rights reserved.
           </p>
           <nav className="ted-footer-legal__links" aria-label="Legal links">
             <a href="/privacy">Privacy</a>

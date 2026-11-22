@@ -1,3 +1,4 @@
+import { IIMTMark } from '../components/IIMTSignature';
 import React from 'react';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
@@ -27,7 +28,7 @@ const VenuePage = () => {
                 </h1>
                 
                 <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
-                  Join us at IIMT UNIVERSITY for an unforgettable TEDx experience
+                  Join us at <IIMTMark /> UNIVERSITY for an unforgettable TEDx experience
                 </p>
               </motion.div>
             </div>
@@ -52,7 +53,7 @@ const VenuePage = () => {
                       Location
                     </div>
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
-                      IIMT UNIVERSITY
+                      <IIMTMark /> UNIVERSITY
                     </h2>
                   </div>
 

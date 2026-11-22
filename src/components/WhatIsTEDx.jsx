@@ -1,3 +1,4 @@
+import { IIMTMark } from './IIMTSignature';
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
@@ -19,7 +20,7 @@ const cards = [
     contentClassName: 'order-2',
   },
   {
-    title: 'IIMT University',
+    title: <><IIMTMark /> University</>,
     description:
       'IIMT University, Meerut is a vibrant centre of learning that brings together academic excellence, innovation, and a strong culture of community engagement.',
     imageAlt: 'IIMT University campus',
@@ -31,7 +32,7 @@ const cards = [
   {
     title: (
       <>
-        About <span className="text-red-500">TEDx</span>IIMT
+        About <span className="text-red-500">TEDx</span><IIMTMark stemColor="#FFFFFF" />
       </>
     ),
     description: (
