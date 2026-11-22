@@ -4,7 +4,7 @@ import { ARCHIVE_EDITIONS } from '../data/archiveData';
 import { AnimatePresence, motion as Motion } from 'framer-motion';
 import {
   ArrowRight, ArrowUpRight, CalendarDays, Camera, ChevronLeft, ChevronRight,
-  Lightbulb, MapPin, Mic2, Users, X,
+  MapPin, Mic2, Users, X,
 } from 'lucide-react';
 import Hero from '../components/Hero';
 import SocialMedia from '../components/SocialMedia';
@@ -90,19 +90,18 @@ const featuredSpeakers2025 = [
   },
 ];
 
-const formatEditionDate = (value) => {
-  if (!value) return 'Date to be announced';
+const getEditionDateParts = (value) => {
+  if (!value) return { day: '—', monthYear: 'DATE TO BE ANNOUNCED' };
   const rawDate = String(value);
   const normalizedDate = /^\d{4}-\d{2}-\d{2}$/.test(rawDate)
     ? rawDate + 'T09:00:00'
     : rawDate;
   const date = new Date(normalizedDate);
-  if (Number.isNaN(date.getTime())) return rawDate;
-  return new Intl.DateTimeFormat('en-IN', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(date);
+  if (Number.isNaN(date.getTime())) return { day: '—', monthYear: rawDate.toUpperCase() };
+  return {
+    day: new Intl.DateTimeFormat('en-IN', { day: '2-digit' }).format(date),
+    monthYear: new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' }).format(date).toUpperCase(),
+  };
 };
 
 const galleryItems = [
@@ -165,12 +164,7 @@ const HomePage = () => {
   const { activeEdition } = useEdition();
   const homepageEdition = activeEdition?.is_active === true ? activeEdition : ARCHIVE_EDITIONS[0];
   const editionYear = Number(homepageEdition?.year) || 2025;
-  const editionDateLabel = formatEditionDate(homepageEdition?.date);
-  const editionFacts = [
-    { index: '01', label: 'THE THEME', value: homepageEdition?.theme || 'To be announced', detail: homepageEdition?.tagline || 'Ideas worth spreading.', Icon: Lightbulb, className: '' },
-    { index: '02', label: 'THE DATE', value: editionDateLabel, detail: 'Official event date', Icon: CalendarDays, className: '' },
-    { index: '03', label: 'THE VENUE', value: homepageEdition?.venue || 'IIMT University, Meerut', detail: homepageEdition?.city || 'Meerut, Uttar Pradesh', Icon: MapPin, className: 'ted-home-edition-card--venue' },
-  ];
+  const editionDate = getEditionDateParts(homepageEdition?.date);
   const homepageSpeakers = editionYear === 2025
     ? featuredSpeakers2025
     : (Array.isArray(homepageEdition?.speakers) ? homepageEdition.speakers.map((speaker, index) => ({
@@ -274,34 +268,84 @@ const HomePage = () => {
           </div>
         </section>
 
-        <section className="ted-home-pillars ted-home-grid-surface" aria-labelledby="home-pillars-heading">
-          <div className="ted-home-shell">
-            <Reveal className="ted-home-pillars-head">
-              <div>
+        <section className="ted-home-pillars ted-home-grid-surface ted-home-edition-showcase" aria-labelledby="home-pillars-heading">
+          <div className="ted-home-shell ted-home-edition-shell">
+            <Reveal className="ted-home-edition-intro">
+              <div className="ted-home-edition-intro-top">
                 <span className="ted-home-kicker">THE EDITION / OFFICIAL EVENT RECORD</span>
-                <h2 id="home-pillars-heading" className="ted-home-section-heading">{homepageEdition?.title || 'TEDxIIMT University'}.</h2>
+                <span className="ted-home-edition-edition-index">01 — 01 <i aria-hidden="true" /> ARCHIVE</span>
               </div>
-              <p>{homepageEdition?.tagline || homepageEdition?.description || 'Ideas worth spreading from IIMT University, Meerut.'}</p>
+              <div className="ted-home-edition-heading-row">
+                <h2 id="home-pillars-heading">TEDxIIMT University <em>{editionYear}.</em></h2>
+                <div className="ted-home-edition-lede">
+                  <span>THE IDEA BEHIND THE EDITION</span>
+                  <p>{homepageEdition?.tagline || homepageEdition?.description || 'Ideas worth spreading from IIMT University, Meerut.'}</p>
+                </div>
+              </div>
             </Reveal>
-            <div className="ted-home-edition-grid">
-              {editionFacts.map((fact) => (
-                <Reveal key={fact.index} className={'ted-home-edition-card ' + fact.className}>
-                  <div className="ted-home-edition-card-top">
-                    <span>{fact.index} / {fact.label}</span>
-                    <span className="ted-home-edition-icon">{React.createElement(fact.Icon, { "aria-hidden": true })}</span>
+
+            <div className="ted-home-edition-showcase-grid">
+              <Reveal className="ted-home-edition-theme-panel" delay={0.08}>
+                <div className="ted-home-edition-panel-top">
+                  <span>01 / THE THEME</span>
+                  <span>THE CENTRAL IDEA</span>
+                </div>
+                <div className="ted-home-edition-theme-content">
+                  <span className="ted-home-edition-theme-overline">TEDxIIMT UNIVERSITY · {editionYear}</span>
+                  <h3>Break <em>the</em><br />Flow<span>.</span></h3>
+                  <div className="ted-home-edition-theme-foot">
+                    <span>A THEME THAT INVITES A DIFFERENT PERSPECTIVE.</span>
+                    <span className="ted-home-edition-theme-mark">TED<span>x</span></span>
                   </div>
-                  <div>
-                    <h3>{fact.value}</h3>
-                    <p>{fact.detail}</p>
+                </div>
+                <span className="ted-home-edition-theme-watermark" aria-hidden="true">01</span>
+              </Reveal>
+
+              <div className="ted-home-edition-facts-rail">
+                <Reveal className="ted-home-edition-date-panel" delay={0.17}>
+                  <div className="ted-home-edition-panel-top">
+                    <span>02 / THE DATE</span>
+                    <CalendarDays aria-hidden="true" />
+                  </div>
+                  <div className="ted-home-edition-date-lockup">
+                    <span className="ted-home-edition-date-day">{editionDate.day}</span>
+                    <div>
+                      <strong>{editionDate.monthYear}</strong>
+                      <span>OFFICIAL EVENT DATE</span>
+                    </div>
+                  </div>
+                  <div className="ted-home-edition-panel-foot">
+                    <span>THE DAY IDEAS TOOK THE STAGE</span>
+                    <i aria-hidden="true" />
                   </div>
                 </Reveal>
-              ))}
+
+                <Reveal className="ted-home-edition-venue-panel" delay={0.25}>
+                  <div className="ted-home-edition-panel-top">
+                    <span>03 / THE VENUE</span>
+                    <MapPin aria-hidden="true" />
+                  </div>
+                  <div className="ted-home-edition-venue-content">
+                    <h3>Seminar Hall</h3>
+                    <p className="ted-home-edition-venue-floor">2nd Floor <i aria-hidden="true" /> B Block</p>
+                    <p className="ted-home-edition-venue-campus">{homepageEdition?.venue || 'IIMT University, Meerut'}</p>
+                  </div>
+                  <div className="ted-home-edition-venue-location">
+                    <MapPin aria-hidden="true" />
+                    <span>{homepageEdition?.city || 'Meerut, Uttar Pradesh'}</span>
+                  </div>
+                </Reveal>
+              </div>
             </div>
-            {editionYear === 2025 && (
-              <a className="ted-home-edition-source" href="https://iimtu.edu.in/news-event-details/tedx-iimt-university-break-the-flow" target="_blank" rel="noreferrer">
-                VIEW THE OFFICIAL IIMT EVENT RECORD <ArrowUpRight aria-hidden="true" />
-              </a>
-            )}
+
+            <div className="ted-home-edition-bottomline">
+              <span><i aria-hidden="true" /> OFFICIAL 2025 EDITION / IIMT UNIVERSITY, MEERUT</span>
+              {editionYear === 2025 && (
+                <a className="ted-home-edition-source" href="https://iimtu.edu.in/news-event-details/tedx-iimt-university-break-the-flow" target="_blank" rel="noreferrer">
+                  VIEW THE OFFICIAL IIMT EVENT RECORD <ArrowUpRight aria-hidden="true" />
+                </a>
+              )}
+            </div>
           </div>
         </section>
 
