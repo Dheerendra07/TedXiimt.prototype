@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { BookOpen, ArrowRight, Clock } from 'lucide-react';
 import api from '../services/api';
 
 const Blog = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     let isMounted = true;
@@ -47,10 +48,10 @@ const Blog = () => {
         
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+          whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.14 }}
+          transition={{ duration: 0.56, ease: [0.22, 1, 0.36, 1] }}
           className="mb-10 text-center md:mb-14"
         >
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EB0028]/10 border border-[#EB0028]/30 text-[#EB0028] text-xs font-bold uppercase mb-4">
@@ -70,10 +71,10 @@ const Blog = () => {
           {posts.map((post, index) => (
             <motion.article
               key={post.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.15, duration: 0.6 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 18, scale: 0.985 }}
+              whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, amount: 0.14, margin: '0px 0px -36px 0px' }}
+              transition={{ delay: Math.min(index * 0.06, 0.12), duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="group flex cursor-pointer flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/[0.035] shadow-[0_14px_40px_rgba(0,0,0,0.18)] transition-all duration-300 hover:-translate-y-1 hover:border-[#EB0028]/60 hover:bg-white/[0.06]"
               onClick={() => window.location.href = `/blog/${post.slug}`}
             >
