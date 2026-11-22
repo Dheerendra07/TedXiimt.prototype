@@ -1,0 +1,1729 @@
+/* TEDxIIMT footer — one continuous artwork stage, clear foreground structure */
+.ted-site-footer {
+  --ted-footer-red: #eb0028;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 28px 28px 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: #050505;
+  color: #fff;
+}
+
+.ted-footer-shell {
+  width: min(100%, 1440px);
+  margin: 0 auto;
+}
+
+.ted-footer-stage {
+  position: relative;
+  isolation: isolate;
+  height: clamp(660px, 55vw, 790px);
+  min-height: 660px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: #09090d;
+}
+
+/* The ambient layer fills the canvas while the sharp layer preserves the artwork. */
+.ted-footer-artwork,
+.ted-footer-artwork__ambient,
+.ted-footer-artwork__image,
+.ted-footer-artwork__shade,
+.ted-footer-flow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ted-footer-artwork {
+  z-index: 0;
+  overflow: hidden;
+  background: #09090d;
+}
+
+.ted-footer-artwork__ambient {
+  background-image: url('/hero-bg.png');
+  background-position: center center;
+  background-size: cover;
+  filter: blur(18px) brightness(0.43) saturate(0.82);
+  opacity: 0.72;
+  transform: scale(1.045);
+}
+
+.ted-footer-artwork__image {
+  z-index: 1;
+  background-image: url('/hero-bg.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  filter: brightness(1.03) contrast(1.04) saturate(1.02);
+  opacity: 0.96;
+}
+
+.ted-footer-artwork__shade {
+  z-index: 2;
+  background:
+    linear-gradient(90deg,
+      rgba(4, 5, 8, 0.66) 0%,
+      rgba(4, 5, 8, 0.47) 34%,
+      rgba(4, 5, 8, 0.43) 66%,
+      rgba(4, 5, 8, 0.62) 100%),
+    linear-gradient(180deg,
+      rgba(4, 5, 8, 0.1) 0%,
+      rgba(4, 5, 8, 0.02) 48%,
+      rgba(4, 5, 8, 0.34) 100%);
+}
+
+.ted-footer-artwork__reveal {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.ted-footer-artwork__grid {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  background-position: 0 0;
+  opacity: 0.58;
+}
+
+
+/* Six soft, uninterrupted light passes — deliberately no tile grid or mosaic. */
+.ted-footer-flow {
+  z-index: 3;
+  overflow: hidden;
+  mix-blend-mode: screen;
+  opacity: 0.86;
+}
+
+.ted-footer-flow::before {
+  position: absolute;
+  top: -55%;
+  left: -55%;
+  width: 43%;
+  height: 210%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.012) 26%,
+    rgba(255, 255, 255, 0.095) 49%,
+    rgba(255, 255, 255, 0.055) 54%,
+    rgba(255, 255, 255, 0.01) 69%,
+    transparent 100%
+  );
+  content: '';
+  filter: blur(9px);
+  transform: translate3d(-140%, var(--beam-y, 0%), 0) rotate(var(--beam-angle, 112deg));
+  animation: none;
+}
+
+.ted-footer-flow::after {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(ellipse at var(--glow-x, 24%) var(--glow-y, 70%), rgba(255, 255, 255, 0.065), transparent 36%),
+    linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.025) 51%, transparent 60%);
+  content: '';
+  opacity: 0.48;
+  animation: none;
+}
+
+.ted-footer-stage.is-active .ted-footer-flow::before {
+  animation: ted-footer-light-pass var(--beam-duration, 8.4s) cubic-bezier(0.55, 0, 0.35, 1) infinite;
+}
+
+.ted-footer-stage.is-active .ted-footer-flow::after {
+  animation: ted-footer-glow-drift 17s ease-in-out infinite alternate;
+}
+
+.ted-footer-flow--0 { --beam-angle: 112deg; --beam-y: -7%; --beam-duration: 8.2s; --glow-x: 20%; --glow-y: 68%; }
+.ted-footer-flow--1 { --beam-angle: 82deg; --beam-y: 9%; --beam-duration: 8.8s; --glow-x: 74%; --glow-y: 28%; }
+.ted-footer-flow--2 { --beam-angle: 128deg; --beam-y: 18%; --beam-duration: 8.4s; --glow-x: 42%; --glow-y: 82%; }
+.ted-footer-flow--3 { --beam-angle: 96deg; --beam-y: -15%; --beam-duration: 9.1s; --glow-x: 84%; --glow-y: 58%; }
+.ted-footer-flow--4 { --beam-angle: 145deg; --beam-y: 12%; --beam-duration: 8.6s; --glow-x: 14%; --glow-y: 34%; }
+.ted-footer-flow--5 { --beam-angle: 68deg; --beam-y: -3%; --beam-duration: 8.9s; --glow-x: 62%; --glow-y: 74%; }
+
+@keyframes ted-footer-light-pass {
+  0% {
+    opacity: 0;
+    transform: translate3d(-145%, var(--beam-y, 0%), 0) rotate(var(--beam-angle, 112deg));
+  }
+  14% { opacity: 0.82; }
+  76% { opacity: 0.6; }
+  100% {
+    opacity: 0;
+    transform: translate3d(285%, var(--beam-y, 0%), 0) rotate(var(--beam-angle, 112deg));
+  }
+}
+
+@keyframes ted-footer-glow-drift {
+  from { transform: translate3d(-1.3%, 0, 0) scale(0.98); opacity: 0.32; }
+  to { transform: translate3d(1.3%, -1%, 0) scale(1.04); opacity: 0.58; }
+}
+
+/* Foreground: independent brand and navigation columns with a real grid layout. */
+.ted-footer-content {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: minmax(245px, 0.88fr) minmax(0, 2.5fr);
+  align-items: center;
+  min-height: 100%;
+  height: 100%;
+  padding: 64px 54px;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(4, 5, 8, 0.16), rgba(4, 5, 8, 0.08) 55%, rgba(4, 5, 8, 0.16));
+}
+
+
+.ted-footer-content > * {
+  pointer-events: none;
+}
+
+.ted-footer-content a {
+  pointer-events: auto;
+}
+
+.ted-footer-brand {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-width: 0;
+  height: fit-content;
+  align-self: center;
+  padding: 16px 42px 16px 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+  opacity: 1;
+}
+
+.ted-footer-brand__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 23px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.ted-footer-brand__eyebrow::before {
+  width: 22px;
+  height: 2px;
+  flex: 0 0 auto;
+  background: var(--ted-footer-red);
+  content: '';
+  box-shadow: 0 0 14px rgba(235, 0, 40, 0.55);
+}
+
+.ted-footer-logo-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  border-radius: 2px;
+}
+
+.ted-footer-logo {
+  display: block;
+  width: 176px;
+  max-height: 48px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.ted-footer-brand__copy {
+  max-width: 320px;
+  margin: 23px 0 0;
+  color: rgba(255, 255, 255, 0.83);
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.ted-footer-brand__rule {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 27px;
+}
+
+.ted-footer-brand__rule span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.ted-footer-brand__rule span:first-child {
+  width: 42px;
+  background: var(--ted-footer-red);
+}
+
+.ted-footer-groups {
+  display: grid;
+  grid-template-columns: 0.98fr 1.18fr 1fr;
+  align-items: center;
+  min-width: 0;
+  padding-left: 20px;
+}
+
+.ted-footer-group {
+  min-width: 0;
+  height: fit-content;
+  align-self: center;
+  padding: 17px 22px;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+}
+
+.ted-footer-group:first-child {
+  border-left: 0;
+}
+
+.ted-footer-stage.is-active .ted-footer-brand {
+  animation: ted-footer-content-enter 760ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both;
+}
+
+.ted-footer-stage.is-active .ted-footer-group:nth-child(1) {
+  animation: ted-footer-content-enter 760ms cubic-bezier(0.22, 1, 0.36, 1) 140ms both;
+}
+
+.ted-footer-stage.is-active .ted-footer-group:nth-child(2) {
+  animation: ted-footer-content-enter 760ms cubic-bezier(0.22, 1, 0.36, 1) 220ms both;
+}
+
+.ted-footer-stage.is-active .ted-footer-group:nth-child(3) {
+  animation: ted-footer-content-enter 760ms cubic-bezier(0.22, 1, 0.36, 1) 300ms both;
+}
+
+@keyframes ted-footer-content-enter {
+  from { opacity: 0; transform: translate3d(0, 15px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+.ted-footer-group__intro {
+  min-height: 124px;
+  margin-bottom: 12px;
+}
+
+.ted-footer-group__eyebrow {
+  margin: 0 0 11px;
+  color: #ff5874;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.ted-footer-group__title {
+  position: relative;
+  margin: 0;
+  color: #fff;
+  font-size: clamp(17px, 1.35vw, 20px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.28;
+  text-transform: none;
+}
+
+.ted-footer-group__title::after {
+  display: block;
+  width: 27px;
+  height: 2px;
+  margin-top: 13px;
+  background: var(--ted-footer-red);
+  content: '';
+  box-shadow: 0 0 12px rgba(235, 0, 40, 0.35);
+}
+
+.ted-footer-group__description {
+  max-width: 245px;
+  margin: 12px 0 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 10.5px;
+  line-height: 1.65;
+}
+
+.ted-footer-link-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ted-footer-link-list li {
+  min-width: 0;
+}
+
+.ted-footer-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  min-height: 39px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.105);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 11.5px;
+  line-height: 1.4;
+  text-decoration: none;
+  transition:
+    color 220ms ease,
+    padding 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 220ms ease,
+    background-color 220ms ease;
+}
+
+.ted-footer-link:hover {
+  padding-left: 6px;
+  border-color: rgba(235, 0, 40, 0.48);
+  color: #fff;
+  background: linear-gradient(90deg, rgba(235, 0, 40, 0.1), transparent 85%);
+}
+
+.ted-footer-link:focus-visible,
+.ted-site-footer a:focus-visible {
+  outline: 2px solid var(--ted-footer-red);
+  outline-offset: 4px;
+}
+
+.ted-footer-link__arrow {
+  flex: 0 0 auto;
+  color: #ff5874;
+  font-size: 13px;
+  opacity: 0.42;
+  transform: translate(-3px, 3px);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.ted-footer-link:hover .ted-footer-link__arrow,
+.ted-footer-link:focus-visible .ted-footer-link__arrow {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* Legal row stays outside the artwork card so it never collides with the links. */
+.ted-footer-legal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 21px 2px 0;
+}
+
+.ted-footer-legal__disclaimer {
+  max-width: 590px;
+  margin: 0;
+  color: #777780;
+  font-size: 10px;
+  line-height: 1.8;
+}
+
+.ted-footer-legal__disclaimer strong {
+  color: #d4d4d8;
+}
+
+.ted-footer-legal__disclaimer a,
+.ted-footer-legal__links a {
+  color: #a1a1aa;
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+
+.ted-footer-legal__disclaimer a:hover,
+.ted-footer-legal__links a:hover {
+  color: var(--ted-footer-red);
+}
+
+.ted-footer-legal__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px 19px;
+  color: #a1a1aa;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.ted-footer-back-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: 3px;
+  font-weight: 700;
+}
+
+.ted-footer-back-top span {
+  color: var(--ted-footer-red);
+  font-size: 15px;
+  transition: transform 180ms ease;
+}
+
+.ted-footer-back-top:hover span {
+  transform: translateY(-3px);
+}
+
+/* Tablet: two balanced rows and no forced vertical overlap. */
+@media (max-width: 1100px) {
+  .ted-site-footer {
+    padding: 22px 20px 20px;
+  }
+
+  .ted-footer-stage {
+    height: auto;
+    min-height: 0;
+  }
+
+  .ted-footer-artwork__image {
+    background-size: contain;
+    background-position: center top;
+    opacity: 0.82;
+  }
+
+  .ted-footer-content {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+    min-height: 0;
+    padding: 45px 38px 38px;
+  }
+
+  .ted-footer-brand {
+    padding: 0 0 27px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .ted-footer-brand__copy {
+    max-width: 530px;
+    margin-top: 17px;
+  }
+
+  .ted-footer-brand__rule {
+    margin-top: 18px;
+  }
+
+  .ted-footer-groups {
+    grid-template-columns: 0.98fr 1.18fr 1fr;
+    padding: 24px 0 0;
+  }
+
+  .ted-footer-group {
+    height: auto;
+    padding: 22px 20px 15px;
+  }
+
+  .ted-footer-group:first-child {
+    padding-left: 0;
+  }
+
+  .ted-footer-group__intro {
+    min-height: 130px;
+  }
+
+  .ted-footer-group__title {
+    font-size: 18px;
+  }
+}
+
+/* Phone: two tidy navigation columns, with Get involved spanning the width. */
+@media (max-width: 720px) {
+  .ted-site-footer {
+    padding: 15px 12px 18px;
+  }
+
+  .ted-footer-stage {
+    min-height: 0;
+  }
+
+  .ted-footer-artwork__ambient {
+    filter: blur(16px) brightness(0.37) saturate(0.78);
+    opacity: 0.72;
+  }
+
+  .ted-footer-artwork__image {
+    background-size: 100% auto;
+    background-position: center top;
+    opacity: 0.8;
+  }
+
+  .ted-footer-artwork__shade {
+    background:
+      linear-gradient(180deg, rgba(4, 5, 8, 0.18), rgba(4, 5, 8, 0.72) 31%, rgba(4, 5, 8, 0.87) 100%),
+      linear-gradient(90deg, rgba(4, 5, 8, 0.3), rgba(4, 5, 8, 0.18));
+  }
+
+  .ted-footer-content {
+    display: block;
+    padding: 34px 21px 27px;
+    background: linear-gradient(180deg, rgba(4, 5, 8, 0.04), rgba(4, 5, 8, 0.22) 24%, rgba(4, 5, 8, 0.42));
+  }
+
+  .ted-footer-brand {
+    padding: 0 0 24px;
+  }
+
+  .ted-footer-brand__eyebrow {
+    margin-bottom: 17px;
+    font-size: 8px;
+    letter-spacing: 0.17em;
+  }
+
+  .ted-footer-logo {
+    width: 158px;
+    max-height: 44px;
+  }
+
+  .ted-footer-brand__copy {
+    max-width: 380px;
+    margin-top: 15px;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  .ted-footer-brand__rule {
+    margin-top: 17px;
+  }
+
+  .ted-footer-groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 0;
+    padding-top: 8px;
+  }
+
+  .ted-footer-group,
+  .ted-footer-group:first-child {
+    height: fit-content;
+    align-self: start;
+    min-width: 0;
+    padding: 23px 12px 19px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    border-left: 0;
+  }
+
+  .ted-footer-group:nth-child(2) {
+    padding-right: 0;
+    padding-left: 14px;
+    border-left: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .ted-footer-group:nth-child(3) {
+    grid-column: 1 / -1;
+    padding: 24px 0 4px;
+    border-left: 0;
+  }
+
+  .ted-footer-group__intro {
+    min-height: 126px;
+    margin-bottom: 8px;
+  }
+
+  .ted-footer-group__eyebrow {
+    margin-bottom: 9px;
+    font-size: 8px;
+    letter-spacing: 0.15em;
+  }
+
+  .ted-footer-group__title {
+    font-size: 16px;
+    line-height: 1.3;
+  }
+
+  .ted-footer-group__title::after {
+    width: 22px;
+    margin-top: 10px;
+  }
+
+  .ted-footer-group__description {
+    margin-top: 9px;
+    font-size: 9.5px;
+    line-height: 1.55;
+  }
+
+  .ted-footer-group:nth-child(3) .ted-footer-group__intro {
+    min-height: 0;
+    margin-bottom: 13px;
+  }
+
+  .ted-footer-group:nth-child(3) .ted-footer-link-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 20px;
+  }
+
+  .ted-footer-link {
+    min-height: 42px;
+    gap: 6px;
+    font-size: 10.5px;
+    line-height: 1.38;
+  }
+
+  .ted-footer-link__arrow {
+    font-size: 11px;
+  }
+
+  .ted-footer-legal {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding: 17px 2px 0;
+  }
+
+  .ted-footer-legal__disclaimer {
+    font-size: 9px;
+  }
+
+  .ted-footer-legal__links {
+    justify-content: flex-start;
+    gap: 9px 14px;
+    font-size: 9px;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 380px) {
+  .ted-footer-content {
+    padding-right: 15px;
+    padding-left: 15px;
+  }
+
+  .ted-footer-group,
+  .ted-footer-group:first-child {
+    padding-right: 9px;
+  }
+
+  .ted-footer-group:nth-child(2) {
+    padding-right: 0;
+    padding-left: 10px;
+  }
+
+  .ted-footer-link {
+    font-size: 10px;
+  }
+
+  .ted-footer-group__title {
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-footer-flow::before,
+  .ted-footer-flow::after,
+  .ted-footer-artwork__reveal,
+  .ted-footer-stage.is-active .ted-footer-brand,
+  .ted-footer-stage.is-active .ted-footer-group {
+    animation: none !important;
+  }
+
+  .ted-footer-group {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ted-footer-link,
+  .ted-footer-link__arrow,
+  .ted-footer-legal__links a,
+  .ted-footer-back-top span {
+    transition: none;
+  }
+}
+
+/* ── Footer art-first composition: keep navigation above the monuments ── */
+.ted-footer-stage {
+  height: clamp(900px, 68vw, 990px);
+  min-height: 900px;
+  background: #070809;
+}
+
+.ted-footer-artwork {
+  overflow: hidden;
+  background: #070809;
+}
+
+.ted-footer-artwork__ambient {
+  inset: 0;
+  background-size: cover;
+  background-position: center center;
+  filter: blur(20px) brightness(0.34) saturate(0.7);
+  opacity: 0.68;
+  transform: scale(1.06);
+}
+
+.ted-footer-artwork__image {
+  --footer-artwork-scale: 0.96;
+  --footer-artwork-lift: 20px;
+  inset: auto 0 0;
+  width: 100%;
+  height: 66%;
+  background-size: 96% auto;
+  background-position: center calc(100% - 20px);
+  background-repeat: no-repeat;
+  filter: brightness(1.1) contrast(1.08) saturate(0.94);
+  opacity: 1;
+}
+
+.ted-footer-artwork__shade {
+  z-index: 2;
+  background:
+    linear-gradient(180deg,
+      rgba(4, 5, 8, 0.36) 0%,
+      rgba(4, 5, 8, 0.2) 31%,
+      rgba(4, 5, 8, 0.06) 52%,
+      rgba(4, 5, 8, 0.12) 100%),
+    linear-gradient(90deg,
+      rgba(4, 5, 8, 0.16) 0%,
+      transparent 19%,
+      transparent 81%,
+      rgba(4, 5, 8, 0.16) 100%);
+}
+
+.ted-footer-artwork__reveal {
+  z-index: 3;
+  filter: brightness(1.34) contrast(1.08) saturate(0.9);
+}
+
+.ted-footer-artwork__grid {
+  inset: auto 0 0;
+  height: 66%;
+  z-index: 4;
+  background-image:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  background-position: 0 0;
+  opacity: 0.58;
+}
+
+.ted-footer-flow {
+  z-index: 5;
+}
+
+.ted-footer-content {
+  position: relative;
+  z-index: 6;
+  height: auto;
+  min-height: 0;
+  align-items: center;
+  padding: 34px 46px 28px;
+  background:
+    linear-gradient(180deg,
+      rgba(4, 5, 8, 0.68) 0%,
+      rgba(4, 5, 8, 0.42) 72%,
+      rgba(4, 5, 8, 0.08) 100%);
+}
+
+.ted-footer-brand {
+  height: fit-content;
+  align-self: center;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.ted-footer-groups {
+  align-items: center;
+}
+
+.ted-footer-group {
+  height: fit-content;
+  align-self: center;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.ted-footer-group__intro {
+  min-height: 124px;
+}
+
+.ted-footer-artwork__image,
+.ted-footer-artwork__reveal {
+  will-change: auto;
+}
+
+.ted-footer-hover-card {
+  position: absolute;
+  z-index: 9;
+  width: min(356px, calc(100% - 36px));
+  padding: 19px 21px 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  background:
+    linear-gradient(145deg, rgba(22, 24, 27, 0.97), rgba(7, 8, 10, 0.96));
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  pointer-events: none;
+  animation: ted-footer-card-enter 380ms cubic-bezier(0.2, 0.85, 0.25, 1) both;
+}
+
+.ted-footer-hover-card::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, #e7e7e7, rgba(255, 255, 255, 0.08));
+  content: '';
+}
+
+.ted-footer-hover-card__topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  line-height: 1.5;
+}
+
+.ted-footer-hover-card__topline span:last-child {
+  color: rgba(255, 255, 255, 0.42);
+  font-variant-numeric: tabular-nums;
+}
+
+.ted-footer-hover-card__place {
+  margin: 15px 0 7px;
+  color: #d0d0d3;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+}
+
+.ted-footer-hover-card h3 {
+  max-width: 300px;
+  margin: 0;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+}
+
+.ted-footer-hover-card__message {
+  margin: 9px 0 0;
+  color: rgba(255, 255, 255, 0.73);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.ted-footer-hover-card__foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(255, 255, 255, 0.11);
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.ted-footer-hover-card__pulse {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #dedede;
+  box-shadow: 0 0 9px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes ted-footer-card-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.985);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@media (max-width: 1100px) {
+  .ted-footer-artwork__image {
+    --footer-artwork-scale: 1;
+    --footer-artwork-lift: 0px;
+  }
+
+  .ted-footer-stage {
+    height: 960px;
+    min-height: 960px;
+  }
+
+  .ted-footer-artwork__image,
+  .ted-footer-artwork__grid {
+    height: 48%;
+  }
+
+  .ted-footer-content {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+    min-height: 0;
+    padding: 34px 34px 25px;
+  }
+
+  .ted-footer-brand {
+    height: fit-content;
+    padding: 0 0 23px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .ted-footer-groups {
+    grid-template-columns: 0.98fr 1.18fr 1fr;
+    align-items: start;
+    padding: 18px 0 0;
+  }
+
+  .ted-footer-group,
+  .ted-footer-group:first-child {
+    height: fit-content;
+    align-self: start;
+    padding: 17px 17px 13px;
+  }
+
+  .ted-footer-group:first-child {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .ted-footer-group__intro {
+    min-height: 130px;
+  }
+}
+
+@media (max-width: 720px) {
+  .ted-footer-stage {
+    height: auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .ted-footer-artwork__ambient {
+    filter: blur(16px) brightness(0.32) saturate(0.74);
+  }
+
+  .ted-footer-artwork__image {
+    inset: auto 0 0;
+    width: 100%;
+    height: 220px;
+    background-size: 100% auto;
+    background-position: center bottom;
+    opacity: 0.98;
+  }
+
+  .ted-footer-artwork__shade {
+    background:
+      linear-gradient(180deg,
+        rgba(4, 5, 8, 0.36) 0%,
+        rgba(4, 5, 8, 0.22) 60%,
+        rgba(4, 5, 8, 0.12) 100%);
+  }
+
+  .ted-footer-artwork__grid {
+    height: 220px;
+    background-size: 72px 72px;
+  }
+
+  .ted-footer-content {
+    display: block;
+    height: auto;
+    min-height: 0;
+    padding: 31px 20px 246px;
+    background:
+      linear-gradient(180deg,
+        rgba(4, 5, 8, 0.74) 0%,
+        rgba(4, 5, 8, 0.48) 72%,
+        rgba(4, 5, 8, 0.08) 100%);
+  }
+
+  .ted-footer-brand {
+    padding: 0 0 23px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .ted-footer-groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    padding-top: 8px;
+  }
+
+  .ted-footer-group,
+  .ted-footer-group:first-child {
+    height: fit-content;
+    align-self: start;
+    padding: 21px 12px 18px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    border-left: 0;
+  }
+
+  .ted-footer-group:nth-child(2) {
+    padding-right: 0;
+    padding-left: 14px;
+    border-left: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .ted-footer-group:nth-child(3) {
+    grid-column: 1 / -1;
+    padding: 22px 0 4px;
+    border-left: 0;
+  }
+
+  .ted-footer-group__intro {
+    min-height: 126px;
+  }
+
+  .ted-footer-group:nth-child(3) .ted-footer-group__intro {
+    min-height: 0;
+  }
+
+  .ted-footer-group:nth-child(3) .ted-footer-link-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 20px;
+  }
+
+  .ted-footer-hover-card {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-footer-hover-card {
+    animation: none;
+  }
+}
+
+
+
+/* ── Cinematic motion polish: restrained light, depth and staggered detail ── */
+.ted-footer-stage.is-active .ted-footer-artwork__ambient {
+  animation: ted-footer-ambient-drift 26s cubic-bezier(0.42, 0, 0.24, 1) infinite alternate;
+}
+
+.ted-footer-stage.is-active .ted-footer-artwork__image {
+  animation: ted-footer-artwork-luminance 18s ease-in-out infinite alternate;
+}
+
+.ted-footer-stage.is-active .ted-footer-flow::before {
+  animation-duration: calc(var(--beam-duration, 8.4s) * 1.2);
+}
+
+.ted-footer-stage.is-active .ted-footer-flow::after {
+  animation-duration: 24s;
+}
+
+.ted-footer-stage.is-active .ted-footer-brand__rule span:first-child {
+  animation: ted-footer-rule-grow 880ms cubic-bezier(0.2, 0.85, 0.25, 1) 380ms both;
+}
+
+.ted-footer-stage.is-active .ted-footer-group__title::after {
+  transform-origin: left center;
+  animation: ted-footer-rule-grow 760ms cubic-bezier(0.2, 0.85, 0.25, 1) 420ms both;
+}
+
+.ted-footer-hover-card {
+  isolation: isolate;
+  transform-origin: 50% 60%;
+  border-color: rgba(255, 255, 255, 0.24);
+  box-shadow:
+    0 28px 82px rgba(0, 0, 0, 0.56),
+    0 0 34px rgba(255, 255, 255, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.075);
+  animation: ted-footer-card-cinematic 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ted-footer-hover-card::before {
+  width: 2px;
+  background: linear-gradient(180deg, #fff 0%, rgba(235, 0, 40, 0.95) 46%, rgba(255, 255, 255, 0.12) 100%);
+  box-shadow: 0 0 16px rgba(235, 0, 40, 0.22);
+  transform-origin: top;
+  animation: ted-footer-card-edge 680ms cubic-bezier(0.2, 0.85, 0.25, 1) 80ms both;
+}
+
+.ted-footer-hover-card::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(
+    112deg,
+    transparent 16%,
+    rgba(255, 255, 255, 0.075) 47%,
+    rgba(255, 255, 255, 0.018) 54%,
+    transparent 70%
+  );
+  content: '';
+  pointer-events: none;
+  transform: translate3d(-125%, 0, 0);
+  animation: ted-footer-card-glass-sweep 1150ms cubic-bezier(0.16, 1, 0.3, 1) 180ms both;
+}
+
+.ted-footer-hover-card__topline,
+.ted-footer-hover-card__place,
+.ted-footer-hover-card h3,
+.ted-footer-hover-card__message,
+.ted-footer-hover-card__foot {
+  animation: ted-footer-card-copy 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ted-footer-hover-card__topline { animation-delay: 65ms; }
+.ted-footer-hover-card__place { animation-delay: 115ms; }
+.ted-footer-hover-card h3 { animation-delay: 165ms; }
+.ted-footer-hover-card__message { animation-delay: 220ms; }
+.ted-footer-hover-card__foot { animation-delay: 295ms; }
+
+.ted-footer-hover-card__pulse {
+  animation: ted-footer-card-pulse 2.4s ease-in-out 650ms infinite;
+}
+
+.ted-footer-link span:first-child {
+  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ted-footer-link:hover span:first-child,
+.ted-footer-link:focus-visible span:first-child {
+  transform: translateX(2px);
+}
+
+@keyframes ted-footer-ambient-drift {
+  from {
+    transform: translate3d(-0.35%, 0, 0) scale(1.06);
+    filter: blur(20px) brightness(0.34) saturate(0.7);
+  }
+  to {
+    transform: translate3d(0.45%, -0.7%, 0) scale(1.09);
+    filter: blur(22px) brightness(0.4) saturate(0.82);
+  }
+}
+
+@keyframes ted-footer-artwork-luminance {
+  from { filter: brightness(1.08) contrast(1.08) saturate(0.92); }
+  to { filter: brightness(1.16) contrast(1.1) saturate(1); }
+}
+
+@keyframes ted-footer-rule-grow {
+  from { opacity: 0.35; transform: scaleX(0.22); }
+  to { opacity: 1; transform: scaleX(1); }
+}
+
+@keyframes ted-footer-card-cinematic {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.965);
+    filter: blur(9px);
+  }
+  68% {
+    opacity: 1;
+    transform: translate3d(0, -2px, 0) scale(1.006);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes ted-footer-card-edge {
+  from { transform: scaleY(0.08); opacity: 0.3; }
+  to { transform: scaleY(1); opacity: 1; }
+}
+
+@keyframes ted-footer-card-glass-sweep {
+  0% { transform: translate3d(-125%, 0, 0); opacity: 0; }
+  18% { opacity: 1; }
+  100% { transform: translate3d(125%, 0, 0); opacity: 0; }
+}
+
+@keyframes ted-footer-card-copy {
+  from { opacity: 0; transform: translate3d(0, 8px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes ted-footer-card-pulse {
+  0%, 100% {
+    opacity: 0.72;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.32);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 13px rgba(255, 255, 255, 0.75);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-footer-stage.is-active .ted-footer-artwork__ambient,
+  .ted-footer-stage.is-active .ted-footer-artwork__image,
+  .ted-footer-stage.is-active .ted-footer-brand__rule span:first-child,
+  .ted-footer-stage.is-active .ted-footer-group__title::after,
+  .ted-footer-hover-card,
+  .ted-footer-hover-card::before,
+  .ted-footer-hover-card::after,
+  .ted-footer-hover-card__topline,
+  .ted-footer-hover-card__place,
+  .ted-footer-hover-card h3,
+  .ted-footer-hover-card__message,
+  .ted-footer-hover-card__foot,
+  .ted-footer-hover-card__pulse {
+    animation: none !important;
+  }
+
+  .ted-footer-link span:first-child {
+    transition: none;
+  }
+}
+
+
+/* ── Footer artwork finish: atmospheric depth without adding section height ── */
+.ted-footer-artwork__image {
+  isolation: isolate;
+}
+
+.ted-footer-artwork__image::before,
+.ted-footer-artwork__image::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  pointer-events: none;
+}
+
+.ted-footer-artwork__image::before {
+  background:
+    radial-gradient(ellipse 42% 31% at 50% 82%, rgba(225, 184, 151, 0.15), transparent 72%),
+    radial-gradient(ellipse 24% 32% at 17% 78%, rgba(132, 169, 190, 0.085), transparent 76%),
+    radial-gradient(ellipse 26% 30% at 83% 80%, rgba(205, 151, 120, 0.09), transparent 76%);
+  mix-blend-mode: screen;
+  opacity: 0.68;
+}
+
+.ted-footer-artwork__image::after {
+  background:
+    radial-gradient(ellipse 88% 92% at 50% 48%, transparent 55%, rgba(3, 4, 7, 0.3) 100%),
+    linear-gradient(180deg, rgba(3, 4, 7, 0.035), transparent 22%, transparent 72%, rgba(3, 4, 7, 0.17));
+  opacity: 0.82;
+}
+
+.ted-footer-artwork::before {
+  position: absolute;
+  z-index: 6;
+  right: 9%;
+  bottom: 1.5%;
+  left: 9%;
+  height: 13%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(205, 164, 139, 0.105) 0%,
+    rgba(117, 103, 99, 0.045) 38%,
+    transparent 74%
+  );
+  content: '';
+  filter: blur(17px);
+  opacity: 0.72;
+  pointer-events: none;
+  animation: ted-footer-ground-ambience 20s ease-in-out infinite alternate;
+}
+
+.ted-footer-artwork::after {
+  position: absolute;
+  z-index: 6;
+  right: 13%;
+  bottom: 12.5%;
+  left: 13%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.035) 16%,
+    rgba(224, 190, 165, 0.16) 50%,
+    rgba(255, 255, 255, 0.035) 84%,
+    transparent 100%
+  );
+  box-shadow: 0 0 18px rgba(224, 190, 165, 0.12);
+  content: '';
+  opacity: 0.48;
+  pointer-events: none;
+}
+
+.ted-footer-stage.is-active .ted-footer-artwork__image::before {
+  animation: ted-footer-skyline-halo 17s ease-in-out infinite alternate;
+}
+
+@keyframes ted-footer-skyline-halo {
+  from {
+    opacity: 0.56;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 0.82;
+    transform: scale(1.015);
+  }
+}
+
+@keyframes ted-footer-ground-ambience {
+  from {
+    opacity: 0.48;
+    transform: scaleX(0.94) translateY(1px);
+  }
+  to {
+    opacity: 0.78;
+    transform: scaleX(1.04) translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-footer-stage.is-active .ted-footer-artwork__image::before,
+  .ted-footer-artwork::before {
+    animation: none !important;
+  }
+}
+
+
+/* ── Hover finish: softer material light + a reveal pulse locked to the 72px grid ── */
+.ted-footer-artwork__reveal {
+  filter: brightness(1.16) contrast(1.06) saturate(0.96);
+}
+
+.ted-footer-flow {
+  opacity: 0.68;
+}
+
+.ted-footer-hover-card {
+  border-color: rgba(213, 164, 137, 0.19);
+  box-shadow:
+    0 28px 82px rgba(0, 0, 0, 0.56),
+    0 0 26px rgba(211, 145, 113, 0.035),
+    inset 0 1px 0 rgba(228, 194, 169, 0.045);
+}
+
+.ted-footer-hover-card::before {
+  background: linear-gradient(
+    180deg,
+    rgba(225, 181, 149, 0.86) 0%,
+    rgba(235, 0, 40, 0.88) 46%,
+    rgba(225, 181, 149, 0.12) 100%
+  );
+  box-shadow: 0 0 12px rgba(235, 0, 40, 0.16);
+}
+
+.ted-footer-hover-card::after {
+  background: linear-gradient(
+    112deg,
+    transparent 16%,
+    rgba(228, 186, 157, 0.032) 47%,
+    rgba(228, 186, 157, 0.012) 54%,
+    transparent 70%
+  );
+}
+
+.ted-footer-hover-card__pulse {
+  background: #eb0028;
+  box-shadow: 0 0 7px rgba(235, 0, 40, 0.34);
+}
+
+@keyframes ted-footer-card-pulse {
+  0%, 100% {
+    opacity: 0.72;
+    box-shadow: 0 0 4px rgba(235, 0, 40, 0.22);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 9px rgba(235, 0, 40, 0.48);
+  }
+}
+
+/* The pointer selects the nearest existing grid intersection; no new tile layout. */
+.ted-footer-artwork__grid {
+  isolation: isolate;
+}
+
+.ted-footer-artwork__grid::before,
+.ted-footer-artwork__grid::after {
+  position: absolute;
+  z-index: 1;
+  content: '';
+  pointer-events: none;
+  opacity: 0;
+}
+
+.ted-footer-artwork__grid::before {
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      transparent calc(var(--footer-grid-x, 50%) - 0.6px),
+      rgba(218, 157, 125, 0.2) var(--footer-grid-x, 50%),
+      transparent calc(var(--footer-grid-x, 50%) + 0.6px)
+    ),
+    linear-gradient(
+      0deg,
+      transparent calc(var(--footer-grid-y, 50%) - 0.6px),
+      rgba(218, 157, 125, 0.2) var(--footer-grid-y, 50%),
+      transparent calc(var(--footer-grid-y, 50%) + 0.6px)
+    ),
+    radial-gradient(
+      circle 160px at var(--footer-grid-x, 50%) var(--footer-grid-y, 50%),
+      rgba(218, 150, 116, 0.055),
+      transparent 100%
+    );
+}
+
+.ted-footer-artwork__grid::after {
+  left: calc(var(--footer-grid-x, 50%) - 36px);
+  top: calc(var(--footer-grid-y, 50%) - 36px);
+  width: 72px;
+  height: 72px;
+  box-sizing: border-box;
+  border: 1px solid rgba(218, 157, 125, 0.22);
+  background: linear-gradient(145deg, rgba(218, 157, 125, 0.055), transparent 72%);
+  box-shadow:
+    inset 0 0 14px rgba(218, 157, 125, 0.055),
+    0 0 14px rgba(235, 0, 40, 0.045);
+  transform: scale(0.82);
+  transform-origin: center;
+}
+
+.ted-footer-stage.is-monument-active .ted-footer-artwork__grid::before {
+  animation: ted-footer-grid-trace 1180ms cubic-bezier(0.2, 0.8, 0.2, 1) 90ms both;
+}
+
+.ted-footer-stage.is-monument-active .ted-footer-artwork__grid::after {
+  animation: ted-footer-grid-cell 1180ms cubic-bezier(0.16, 1, 0.3, 1) 90ms both;
+}
+
+@keyframes ted-footer-grid-trace {
+  0% { opacity: 0; }
+  26% { opacity: 0.62; }
+  100% { opacity: 0.2; }
+}
+
+@keyframes ted-footer-grid-cell {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  24% {
+    opacity: 0.62;
+    transform: scale(0.94);
+  }
+  100% {
+    opacity: 0.16;
+    transform: scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-footer-stage.is-monument-active .ted-footer-artwork__grid::before,
+  .ted-footer-stage.is-monument-active .ted-footer-artwork__grid::after {
+    animation: none !important;
+  }
+
+  .ted-footer-stage.is-monument-active .ted-footer-artwork__grid::before {
+    opacity: 0.28;
+  }
+
+  .ted-footer-stage.is-monument-active .ted-footer-artwork__grid::after {
+    opacity: 0.14;
+    transform: none;
+  }
+}
+
+
+/* ── Monument note card: editorial hierarchy aligned with the TEDxIIMT footer ── */
+.ted-footer-hover-card {
+  width: min(372px, calc(100% - 36px));
+  padding: 19px 22px 16px;
+  border: 1px solid rgba(235, 0, 40, 0.22);
+  border-top-color: rgba(235, 0, 40, 0.36);
+  border-radius: 3px;
+  background:
+    linear-gradient(145deg, rgba(18, 17, 19, 0.985), rgba(6, 7, 9, 0.975));
+  box-shadow:
+    0 26px 72px rgba(0, 0, 0, 0.58),
+    0 0 26px rgba(235, 0, 40, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  animation: ted-footer-card-cinematic 540ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ted-footer-hover-card::before {
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    rgba(235, 0, 40, 0.98) 0%,
+    rgba(179, 20, 48, 0.76) 52%,
+    rgba(179, 20, 48, 0.08) 100%
+  );
+  box-shadow: 0 0 12px rgba(235, 0, 40, 0.15);
+}
+
+.ted-footer-hover-card::after {
+  background: linear-gradient(
+    112deg,
+    transparent 16%,
+    rgba(235, 0, 40, 0.028) 47%,
+    rgba(228, 186, 157, 0.012) 54%,
+    transparent 70%
+  );
+  animation-duration: 920ms;
+}
+
+.ted-footer-hover-card__topline {
+  color: rgba(244, 239, 241, 0.52);
+  font-size: 8px;
+  letter-spacing: 0.16em;
+}
+
+.ted-footer-hover-card__topline span:last-child {
+  color: rgba(240, 92, 116, 0.88);
+}
+
+.ted-footer-hover-card__place {
+  margin: 13px 0 7px;
+  color: #E7E2E4;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+}
+
+.ted-footer-hover-card__theme {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 9px;
+  color: rgba(240, 91, 115, 0.9);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.105em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.ted-footer-hover-card__theme::before {
+  width: 17px;
+  height: 1px;
+  flex: 0 0 auto;
+  background: rgba(235, 0, 40, 0.85);
+  content: "";
+}
+
+.ted-footer-hover-card h3 {
+  max-width: 326px;
+  color: #FAF8F8;
+  font-size: 18px;
+  font-weight: 760;
+  letter-spacing: -0.035em;
+  line-height: 1.24;
+}
+
+.ted-footer-hover-card__message {
+  max-width: 326px;
+  margin-top: 9px;
+  color: rgba(235, 233, 235, 0.72);
+  font-size: 11px;
+  line-height: 1.68;
+}
+
+.ted-footer-hover-card__foot {
+  margin-top: 13px;
+  padding-top: 10px;
+  border-top-color: rgba(235, 0, 40, 0.18);
+  color: rgba(224, 218, 221, 0.48);
+  font-size: 7px;
+  letter-spacing: 0.15em;
+}
+
+.ted-footer-hover-card__pulse {
+  width: 5px;
+  height: 5px;
+  background: #EB0028;
+  box-shadow: 0 0 8px rgba(235, 0, 40, 0.4);
+}
+
+.ted-footer-hover-card__topline,
+.ted-footer-hover-card__place,
+.ted-footer-hover-card__theme,
+.ted-footer-hover-card h3,
+.ted-footer-hover-card__message,
+.ted-footer-hover-card__foot {
+  animation: ted-footer-card-copy 460ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ted-footer-hover-card__topline { animation-delay: 45ms; }
+.ted-footer-hover-card__place { animation-delay: 85ms; }
+.ted-footer-hover-card__theme { animation-delay: 120ms; }
+.ted-footer-hover-card h3 { animation-delay: 160ms; }
+.ted-footer-hover-card__message { animation-delay: 205ms; }
+.ted-footer-hover-card__foot { animation-delay: 265ms; }
+
+@media (max-width: 1100px) and (min-width: 721px) {
+  .ted-footer-hover-card {
+    width: min(350px, calc(100% - 36px));
+    padding: 17px 19px 15px;
+  }
+
+  .ted-footer-hover-card h3 {
+    font-size: 17px;
+  }
+
+  .ted-footer-hover-card__message {
+    font-size: 10.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-footer-hover-card,
+  .ted-footer-hover-card::before,
+  .ted-footer-hover-card::after,
+  .ted-footer-hover-card__topline,
+  .ted-footer-hover-card__place,
+  .ted-footer-hover-card__theme,
+  .ted-footer-hover-card h3,
+  .ted-footer-hover-card__message,
+  .ted-footer-hover-card__foot {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+
+/* Two-tone TEDx/IIMT signature dot: scoped to the first i in the footer's University word. */
+.ted-university-wordmark__accented-i {
+  position: relative;
+  display: inline-block;
+}
+
+.ted-university-wordmark__accented-i::after {
+  position: absolute;
+  top: .055em;
+  left: .205em;
+  width: .12em;
+  height: .12em;
+  border-radius: .015em;
+  background: linear-gradient(135deg, #EB0028 0 49%, #D8DEE6 51% 100%);
+  content: "";
+  pointer-events: none;
+}
