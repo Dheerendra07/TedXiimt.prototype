@@ -58,7 +58,7 @@
 .ted-home-origin-mark:after{width:54%;height:54%;border-color:rgba(235,0,40,.45);transform:rotate(22.5deg)}
 .ted-home-origin-lockup{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:14px;width:min(100%,390px)}
 .ted-home-origin-logo{position:relative;display:flex;align-items:baseline;gap:3px;font-size:clamp(5rem,10vw,9rem);font-weight:900;letter-spacing:-.095em;line-height:.85}
-.ted-home-origin-logo .ted{color:#F7F6F5}
+.ted-home-origin-logo .ted{color:var(--home-red)}
 .ted-home-origin-logo .x{color:var(--home-red);font-size:.82em}
 .ted-home-origin-university{padding-top:11px;border-top:1px solid rgba(235,0,40,.55);color:#F0EEEC;font-size:clamp(1.1rem,2vw,1.55rem);font-weight:430;letter-spacing:-.045em;line-height:1.1;text-align:center}
 .ted-home-origin-caption{position:absolute;right:22px;bottom:20px;left:22px;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#777780;font-size:9px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
