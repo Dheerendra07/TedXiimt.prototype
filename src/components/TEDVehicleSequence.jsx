@@ -171,6 +171,7 @@ export default function TEDVehicleSequence({ onReady, disabled = false }) {
 
     const initialize = async () => {
       try {
+        const importExternal = (specifier) => import(/* @vite-ignore */ specifier);
         const [
           THREE,
           { GLTFLoader },
@@ -178,11 +179,11 @@ export default function TEDVehicleSequence({ onReady, disabled = false }) {
           { MeshoptDecoder },
           { RoomEnvironment },
         ] = await Promise.all([
-          import(/* @vite-ignore */ 'three'),
-          import(/* @vite-ignore */ 'three/addons/loaders/GLTFLoader.js'),
-          import(/* @vite-ignore */ 'three/addons/loaders/KTX2Loader.js'),
-          import(/* @vite-ignore */ 'three/addons/libs/meshopt_decoder.module.js'),
-          import(/* @vite-ignore */ 'three/addons/environments/RoomEnvironment.js'),
+          importExternal('three'),
+          importExternal('three/addons/loaders/GLTFLoader.js'),
+          importExternal('three/addons/loaders/KTX2Loader.js'),
+          importExternal('three/addons/libs/meshopt_decoder.module.js'),
+          importExternal('three/addons/environments/RoomEnvironment.js'),
         ]);
 
         if (cancelled) return;
