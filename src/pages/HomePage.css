@@ -1915,3 +1915,356 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
     transform: none !important;
   }
 }
+
+
+/* 2026-11 speaker showcase: portrait-led editorial cards with restrained TEDx motion. */
+.ted-home-speaker-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(12px, 1.25vw, 18px);
+  align-items: stretch;
+}
+
+.ted-home-speaker-card {
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  transform-origin: center bottom;
+  will-change: transform, opacity;
+}
+
+.ted-home-speaker-card__surface {
+  position: relative;
+  display: flex;
+  height: 100%;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(176, 201, 219, .16);
+  background:
+    linear-gradient(145deg, rgba(148, 174, 192, .055), transparent 48%),
+    #0B0E12;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, .2);
+  transition:
+    transform .58s cubic-bezier(.2,.75,.25,1),
+    border-color .4s ease,
+    box-shadow .58s ease,
+    background-color .4s ease;
+}
+
+.ted-home-speaker-card__surface::before {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  right: 18px;
+  left: 18px;
+  height: 2px;
+  background: linear-gradient(90deg, #EB0028, rgba(235, 0, 40, .16));
+  content: "";
+  transform: scaleX(.18);
+  transform-origin: left;
+  transition: transform .55s cubic-bezier(.2,.75,.25,1);
+  pointer-events: none;
+}
+
+.ted-home-speaker-portrait {
+  position: relative;
+  aspect-ratio: 4 / 4.7;
+  min-height: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 50% 22%, rgba(114, 145, 166, .22), transparent 62%),
+    linear-gradient(145deg, #18212A, #090B0F 74%);
+}
+
+.ted-home-speaker-portrait img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(.78) contrast(1.055) brightness(.88);
+  transform: scale(1.002);
+  transition:
+    transform .9s cubic-bezier(.2,.7,.2,1),
+    filter .65s ease;
+}
+
+.ted-home-speaker-image-wash {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(4, 7, 10, .42) 0%, transparent 23%, transparent 48%, rgba(5, 7, 10, .22) 68%, rgba(5, 7, 10, .84) 100%),
+    linear-gradient(90deg, rgba(5, 7, 10, .15), transparent 34%, transparent 72%, rgba(5, 7, 10, .18));
+  transition: background-color .45s ease, opacity .45s ease;
+  pointer-events: none;
+}
+
+.ted-home-speaker-image-top {
+  position: absolute;
+  z-index: 2;
+  top: 17px;
+  right: 16px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: rgba(255, 255, 255, .88);
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .15em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, .45);
+}
+
+.ted-home-speaker-image-top span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #fff;
+}
+
+.ted-home-speaker-image-top span:first-child::before {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #EB0028;
+  box-shadow: 0 0 13px rgba(235, 0, 40, .7);
+  content: "";
+}
+
+.ted-home-speaker-image-top span:last-child {
+  color: rgba(255, 255, 255, .63);
+  font-size: 7px;
+  letter-spacing: .13em;
+}
+
+.ted-home-speaker-image-corner {
+  position: absolute;
+  z-index: 2;
+  right: 16px;
+  bottom: 16px;
+  width: 22px;
+  height: 22px;
+  border-right: 1px solid rgba(255, 255, 255, .6);
+  border-bottom: 1px solid rgba(255, 255, 255, .6);
+  opacity: .72;
+  transition: width .45s ease, height .45s ease, border-color .35s ease;
+  pointer-events: none;
+}
+
+.ted-home-speaker-portrait-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, .88);
+  font-size: clamp(4rem, 8vw, 7rem);
+  font-weight: 850;
+  letter-spacing: -.09em;
+}
+
+.ted-home-speaker-card-copy {
+  position: relative;
+  display: flex;
+  min-height: 132px;
+  flex: 1 0 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px clamp(16px, 1.55vw, 23px) 19px;
+  background:
+    radial-gradient(ellipse 76% 95% at 100% 100%, rgba(235, 0, 40, .055), transparent 74%),
+    linear-gradient(180deg, #0C1015, #0A0D11);
+}
+
+.ted-home-speaker-card-copy h3 {
+  margin: 0;
+  color: #F4F6F8;
+  font-size: clamp(1.12rem, 1.55vw, 1.52rem);
+  font-weight: 790;
+  letter-spacing: -.052em;
+  line-height: 1.06;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+  transition: color .35s ease, transform .45s cubic-bezier(.2,.75,.25,1);
+}
+
+.ted-home-speaker-card-copy p {
+  max-width: 290px;
+  margin: 10px 0 0;
+  color: #A0AAB4;
+  font-size: 11px;
+  font-weight: 520;
+  line-height: 1.65;
+  transition: color .35s ease, transform .45s cubic-bezier(.2,.75,.25,1);
+}
+
+.ted-home-speaker-card-rule {
+  display: block;
+  width: 28px;
+  height: 2px;
+  margin-top: auto;
+  padding-top: 17px;
+  background: linear-gradient(90deg, #EB0028, rgba(235, 0, 40, .08));
+  background-clip: content-box;
+  transition: width .5s cubic-bezier(.2,.75,.25,1);
+}
+
+.ted-home-speaker-card:hover .ted-home-speaker-card__surface,
+.ted-home-speaker-card:focus-within .ted-home-speaker-card__surface {
+  transform: translateY(-7px);
+  border-color: rgba(235, 0, 40, .58);
+  box-shadow: 0 26px 58px rgba(0, 0, 0, .38), 0 0 0 1px rgba(235, 0, 40, .06);
+}
+
+.ted-home-speaker-card:hover .ted-home-speaker-card__surface::before,
+.ted-home-speaker-card:focus-within .ted-home-speaker-card__surface::before {
+  transform: scaleX(1);
+}
+
+.ted-home-speaker-card:hover .ted-home-speaker-portrait img,
+.ted-home-speaker-card:focus-within .ted-home-speaker-portrait img {
+  filter: saturate(.98) contrast(1.06) brightness(.98);
+  transform: scale(1.055);
+}
+
+.ted-home-speaker-card:hover .ted-home-speaker-card-copy h3,
+.ted-home-speaker-card:focus-within .ted-home-speaker-card-copy h3 {
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.ted-home-speaker-card:hover .ted-home-speaker-card-copy p,
+.ted-home-speaker-card:focus-within .ted-home-speaker-card-copy p {
+  color: #C3CBD2;
+}
+
+.ted-home-speaker-card:hover .ted-home-speaker-image-corner,
+.ted-home-speaker-card:focus-within .ted-home-speaker-image-corner {
+  width: 34px;
+  height: 34px;
+  border-color: rgba(255, 255, 255, .88);
+}
+
+.ted-home-speaker-card:hover .ted-home-speaker-card-rule,
+.ted-home-speaker-card:focus-within .ted-home-speaker-card-rule {
+  width: 64px;
+}
+
+.ted-home-speaker-card:focus-within {
+  outline: 2px solid #EB0028;
+  outline-offset: 4px;
+}
+
+@media (max-width: 1000px) {
+  .ted-home-speaker-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .ted-home-speaker-portrait {
+    aspect-ratio: 4 / 4.4;
+  }
+
+  .ted-home-speaker-card-copy {
+    min-height: 124px;
+    padding: 19px 20px 18px;
+  }
+
+  .ted-home-speaker-card-copy h3 {
+    font-size: clamp(1.22rem, 2.7vw, 1.65rem);
+  }
+}
+
+@media (max-width: 600px) {
+  .ted-home-speaker-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .ted-home-speaker-portrait {
+    aspect-ratio: 4 / 4.8;
+  }
+
+  .ted-home-speaker-image-top {
+    top: 12px;
+    right: 10px;
+    left: 10px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 7px;
+  }
+
+  .ted-home-speaker-image-top span:last-child {
+    padding-left: 12px;
+    font-size: 6px;
+  }
+
+  .ted-home-speaker-image-corner {
+    right: 10px;
+    bottom: 10px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .ted-home-speaker-card-copy {
+    min-height: 124px;
+    padding: 14px 12px 14px;
+  }
+
+  .ted-home-speaker-card-copy h3 {
+    font-size: clamp(.98rem, 4.1vw, 1.22rem);
+    line-height: 1.05;
+  }
+
+  .ted-home-speaker-card-copy p {
+    margin-top: 8px;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+}
+
+@media (max-width: 360px) {
+  .ted-home-speaker-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ted-home-speaker-portrait {
+    aspect-ratio: 4 / 4.15;
+  }
+
+  .ted-home-speaker-card-copy {
+    min-height: 112px;
+    padding: 17px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ted-home-speaker-card,
+  .ted-home-speaker-card__surface,
+  .ted-home-speaker-card__surface::before,
+  .ted-home-speaker-portrait img,
+  .ted-home-speaker-image-corner,
+  .ted-home-speaker-card-copy h3,
+  .ted-home-speaker-card-copy p,
+  .ted-home-speaker-card-rule {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    will-change: auto;
+  }
+
+  .ted-home-speaker-card:hover .ted-home-speaker-card__surface,
+  .ted-home-speaker-card:focus-within .ted-home-speaker-card__surface {
+    transform: none;
+  }
+}
