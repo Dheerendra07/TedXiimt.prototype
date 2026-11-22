@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Handshake, Star, ExternalLink } from 'lucide-react';
 import api from '../services/api';
 
 const Partners = () => {
   const [tiers, setTiers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     let isMounted = true;
@@ -36,10 +37,10 @@ const Partners = () => {
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+          whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.14 }}
+          transition={{ duration: 0.56, ease: [0.22, 1, 0.36, 1] }}
         >
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EB0028]/10 border border-[#EB0028]/30 text-[#EB0028] text-xs font-bold uppercase mb-4">
             <Handshake className="w-3.5 h-3.5" />
@@ -57,10 +58,10 @@ const Partners = () => {
           {tiers.map((tier) => (
             <motion.div
               key={tier.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 14 }}
+              whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.14 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="space-y-6"
             >
               <div className="text-center">
@@ -74,9 +75,15 @@ const Partners = () => {
               </div>
 
               <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8">
-                {tier.sponsors.map((partner) => (
-                  <a
+                {tier.sponsors.map((partner, partnerIndex) => (
+                  <motion.div
                     key={partner.id}
+                    initial={prefersReducedMotion ? false : { opacity: 0, y: 14, scale: 0.985 }}
+                    whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: true, amount: 0.18, margin: '0px 0px -28px 0px' }}
+                    transition={{ duration: 0.48, delay: Math.min(partnerIndex * 0.045, 0.18), ease: [0.22, 1, 0.36, 1] }}
+                  >
+                  <a
                     href={partner.website || '#'}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -98,6 +105,7 @@ const Partners = () => {
                       {partner.website && <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />}
                     </span>
                   </a>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>
