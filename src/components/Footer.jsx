@@ -151,7 +151,8 @@ const Footer = () => {
     const stage = stageRef.current;
     const canvas = revealCanvasRef.current;
     const imageLayer = stage?.querySelector('.ted-footer-artwork__image');
-    if (!stage || !canvas || !imageLayer) return undefined;
+    const gridLayer = stage?.querySelector('.ted-footer-artwork__grid');
+    if (!stage || !canvas || !imageLayer || !gridLayer) return undefined;
 
     const context = canvas.getContext('2d', { alpha: true });
     if (!context) return undefined;
@@ -251,7 +252,7 @@ const Footer = () => {
         naturalLight.addColorStop(0.38, 'rgba(0, 0, 0, 0.08)');
         naturalLight.addColorStop(1, 'rgba(0, 0, 0, 0)');
         colourContext.globalCompositeOperation = 'screen';
-        colourContext.globalAlpha = 0.34;
+        colourContext.globalAlpha = 0.22;
         colourContext.fillStyle = naturalLight;
         colourContext.fillRect(left, top, right - left, bottom - top);
         colourContext.restore();
@@ -349,9 +350,9 @@ const Footer = () => {
         context.clip();
 
         // First pass: a soft, coloured bloom follows the original silhouette.
-        context.globalAlpha = opacity * 0.42;
+        context.globalAlpha = opacity * 0.28;
         context.shadowColor = region.highlight;
-        context.shadowBlur = 10 + (22 * glowStrength);
+        context.shadowBlur = 7 + (14 * glowStrength);
         context.drawImage(colourCanvas, 0, 0, width, height);
 
         // Second pass: crisp material colour keeps the landmark's real detail intact.
@@ -370,11 +371,11 @@ const Footer = () => {
             beamCenter + beamWidth,
             bottom
           );
-          highlightSweep.addColorStop(0, 'rgba(255, 255, 255, 0)');
-          highlightSweep.addColorStop(0.4, 'rgba(255, 255, 255, 0.035)');
-          highlightSweep.addColorStop(0.5, 'rgba(255, 255, 255, 0.42)');
-          highlightSweep.addColorStop(0.6, 'rgba(255, 255, 255, 0.035)');
-          highlightSweep.addColorStop(1, 'rgba(255, 255, 255, 0)');
+          highlightSweep.addColorStop(0, 'rgba(255, 244, 232, 0)');
+          highlightSweep.addColorStop(0.4, 'rgba(255, 228, 205, 0.016)');
+          highlightSweep.addColorStop(0.5, 'rgba(255, 228, 205, 0.14)');
+          highlightSweep.addColorStop(0.6, 'rgba(255, 228, 205, 0.016)');
+          highlightSweep.addColorStop(1, 'rgba(255, 244, 232, 0)');
 
           context.globalCompositeOperation = 'source-atop';
           context.globalAlpha = (1 - (sweepProgress * 0.16)) * fadeOpacity;
@@ -395,10 +396,29 @@ const Footer = () => {
       if (!animationFrame) animationFrame = window.requestAnimationFrame(drawReveal);
     };
 
+    const focusGridCell = (clientX, clientY) => {
+      const gridBounds = gridLayer.getBoundingClientRect();
+      if (!gridBounds.width || !gridBounds.height) return;
+
+      // Snap the interaction to the existing 72px grid so its pulse feels intentional.
+      const gridX = Math.min(gridBounds.width, Math.max(0, Math.round((clientX - gridBounds.left) / 72) * 72));
+      const gridY = Math.min(gridBounds.height, Math.max(0, Math.round((clientY - gridBounds.top) / 72) * 72));
+
+      // Restart the cell trace when the pointer moves to another monument.
+      stage.classList.remove('is-monument-active');
+      stage.style.setProperty('--footer-grid-x', gridX + 'px');
+      stage.style.setProperty('--footer-grid-y', gridY + 'px');
+      void gridLayer.offsetWidth;
+      stage.classList.add('is-monument-active');
+    };
+
     const hideMessageSoon = () => {
       if (hideCardTimer !== null) window.clearTimeout(hideCardTimer);
       hideCardTimer = window.setTimeout(() => {
         hideCardTimer = null;
+        stage.classList.remove('is-monument-active');
+        stage.style.removeProperty('--footer-grid-x');
+        stage.style.removeProperty('--footer-grid-y');
         setHoveredMonument(null);
       }, HIDE_CARD_MS);
     };
@@ -435,6 +455,7 @@ const Footer = () => {
 
       // Re-entering any monument always restarts its colour reveal, even when
       // the previous pass for that same monument has not finished fading.
+      focusGridCell(event.clientX, event.clientY);
       activeReveals.clear();
       activeReveals.set(region.id, { startedAt: performance.now() });
       requestRevealDraw();
