@@ -1231,3 +1231,130 @@
     opacity: 0 !important;
   }
 }
+
+
+/* University identity reveal follows the TEDx mark — a crisp IIMT rise, then a light-swept name. */
+.tedx-hero__identity h1.tedx-hero__university {
+  position: relative;
+  perspective: 720px;
+}
+
+.tedx-hero__university-iimt,
+.tedx-hero__university-name {
+  display: inline-block;
+  opacity: 0;
+  will-change: transform, opacity, filter, clip-path;
+}
+
+.tedx-hero__university-iimt {
+  color: #fff;
+  font-weight: 620;
+  letter-spacing: -.075em;
+  transform-origin: 50% 100%;
+  animation: tedx-university-iimt-arrive 880ms cubic-bezier(.16, 1, .3, 1) 6.12s both;
+}
+
+.tedx-hero__university-name {
+  color: rgba(247, 246, 245, .88);
+  font-weight: 360;
+  letter-spacing: -.065em;
+  clip-path: inset(0 100% 0 0);
+  animation: tedx-university-name-reveal 1.02s cubic-bezier(.22, 1, .36, 1) 6.48s both;
+}
+
+.tedx-hero__university::after {
+  position: absolute;
+  right: 0;
+  bottom: -.17em;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--ted-red), rgba(235, 0, 40, .42) 44%, rgba(255, 255, 255, .12) 78%, transparent);
+  content: "";
+  opacity: 0;
+  transform: scaleX(.12);
+  transform-origin: left center;
+  animation: tedx-university-rule 760ms cubic-bezier(.16, 1, .3, 1) 7.12s both;
+}
+
+@keyframes tedx-university-iimt-arrive {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, .34em, 0) rotateX(-48deg) skewY(3deg) scale(.94, .88);
+    filter: blur(8px) brightness(1.8);
+    text-shadow: 0 0 26px rgba(235, 0, 40, .55);
+  }
+  66% {
+    opacity: 1;
+    transform: translate3d(0, -.025em, 0) rotateX(5deg) skewY(0) scale(1.035, 1.04);
+    filter: blur(0) brightness(1.16);
+    text-shadow: 0 0 16px rgba(235, 0, 40, .22);
+  }
+  84% {
+    transform: translate3d(0, .008em, 0) rotateX(-1deg) scale(.995, 1);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    text-shadow: none;
+  }
+}
+
+@keyframes tedx-university-name-reveal {
+  0% {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+    transform: translate3d(.1em, .04em, 0);
+    filter: blur(5px);
+    text-shadow: 0 0 18px rgba(235, 0, 40, .3);
+  }
+  32% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  72% {
+    clip-path: inset(0 0 0 0);
+    transform: translate3d(0, 0, 0);
+    text-shadow: 0 0 13px rgba(255, 255, 255, .13);
+  }
+  100% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: none;
+    filter: none;
+    text-shadow: none;
+  }
+}
+
+@keyframes tedx-university-rule {
+  0% {
+    opacity: 0;
+    transform: scaleX(.12);
+  }
+  45% {
+    opacity: .9;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: .58;
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tedx-hero__university-iimt,
+  .tedx-hero__university-name {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+    text-shadow: none !important;
+  }
+
+  .tedx-hero__university::after {
+    animation: none !important;
+    opacity: .58 !important;
+    transform: none !important;
+  }
+}
