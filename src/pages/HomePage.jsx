@@ -417,7 +417,17 @@ const HomePage = () => {
             <Reveal className="ted-home-origin-mark" variant="image">
               <div className="ted-home-origin-lockup">
                 <div className="ted-home-origin-logo"><span className="ted">TED</span><span className="x">x</span></div>
-                <span className="ted-home-origin-university"><span className="ted-home-origin-university-initial">I</span>IMT University</span>
+                <span className="ted-home-origin-university"><svg className="ted-home-origin-university-initial" viewBox="0 0 40 68" role="img" aria-label="I" focusable="false">
+                    <path d="M5 25 L35 14 V64 H5 Z" fill="url(#iimt-signature-stem)" />
+                    <path d="M5 4 H35 V15 L5 26 Z" fill="#EB0028" />
+                    <defs>
+                      <linearGradient id="iimt-signature-stem" x1="0" x2="1" y1="0" y2="0">
+                        <stop offset="0" stopColor="#BFC6CE" />
+                        <stop offset=".48" stopColor="#F7F8F9" />
+                        <stop offset="1" stopColor="#D9DEE4" />
+                      </linearGradient>
+                    </defs>
+                  </svg>IMT University</span>
               </div>
               <div className="ted-home-origin-caption"><span>INDEPENDENTLY ORGANIZED</span><span>MEERUT / INDIA</span></div>
               <a className="ted-home-origin-hit" href="/about" aria-label="Learn more about TEDxIIMT University" />
