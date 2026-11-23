@@ -745,7 +745,44 @@
 }
 
 @media (max-width: 720px) {
-  .tedx-hero__orbit-art { display: none; }
+  /* Phone: use the actual open top-right pocket above the hero wordmark. */
+  .tedx-hero__orbit-art {
+    position: absolute;
+    z-index: 3;
+    top: clamp(4px, 1.2svh, 12px);
+    right: clamp(10px, 3.5vw, 18px);
+    display: block;
+    width: clamp(116px, 36vw, 150px);
+    opacity: .98;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .tedx-hero__orbit-art svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    filter: drop-shadow(0 5px 18px rgba(0, 0, 0, .34));
+  }
+
+  .tedx-hero__orbit-draw {
+    stroke-dasharray: 520;
+    stroke-dashoffset: 520;
+    animation: tedx-orbit-arrive-mobile 1.9s cubic-bezier(.22, 1, .36, 1) .2s forwards;
+  }
+
+  @keyframes tedx-orbit-arrive-mobile {
+    to { stroke-dashoffset: 0; }
+  }
+}
+
+@media (max-width: 380px) {
+  .tedx-hero__orbit-art {
+    top: 4px;
+    right: 9px;
+    width: 112px;
+  }
 }
 
 @media (max-width: 720px) {
