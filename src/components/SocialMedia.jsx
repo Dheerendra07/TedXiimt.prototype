@@ -121,7 +121,7 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
           <button
             type="button"
             onClick={togglePlayback}
-            className="ted-reel-play-overlay absolute inset-0 z-10 flex cursor-pointer items-center justify-center bg-black/40 backdrop-blur-[2px] transition-all hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#EB0028]"
+            className="ted-reel-play-overlay absolute inset-0 z-10 flex cursor-pointer items-center justify-center bg-black/20 backdrop-blur-0 transition-all hover:bg-black/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#EB0028]"
             aria-label={`Play reel ${index + 1}`}
           >
             <span className="ted-reel-play-orb flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-2xl backdrop-blur-md transition-transform group-hover:scale-110">
