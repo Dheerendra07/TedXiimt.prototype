@@ -1708,3 +1708,40 @@
     filter: none;
   }
 }
+
+
+/* Grid continuity fix: the TEDx grid now spans the complete footer artwork,
+   including the previously ungridded upper area and mobile artwork crop. */
+.ted-footer-artwork__grid {
+  inset: 0 !important;
+  width: 100%;
+  height: 100% !important;
+  background-image:
+    linear-gradient(90deg, rgba(214, 225, 236, .06) 1px, transparent 1px),
+    linear-gradient(rgba(214, 225, 236, .06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(235, 0, 40, .023) 1px, transparent 1px),
+    linear-gradient(rgba(235, 0, 40, .023) 1px, transparent 1px);
+  background-size: 72px 72px, 72px 72px, 360px 360px, 360px 360px;
+  background-position: 0 0, 0 0, 0 0, 0 0;
+  background-repeat: repeat, repeat, repeat, repeat;
+  opacity: .82;
+}
+
+/* Carry a quieter continuation into the legal strip below the artwork. */
+.ted-footer-legal {
+  background-image:
+    linear-gradient(90deg, rgba(214, 225, 236, .032) 1px, transparent 1px),
+    linear-gradient(rgba(214, 225, 236, .032) 1px, transparent 1px);
+  background-size: 72px 72px;
+  background-repeat: repeat;
+}
+
+@media (max-width: 600px) {
+  .ted-footer-artwork__grid {
+    background-size: 64px 64px, 64px 64px, 320px 320px, 320px 320px;
+  }
+
+  .ted-footer-legal {
+    background-size: 64px 64px;
+  }
+}
