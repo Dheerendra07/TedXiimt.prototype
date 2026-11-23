@@ -10,7 +10,7 @@
   min-height: 720px;
   max-height: 1120px;
   overflow: hidden;
-  background: #080a0e;
+  background: #0c0e15;
   color: #f7f6f5;
 }
 
@@ -19,11 +19,12 @@
   z-index: 0;
   inset: 0;
   background:
-    radial-gradient(ellipse 42% 58% at 8% 78%, rgba(235, 0, 40, .105), transparent 74%),
-    radial-gradient(ellipse 38% 52% at 31% 13%, rgba(105, 137, 159, .075), transparent 76%),
-    radial-gradient(ellipse 48% 68% at 78% 48%, rgba(153, 104, 94, .16), transparent 75%),
-    radial-gradient(ellipse 46% 64% at 8% 44%, rgba(111, 14, 39, .14), transparent 74%),
-    linear-gradient(115deg, #080a0e 0%, #0a0d12 52%, #11151b 100%);
+    radial-gradient(ellipse 34% 45% at 0% 0%, rgba(235, 0, 40, .16), transparent 72%),
+    radial-gradient(ellipse 38% 48% at 100% 0%, rgba(135, 91, 240, .15), transparent 72%),
+    radial-gradient(ellipse 36% 52% at 100% 100%, rgba(89, 139, 184, .15), transparent 74%),
+    radial-gradient(ellipse 35% 46% at 0% 100%, rgba(174, 43, 77, .13), transparent 74%),
+    radial-gradient(ellipse 62% 76% at 51% 48%, rgba(58, 67, 88, .15), transparent 82%),
+    linear-gradient(115deg, #0c0e15 0%, #0d1118 50%, #12151e 100%);
   pointer-events: none;
 }
 
@@ -32,13 +33,15 @@
   z-index: 1;
   inset: 0;
   background-image:
-    linear-gradient(90deg, rgba(222, 229, 236, .105) 1px, transparent 1px),
-    linear-gradient(rgba(222, 229, 236, .105) 1px, transparent 1px);
-  background-size: 72px 72px;
+    linear-gradient(90deg, rgba(222, 229, 236, .072) 1px, transparent 1px),
+    linear-gradient(rgba(222, 229, 236, .072) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(235, 0, 40, .045) 1px, transparent 1px),
+    linear-gradient(rgba(235, 0, 40, .045) 1px, transparent 1px);
+  background-size: 72px 72px, 72px 72px, 360px 360px, 360px 360px;
   background-position: center center;
-  opacity: .48;
-  mask-image: linear-gradient(90deg, rgba(0, 0, 0, .98), rgba(0, 0, 0, .82) 34%, rgba(0, 0, 0, .36) 66%, rgba(0, 0, 0, .12));
-  -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, .98), rgba(0, 0, 0, .82) 34%, rgba(0, 0, 0, .36) 66%, rgba(0, 0, 0, .12));
+  opacity: .54;
+  mask-image: radial-gradient(ellipse 90% 88% at 50% 49%, rgba(0, 0, 0, .88), rgba(0, 0, 0, .58) 68%, rgba(0, 0, 0, .18) 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 88% at 50% 49%, rgba(0, 0, 0, .88), rgba(0, 0, 0, .58) 68%, rgba(0, 0, 0, .18) 100%);
   pointer-events: none;
 }
 
@@ -316,11 +319,27 @@
 .tedx-hero__visual-wrap::before {
   position: absolute;
   z-index: -1;
-  inset: 10% 3% 12% 0;
+  inset: 4% -4% 7% -5%;
   border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(178, 110, 94, .11), transparent 72%);
+  background:
+    radial-gradient(ellipse 52% 48% at 55% 43%, rgba(139, 102, 226, .19), transparent 74%),
+    radial-gradient(ellipse 46% 52% at 47% 64%, rgba(235, 0, 40, .105), transparent 76%),
+    radial-gradient(ellipse 68% 70% at 52% 50%, rgba(94, 123, 158, .11), transparent 82%);
   content: "";
-  filter: blur(34px);
+  filter: blur(42px);
+  pointer-events: none;
+}
+
+.tedx-hero__visual-wrap::after {
+  position: absolute;
+  z-index: -1;
+  inset: 12% 1% 14% 7%;
+  border: 1px solid rgba(173, 151, 226, .09);
+  border-radius: 48% 52% 44% 56%;
+  background: conic-gradient(from 210deg at 50% 50%, transparent 0deg, rgba(235, 0, 40, .055) 58deg, transparent 126deg, rgba(151, 116, 235, .075) 218deg, transparent 292deg);
+  content: "";
+  filter: blur(17px);
+  opacity: .76;
   pointer-events: none;
 }
 
@@ -330,13 +349,27 @@
   max-height: 74svh;
   aspect-ratio: 1.38 / 1;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, .17);
+  border: 1px solid rgba(238, 235, 246, .22);
   border-radius: 9px;
-  background: #1b2026;
+  background: #171c26;
   box-shadow:
-    0 26px 64px rgba(0, 0, 0, .36),
-    0 4px 18px rgba(0, 0, 0, .18),
-    inset 0 1px 0 rgba(255, 255, 255, .12);
+    0 28px 70px rgba(0, 0, 0, .32),
+    0 12px 42px rgba(117, 87, 185, .09),
+    0 6px 24px rgba(235, 0, 40, .07),
+    inset 0 1px 0 rgba(255, 255, 255, .15);
+}
+
+.tedx-hero__photo-frame::after {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  left: 8%;
+  width: 84%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(235, 0, 40, .55) 28%, rgba(255, 255, 255, .36) 52%, rgba(151, 116, 235, .46) 78%, transparent);
+  content: "";
+  opacity: .72;
+  pointer-events: none;
 }
 
 .tedx-hero__photo {
@@ -689,9 +722,10 @@
 
   .tedx-hero__ambient {
     background:
-      radial-gradient(ellipse 80% 46% at 78% 70%, rgba(153, 104, 94, .17), transparent 75%),
-      radial-gradient(ellipse 60% 42% at 5% 17%, rgba(111, 14, 39, .13), transparent 74%),
-      linear-gradient(115deg, #080a0e 0%, #0a0d12 52%, #11151b 100%);
+      radial-gradient(ellipse 86% 48% at 94% 77%, rgba(135, 91, 240, .17), transparent 76%),
+      radial-gradient(ellipse 70% 42% at 4% 13%, rgba(235, 0, 40, .15), transparent 75%),
+      radial-gradient(ellipse 70% 46% at 84% 5%, rgba(89, 139, 184, .12), transparent 76%),
+      linear-gradient(115deg, #0c0e15 0%, #0d1118 52%, #12151e 100%);
   }
 
   .tedx-hero__grid {
