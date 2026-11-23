@@ -153,30 +153,31 @@ const Hero = () => {
       <div className="tedx-hero__ambient" aria-hidden="true" />
       <div className="tedx-hero__grid" aria-hidden="true" />
       <div className="tedx-hero__split-line" aria-hidden="true" />
-      <div className="tedx-hero__corner-art" aria-hidden="true">
-        <svg viewBox="0 0 132 104" fill="none" focusable="false">
+      <div className="tedx-hero__idea-in-motion" aria-hidden="true">
+        <span className="tedx-hero__idea-kicker">THE IDEA</span>
+        <div className="tedx-hero__idea-title"><span>IN</span> <em>MOTION.</em></div>
+        <svg className="tedx-hero__idea-stroke" viewBox="0 0 248 54" fill="none" focusable="false">
           <defs>
-            <linearGradient id="tedx-corner-flow" x1="10" y1="88" x2="119" y2="13" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#EB0028" stopOpacity=".95" />
-              <stop offset=".48" stopColor="#E4E8EE" stopOpacity=".86" />
-              <stop offset=".76" stopColor="#A78BFA" stopOpacity=".92" />
-              <stop offset="1" stopColor="#EB0028" stopOpacity=".82" />
+            <linearGradient id="tedx-idea-stroke" x1="3" y1="37" x2="244" y2="13" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#EB0028" />
+              <stop offset=".36" stopColor="#DDE3EA" stopOpacity=".88" />
+              <stop offset=".72" stopColor="#A78BFA" stopOpacity=".9" />
+              <stop offset="1" stopColor="#EB0028" stopOpacity=".78" />
             </linearGradient>
-            <radialGradient id="tedx-corner-glow">
-              <stop stopColor="#EB0028" stopOpacity=".32" />
-              <stop offset="1" stopColor="#EB0028" stopOpacity="0" />
-            </radialGradient>
+            <linearGradient id="tedx-idea-afterglow" x1="3" y1="37" x2="244" y2="13" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#EB0028" stopOpacity=".1" />
+              <stop offset=".5" stopColor="#DDE3EA" stopOpacity=".22" />
+              <stop offset="1" stopColor="#A78BFA" stopOpacity=".08" />
+            </linearGradient>
           </defs>
-          <path d="M8 79C3 59 12 30 33 17C53 4 83 7 101 22C118 36 122 61 108 77C94 93 66 96 48 84C32 73 31 51 45 37C57 25 76 25 88 35" stroke="#CBD5E1" strokeOpacity=".12" strokeWidth="7" strokeLinecap="round" />
-          <path className="tedx-hero__corner-art-line" d="M8 79C3 59 12 30 33 17C53 4 83 7 101 22C118 36 122 61 108 77C94 93 66 96 48 84C32 73 31 51 45 37C57 25 76 25 88 35" stroke="url(#tedx-corner-flow)" strokeWidth="1.7" strokeLinecap="round" />
-          <path d="M8 79C3 59 12 30 33 17" stroke="#EB0028" strokeOpacity=".72" strokeWidth=".9" strokeDasharray="2 5" strokeLinecap="round" />
-          <circle cx="8" cy="79" r="14" fill="url(#tedx-corner-glow)" />
-          <circle cx="88" cy="35" r="11" fill="url(#tedx-corner-glow)" />
-          <circle cx="8" cy="79" r="2.6" fill="#EB0028" />
-          <circle cx="88" cy="35" r="2.3" fill="#E4E8EE" />
-          <circle cx="8" cy="79" r="5.4" stroke="#EB0028" strokeOpacity=".72" strokeWidth=".7" />
-          <circle cx="88" cy="35" r="4.8" stroke="#A78BFA" strokeOpacity=".78" strokeWidth=".7" />
+          <path d="M3 37C26 37 34 17 57 17C79 17 85 41 107 41C128 41 137 12 160 12C182 12 187 30 207 30C222 30 232 20 245 9" stroke="url(#tedx-idea-afterglow)" strokeWidth="7" strokeLinecap="round" />
+          <path className="tedx-hero__idea-stroke-line" d="M3 37C26 37 34 17 57 17C79 17 85 41 107 41C128 41 137 12 160 12C182 12 187 30 207 30C222 30 232 20 245 9" stroke="url(#tedx-idea-stroke)" strokeWidth="1.65" strokeLinecap="round" />
+          <path d="M3 37C26 37 34 17 57 17" stroke="#EB0028" strokeOpacity=".78" strokeWidth=".85" strokeDasharray="2 5" strokeLinecap="round" />
+          <circle cx="3" cy="37" r="2.6" fill="#EB0028" />
+          <circle cx="245" cy="9" r="2.4" fill="#D9C9FF" />
+          <circle cx="245" cy="9" r="5.4" stroke="#A78BFA" strokeOpacity=".55" strokeWidth=".7" />
         </svg>
+        <span className="tedx-hero__idea-signature">A THOUGHT, SET FREE.</span>
       </div>
 
       <div className="tedx-hero__content-wrap">
