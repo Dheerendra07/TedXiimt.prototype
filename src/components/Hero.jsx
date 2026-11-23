@@ -153,45 +153,6 @@ const Hero = () => {
       <div className="tedx-hero__ambient" aria-hidden="true" />
       <div className="tedx-hero__grid" aria-hidden="true" />
       <div className="tedx-hero__split-line" aria-hidden="true" />
-      <div className="tedx-hero__orbit-art" aria-hidden="true">
-        <svg viewBox="0 0 360 280" fill="none" focusable="false">
-          <defs>
-            <linearGradient id="tedx-orbit-colour" x1="42" y1="204" x2="330" y2="82" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#EB0028" stopOpacity=".94" />
-              <stop offset=".38" stopColor="#E7EBF1" stopOpacity=".84" />
-              <stop offset=".72" stopColor="#A78BFA" stopOpacity=".9" />
-              <stop offset="1" stopColor="#EB0028" stopOpacity=".78" />
-            </linearGradient>
-            <linearGradient id="tedx-orbit-glass" x1="62" y1="230" x2="278" y2="28" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#EB0028" stopOpacity=".035" />
-              <stop offset=".46" stopColor="#DCE3EA" stopOpacity=".19" />
-              <stop offset="1" stopColor="#A78BFA" stopOpacity=".035" />
-            </linearGradient>
-            <radialGradient id="tedx-orbit-spark" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(326 127) rotate(90) scale(46)">
-              <stop stopColor="#A78BFA" stopOpacity=".28" />
-              <stop offset=".48" stopColor="#EB0028" stopOpacity=".11" />
-              <stop offset="1" stopColor="#EB0028" stopOpacity="0" />
-            </radialGradient>
-            <filter id="tedx-orbit-blur" x="-40" y="-40" width="440" height="360" filterUnits="userSpaceOnUse">
-              <feGaussianBlur stdDeviation="8" />
-            </filter>
-          </defs>
-          <ellipse cx="186" cy="137" rx="151" ry="111" transform="rotate(-17 186 137)" stroke="#DDE3EA" strokeOpacity=".07" strokeWidth=".8" strokeDasharray="2 8" />
-          <path d="M42 181C18 132 37 69 88 36C143 1 216 4 273 39C312 63 334 102 330 135C327 165 308 191 281 208C267 217 252 226 233 232C176 251 104 229 68 187" stroke="url(#tedx-orbit-glass)" strokeWidth="19" strokeLinecap="round" />
-          <path d="M42 181C18 132 37 69 88 36C143 1 216 4 273 39C312 63 334 102 330 135" stroke="url(#tedx-orbit-colour)" strokeOpacity=".48" strokeWidth="3.8" strokeLinecap="round" filter="url(#tedx-orbit-blur)" />
-          <path className="tedx-hero__orbit-draw" d="M42 181C18 132 37 69 88 36C143 1 216 4 273 39C312 63 334 102 330 135" stroke="url(#tedx-orbit-colour)" strokeWidth="1.7" strokeLinecap="round" />
-          <path d="M68 187C104 229 176 251 233 232C267 217 292 193 306 163" stroke="url(#tedx-orbit-colour)" strokeOpacity=".62" strokeWidth="1.35" strokeLinecap="round" />
-          <path d="M74 161C61 126 79 88 111 67C147 44 197 49 227 73C250 91 261 120 254 146C247 172 225 190 198 198" stroke="url(#tedx-orbit-colour)" strokeOpacity=".55" strokeWidth="1.15" strokeLinecap="round" />
-          <path d="M85 157C79 131 91 104 113 88C139 69 174 68 201 81" stroke="#E5E9F0" strokeOpacity=".25" strokeWidth=".8" strokeLinecap="round" />
-          <path d="M45 173C31 133 45 83 79 51" stroke="#EB0028" strokeOpacity=".72" strokeWidth=".9" strokeDasharray="2 6" strokeLinecap="round" />
-          <circle cx="330" cy="135" r="44" fill="url(#tedx-orbit-spark)" filter="url(#tedx-orbit-blur)" />
-          <circle cx="330" cy="135" r="3.2" fill="#E8DFFF" />
-          <circle cx="330" cy="135" r="8" stroke="#A78BFA" strokeOpacity=".7" strokeWidth=".8" />
-          <circle cx="42" cy="181" r="2.8" fill="#EB0028" />
-          <circle cx="42" cy="181" r="7" stroke="#EB0028" strokeOpacity=".6" strokeWidth=".8" />
-          <path d="M315 116L330 135L344 111" stroke="#D9C8FF" strokeOpacity=".62" strokeWidth=".8" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </div>
       <div className="tedx-hero__content-wrap">
         <Motion.div
           className="tedx-hero__content"
