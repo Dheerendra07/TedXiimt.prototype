@@ -12,21 +12,23 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
   const [posterFrame, setPosterFrame] = useState('');
   const prefersReducedMotion = useReducedMotion();
 
-  // On touch layouts, stop off-screen reels so scrolling never leaves audio/video running behind the page.
+  // Decode one real opening frame as a reel approaches the viewport; do not autoplay.
+  // On touch layouts, pause any reel that has moved out of view.
   useEffect(() => {
     const video = videoRef.current;
-    if (
-      !video ||
-      typeof window === 'undefined' ||
-      typeof IntersectionObserver === 'undefined' ||
-      !window.matchMedia('(hover: none) and (pointer: coarse)').matches
-    ) return undefined;
+    if (!video || typeof window === 'undefined' || typeof IntersectionObserver === 'undefined') return undefined;
 
+    const isTouchLayout = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
     const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting || entry.intersectionRatio < 0.2) {
+      if (entry.isIntersecting && video.preload !== 'auto') {
+        video.preload = 'auto';
+        if (video.readyState < 2) video.load();
+      }
+
+      if (isTouchLayout && (!entry.isIntersecting || entry.intersectionRatio < 0.2)) {
         video.pause();
       }
-    }, { threshold: [0, 0.2, 0.5] });
+    }, { rootMargin: '140px 180px 140px 180px', threshold: [0, 0.12, 0.2, 0.5] });
 
     observer.observe(video);
     return () => observer.disconnect();
@@ -38,7 +40,7 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
 
     try {
       const canvas = document.createElement('canvas');
-      const width = 360;
+      const width = 480;
       const height = Math.round(width * (video.videoHeight / video.videoWidth));
       canvas.width = width;
       canvas.height = height;
@@ -99,7 +101,7 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
           className="h-full w-full object-cover"
           playsInline
           loop
-          preload="metadata"
+          preload="none"
           onLoadedData={handleVideoLoadedData}
           onPlay={handlePlay}
           onPause={handlePause}
@@ -121,15 +123,16 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
           <button
             type="button"
             onClick={togglePlayback}
-            className="ted-reel-play-overlay absolute inset-0 z-10 flex cursor-pointer items-center justify-center bg-black/20 backdrop-blur-0 transition-all hover:bg-black/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#EB0028]"
+            className="ted-reel-play-overlay absolute inset-0 z-10 flex cursor-pointer items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#EB0028]"
             aria-label={`Play reel ${index + 1}`}
           >
-            <span className="ted-reel-play-orb flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-2xl backdrop-blur-md transition-transform group-hover:scale-110">
-              <Play className="h-10 w-10 fill-current" aria-hidden="true" />
+            <span className="ted-reel-index" aria-hidden="true">
+              <span>{String(index + 1).padStart(2, '0')}</span><i /><span>04</span>
             </span>
-            <span className="ted-reel-play-label absolute bottom-8 left-4 right-4 text-center text-sm font-semibold uppercase tracking-widest text-white/80 drop-shadow-md">
-              Play Reel
+            <span className="ted-reel-play-orb flex items-center justify-center rounded-full text-white">
+              <Play className="fill-current" aria-hidden="true" />
             </span>
+            <span className="ted-reel-play-label">PLAY REEL</span>
           </button>
         )}
       </div>
@@ -144,6 +147,8 @@ const SocialMedia = () => {
   const userInteractedRef = useRef(false);
   const peekTimerRef = useRef(null);
   const settleTimerRef = useRef(null);
+  const snapRestoreTimerRef = useRef(null);
+  const autoPeekingRef = useRef(false);
   const [showSwipeCue, setShowSwipeCue] = useState(true);
   const prefersReducedMotion = useReducedMotion();
 
@@ -152,44 +157,67 @@ const SocialMedia = () => {
     if (!track || prefersReducedMotion || typeof window === 'undefined') return undefined;
     if (!window.matchMedia('(max-width: 639px)').matches) return undefined;
 
-    const cancelAutoPeek = () => {
-      userInteractedRef.current = true;
-      setShowSwipeCue(false);
+    const clearPeekTimers = () => {
       if (peekTimerRef.current) window.clearTimeout(peekTimerRef.current);
       if (settleTimerRef.current) window.clearTimeout(settleTimerRef.current);
+      if (snapRestoreTimerRef.current) window.clearTimeout(snapRestoreTimerRef.current);
+    };
+
+    const cancelAutoPeek = () => {
+      userInteractedRef.current = true;
+      clearPeekTimers();
+      autoPeekingRef.current = false;
+      track.style.scrollSnapType = '';
+    };
+
+    const handleScroll = () => {
+      if (!autoPeekingRef.current && track.scrollLeft > 14) {
+        userInteractedRef.current = true;
+        setShowSwipeCue(false);
+      }
     };
 
     const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting || entry.intersectionRatio < 0.35 || didAutoPeekRef.current) return;
+      if (!entry.isIntersecting || entry.intersectionRatio < 0.3 || didAutoPeekRef.current) return;
       didAutoPeekRef.current = true;
       observer.disconnect();
 
       peekTimerRef.current = window.setTimeout(() => {
         if (userInteractedRef.current || !track.isConnected) return;
         const maxScroll = track.scrollWidth - track.clientWidth;
-        if (maxScroll < 28) return;
+        if (maxScroll < 36) return;
 
-        track.scrollTo({ left: Math.min(58, maxScroll), behavior: 'smooth' });
+        autoPeekingRef.current = true;
+        track.style.scrollSnapType = 'none';
+        track.scrollTo({ left: Math.min(82, maxScroll), behavior: 'smooth' });
         settleTimerRef.current = window.setTimeout(() => {
           if (!userInteractedRef.current && track.isConnected) {
             track.scrollTo({ left: 0, behavior: 'smooth' });
+            snapRestoreTimerRef.current = window.setTimeout(() => {
+              track.style.scrollSnapType = '';
+              autoPeekingRef.current = false;
+            }, 520);
           }
-        }, 1050);
-      }, 520);
-    }, { threshold: [0.35, 0.6] });
+        }, 1150);
+      }, 620);
+    }, { threshold: [0.3, 0.55] });
 
     observer.observe(track);
+    track.addEventListener('pointerdown', cancelAutoPeek, { passive: true });
     track.addEventListener('touchstart', cancelAutoPeek, { passive: true });
     track.addEventListener('wheel', cancelAutoPeek, { passive: true });
     track.addEventListener('keydown', cancelAutoPeek);
+    track.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       observer.disconnect();
+      track.removeEventListener('pointerdown', cancelAutoPeek);
       track.removeEventListener('touchstart', cancelAutoPeek);
       track.removeEventListener('wheel', cancelAutoPeek);
       track.removeEventListener('keydown', cancelAutoPeek);
-      if (peekTimerRef.current) window.clearTimeout(peekTimerRef.current);
-      if (settleTimerRef.current) window.clearTimeout(settleTimerRef.current);
+      track.removeEventListener('scroll', handleScroll);
+      clearPeekTimers();
+      track.style.scrollSnapType = '';
     };
   }, [prefersReducedMotion]);
 
@@ -224,7 +252,7 @@ const SocialMedia = () => {
           </div>
         </Motion.div>
 
-        {showSwipeCue && <div className="ted-reels-swipe-cue" aria-hidden="true"><span>SWIPE TO EXPLORE</span><ArrowRight /></div>}
+        {showSwipeCue && <div className="ted-reels-swipe-cue" aria-hidden="true"><span className="ted-reels-swipe-cue__label">DRAG TO DISCOVER</span><span className="ted-reels-swipe-cue__rule" /><ArrowRight /></div>}
         <div ref={reelsTrackRef} className="ted-reels-track mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-4" role="group" aria-label="TEDxIIMT event reels; swipe horizontally on mobile to see all four reels" tabIndex={0}>
           {reelVideos.map((src, index) => {
             return (
