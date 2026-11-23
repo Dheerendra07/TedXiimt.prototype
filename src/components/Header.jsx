@@ -143,8 +143,15 @@ const Header = () => {
       <div className="mx-auto flex w-[92%] max-w-[1780px] items-center justify-between gap-5">
         
         {/* Logo Lockup */}
-        <a href="/" aria-label="TEDxIIMT University home" className="group flex shrink-0 flex-col items-start gap-1 rounded-lg p-1 focus:outline-none focus:ring-2 focus:ring-[#EB0028]">
-          <TEDxIIMTWordmark subline="UNIVERSITY" stacked fontSize="clamp(1.45rem, 2vw, 1.7rem)" style={{ color: "#fff", minHeight: "48px" }} />
+        <a href="/" aria-label="TEDxIIMT University home" className="ted-header-brand shrink-0 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#EB0028]">
+          <TEDxIIMTWordmark
+            className="ted-header-brand__wordmark"
+            subline="UNIVERSITY"
+            stacked
+            fontSize="clamp(1.55rem, 2vw, 1.78rem)"
+            sublineColor="#C7CED7"
+            style={{ color: "#F7F7F8", minHeight: "48px", fontWeight: 520 }}
+          />
         </a>
 
         {/* Desktop Nav Items */}
