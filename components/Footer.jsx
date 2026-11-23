@@ -98,6 +98,16 @@ const FOOTER_MONUMENT_REGIONS = [
   },
 ];
 
+const AccentLowercaseIText = ({ text = '' }) => (
+  <>
+    {String(text).split(/(i)/g).map((part, index) => (
+      part === 'i'
+        ? <span className="ted-footer-accent-i" key={index}>i</span>
+        : part
+    ))}
+  </>
+);
+
 const Footer = () => {
   const stageRef = useRef(null);
   const revealCanvasRef = useRef(null);
@@ -602,8 +612,7 @@ const Footer = () => {
                 <TEDxIIMTWordmark subline="UNIVERSITY" stacked fontSize="1.45rem" className="ted-footer-logo" style={{ color: "#fff", width: "176px", minHeight: "48px" }} />
               </a>
               <p className="ted-footer-brand__copy">
-                A platform for curious minds, courageous ideas and conversations
-                that move perspectives forward.
+                <AccentLowercaseIText text="A platform for curious minds, courageous ideas and conversations that move perspectives forward." />
               </p>
               <div className="ted-footer-brand__rule" aria-hidden="true">
                 <span />
@@ -621,7 +630,7 @@ const Footer = () => {
                 >
                   <div className="ted-footer-group__intro">
                     <p className="ted-footer-group__eyebrow">Section {group.number}</p>
-                    <h2 className="ted-footer-group__title">{group.title}</h2>
+                    <h2 className="ted-footer-group__title"><AccentLowercaseIText text={group.title} /></h2>
                     <p className="ted-footer-group__description">{group.description}</p>
                   </div>
                   <ul className="ted-footer-link-list">

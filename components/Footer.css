@@ -1710,20 +1710,22 @@
 }
 
 
-/* Two-tone TEDx/IIMT signature dot: scoped to the first i in the footer's University word. */
-.ted-university-wordmark__accented-i {
+/* Two-tone signature dot overlays the natural lowercase-i dot without changing text metrics. */
+.ted-university-wordmark__accented-i,
+.ted-footer-accent-i {
   position: relative;
-  display: inline-block;
 }
 
-.ted-university-wordmark__accented-i::after {
+.ted-university-wordmark__accented-i::after,
+.ted-footer-accent-i::after {
   position: absolute;
-  top: .055em;
-  left: .205em;
-  width: .12em;
-  height: .12em;
-  border-radius: .015em;
+  top: .075em;
+  left: 50%;
+  width: .16em;
+  height: .14em;
+  border-radius: .02em;
   background: linear-gradient(135deg, #EB0028 0 49%, #D8DEE6 51% 100%);
   content: "";
   pointer-events: none;
+  transform: translateX(-50%);
 }
