@@ -1,5 +1,5 @@
 /* TEDxIIMT opening frame — editorial copy panel + original campus photography. */
-.tedx-hero__idea-in-motion { display: none; }
+.tedx-hero__orbit-art { display: none; }
 
 .tedx-hero {
   --ted-red: #eb0028;
@@ -712,118 +712,43 @@
   }
 }
 
-@media (max-width: 1150px) {
-  .tedx-hero__idea-in-motion {
+@media (max-width: 1150px) and (min-width: 721px) {
+  .tedx-hero__orbit-art {
     position: absolute;
-    z-index: 5;
-    top: clamp(108px, 15svh, 154px);
-    right: clamp(24px, 4.2vw, 54px);
+    z-index: 2;
+    top: clamp(0px, 1.5vh, 14px);
+    right: clamp(0px, 1.8vw, 20px);
     display: block;
-    width: clamp(190px, 24vw, 258px);
-    color: #F4F1F2;
+    width: clamp(230px, 34vw, 370px);
+    opacity: .92;
     pointer-events: none;
     user-select: none;
-    text-align: left;
-    filter: drop-shadow(0 3px 18px rgba(5, 7, 12, .24));
   }
 
-  .tedx-hero__idea-kicker {
-    display: block;
-    color: rgba(226, 231, 239, .68);
-    font-size: 8px;
-    font-weight: 760;
-    letter-spacing: .28em;
-    line-height: 1.2;
-    text-transform: uppercase;
-  }
-
-  .tedx-hero__idea-title {
-    margin-top: 5px;
-    color: rgba(246, 245, 247, .92);
-    font-size: clamp(22px, 2.9vw, 31px);
-    font-weight: 320;
-    letter-spacing: -.065em;
-    line-height: .98;
-    white-space: nowrap;
-  }
-
-  .tedx-hero__idea-title > span {
-    color: rgba(232, 235, 241, .72);
-    font-size: .68em;
-    font-weight: 550;
-    letter-spacing: -.025em;
-    vertical-align: .1em;
-  }
-
-  .tedx-hero__idea-title em {
-    color: #EB2446;
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 1.12em;
-    font-weight: 500;
-    letter-spacing: -.055em;
-  }
-
-  .tedx-hero__idea-stroke {
+  .tedx-hero__orbit-art svg {
     display: block;
     width: 100%;
     height: auto;
-    margin-top: 7px;
     overflow: visible;
+    filter: drop-shadow(0 8px 26px rgba(5, 7, 14, .25));
   }
 
-  .tedx-hero__idea-stroke-line {
-    stroke-dasharray: 360;
-    stroke-dashoffset: 360;
-    animation: tedx-idea-signature-draw 1.7s cubic-bezier(.22, 1, .36, 1) .45s forwards;
+  .tedx-hero__orbit-draw {
+    stroke-dasharray: 520;
+    stroke-dashoffset: 520;
+    animation: tedx-orbit-arrive 2s cubic-bezier(.22, 1, .36, 1) .25s forwards;
   }
 
-  .tedx-hero__idea-signature {
-    display: block;
-    margin-top: -1px;
-    color: rgba(220, 226, 235, .43);
-    font-size: 6.5px;
-    font-weight: 720;
-    letter-spacing: .2em;
-    line-height: 1.35;
-  }
-
-  @keyframes tedx-idea-signature-draw {
+  @keyframes tedx-orbit-arrive {
     to { stroke-dashoffset: 0; }
   }
 }
 
 @media (max-width: 720px) {
-  .tedx-hero__idea-in-motion {
-    top: clamp(164px, 19svh, 198px);
-    right: 6.5%;
-    width: clamp(116px, 34vw, 158px);
-  }
+  .tedx-hero__orbit-art { display: none; }
+}
 
-  .tedx-hero__idea-kicker {
-    font-size: 6.5px;
-    letter-spacing: .2em;
-  }
-
-  .tedx-hero__idea-title {
-    margin-top: 4px;
-    font-size: clamp(15px, 4.8vw, 20px);
-    letter-spacing: -.06em;
-  }
-
-  .tedx-hero__idea-title em {
-    font-size: 1.08em;
-  }
-
-  .tedx-hero__idea-stroke {
-    margin-top: 4px;
-  }
-
-  .tedx-hero__idea-signature {
-    margin-top: -2px;
-    font-size: 5.4px;
-    letter-spacing: .14em;
-  }
-
+@media (max-width: 720px) {
   .tedx-hero {
     display: flex;
     height: auto;
@@ -1073,7 +998,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tedx-hero__idea-stroke-line {
+  .tedx-hero__orbit-draw {
     animation: none !important;
     stroke-dasharray: none !important;
     stroke-dashoffset: 0 !important;
