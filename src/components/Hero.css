@@ -1,4 +1,6 @@
 /* TEDxIIMT opening frame — editorial copy panel + original campus photography. */
+.tedx-hero__corner-art { display: none; }
+
 .tedx-hero {
   --ted-red: #eb0028;
   position: relative;
@@ -343,92 +345,6 @@
   pointer-events: none;
 }
 
-/* A small, meaningful brand signature occupies the intentional open corner above the campus frame. */
-.tedx-hero__idea-trace {
-  display: none;
-  position: absolute;
-  z-index: 1;
-  top: clamp(28px, 4.2vh, 48px);
-  right: clamp(28px, 4.2vw, 66px);
-  width: clamp(220px, 24vw, 320px);
-  padding: 0 2px;
-  color: rgba(230, 234, 241, .72);
-  pointer-events: none;
-  user-select: none;
-}
-
-.tedx-hero__idea-trace-heading {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  color: rgba(226, 231, 239, .58);
-  font-size: 7px;
-  font-weight: 760;
-  letter-spacing: .2em;
-  line-height: 1;
-}
-
-.tedx-hero__idea-trace-heading i {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: #EB0028;
-  box-shadow: 0 0 8px rgba(235, 0, 40, .6);
-}
-
-.tedx-hero__idea-trace-heading span:last-child {
-  margin-left: auto;
-  color: rgba(226, 231, 239, .32);
-  font-variant-numeric: tabular-nums;
-}
-
-.tedx-hero__idea-trace-art {
-  display: block;
-  width: 100%;
-  height: auto;
-  margin-top: 7px;
-  overflow: visible;
-}
-
-.tedx-hero__idea-trace-line {
-  stroke-dasharray: 430;
-  stroke-dashoffset: 430;
-  animation: tedx-idea-trace-draw 1.8s cubic-bezier(.22, 1, .36, 1) 1.05s forwards;
-}
-
-.tedx-hero__idea-trace-stages {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 7px;
-  margin-top: -2px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(214, 222, 232, .12);
-  color: rgba(228, 232, 239, .47);
-  font-size: 6.5px;
-  font-weight: 760;
-  letter-spacing: .12em;
-  line-height: 1.3;
-}
-
-.tedx-hero__idea-trace-stages span {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  white-space: nowrap;
-}
-
-.tedx-hero__idea-trace-stages i {
-  color: #EB526B;
-  font-size: 6px;
-  font-style: normal;
-  font-variant-numeric: tabular-nums;
-}
-
-@keyframes tedx-idea-trace-draw {
-  to { stroke-dashoffset: 0; }
-}
-
 .tedx-hero__photo-frame {
   position: relative;
   width: min(100%, 900px);
@@ -723,11 +639,6 @@
 }
 
 @media (max-width: 1150px) {
-  .tedx-hero__idea-trace {
-    right: 3.5vw;
-    width: clamp(200px, 25vw, 260px);
-  }
-
   .tedx-hero {
     grid-template-columns: minmax(350px, 43%) minmax(0, 57%);
   }
@@ -757,12 +668,6 @@
 }
 
 @media (max-height: 790px) and (min-width: 721px) {
-  .tedx-hero__idea-trace {
-    top: 19px;
-    width: clamp(185px, 21vw, 230px);
-    opacity: .86;
-  }
-
   .tedx-hero {
     min-height: 650px;
   }
@@ -808,58 +713,34 @@
 }
 
 @media (max-width: 720px) {
-  /* On phones the signature becomes a visible, right-aligned editorial strip
-     above the campus image instead of disappearing off the desktop corner. */
-  .tedx-hero__idea-trace {
-    position: relative;
-    top: auto;
-    right: auto;
+  .tedx-hero__corner-art {
+    position: absolute;
+    z-index: 2;
+    top: clamp(154px, 18svh, 184px);
+    right: clamp(12px, 4vw, 20px);
     display: block;
-    align-self: flex-end;
-    width: min(100%, 340px);
-    max-width: 100%;
-    margin: 0 0 14px auto;
-    padding: 10px 12px 9px;
-    border-top: 1px solid rgba(214, 222, 232, .19);
-    border-bottom: 1px solid rgba(214, 222, 232, .12);
-    background:
-      radial-gradient(ellipse 75% 90% at 92% 42%, rgba(132, 93, 218, .14), transparent 74%),
-      linear-gradient(90deg, rgba(235, 0, 40, .035), rgba(255, 255, 255, .012) 48%, rgba(132, 93, 218, .045));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .025);
+    width: clamp(74px, 24vw, 108px);
+    aspect-ratio: 132 / 104;
+    opacity: .92;
+    pointer-events: none;
   }
 
-  .tedx-hero__idea-trace-heading {
-    gap: 10px;
-    font-size: 8px;
-    letter-spacing: .2em;
-    color: rgba(235, 239, 245, .72);
+  .tedx-hero__corner-art svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0 3px 12px rgba(0, 0, 0, .32));
   }
 
-  .tedx-hero__idea-trace-heading i {
-    width: 4px;
-    height: 4px;
+  .tedx-hero__corner-art-line {
+    stroke-dasharray: 360;
+    stroke-dashoffset: 360;
+    animation: tedx-corner-flow-draw 1.7s cubic-bezier(.22, 1, .36, 1) .35s forwards;
   }
 
-  .tedx-hero__idea-trace-art {
-    height: 92px;
-    margin-top: 5px;
-  }
-
-  .tedx-hero__idea-trace-stages {
-    gap: 8px;
-    margin-top: -1px;
-    padding-top: 8px;
-    color: rgba(235, 239, 245, .66);
-    font-size: 7px;
-    letter-spacing: .13em;
-  }
-
-  .tedx-hero__idea-trace-stages span {
-    gap: 5px;
-  }
-
-  .tedx-hero__idea-trace-stages i {
-    font-size: 7px;
+  @keyframes tedx-corner-flow-draw {
+    to { stroke-dashoffset: 0; }
   }
 
   .tedx-hero {
@@ -1111,7 +992,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tedx-hero__idea-trace-line {
+  .tedx-hero__corner-art-line {
     animation: none !important;
     stroke-dasharray: none !important;
     stroke-dashoffset: 0 !important;
@@ -1550,20 +1431,3 @@
   }
 }
 
-
-@media (max-width: 380px) {
-  .tedx-hero__idea-trace {
-    width: 100%;
-    margin-bottom: 12px;
-    padding-inline: 9px;
-  }
-
-  .tedx-hero__idea-trace-art {
-    height: 82px;
-  }
-
-  .tedx-hero__idea-trace-stages {
-    font-size: 6.5px;
-    letter-spacing: .105em;
-  }
-}
