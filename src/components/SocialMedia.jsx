@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion as Motion, useReducedMotion } from 'framer-motion';
-import { Play } from 'lucide-react';
+import { ArrowRight, Play } from 'lucide-react';
 
 // Keep the four original local TEDxIIMT event clips; do not introduce additional media.
 const reelVideos = ['/1.mp4', '/2.mp4', '/3.mp4', '/4.mp4'];
@@ -8,6 +8,8 @@ const reelVideos = ['/1.mp4', '/2.mp4', '/3.mp4', '/4.mp4'];
 const ReelCard = ({ post, index, onPlaybackStart }) => {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [posterFrame, setPosterFrame] = useState('');
   const prefersReducedMotion = useReducedMotion();
 
   // On touch layouts, stop off-screen reels so scrolling never leaves audio/video running behind the page.
@@ -30,6 +32,27 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
     return () => observer.disconnect();
   }, []);
 
+  const handleVideoLoadedData = () => {
+    const video = videoRef.current;
+    if (!video || posterFrame || !video.videoWidth || !video.videoHeight) return;
+
+    try {
+      const canvas = document.createElement('canvas');
+      const width = 360;
+      const height = Math.round(width * (video.videoHeight / video.videoWidth));
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d');
+      if (!context) return;
+
+      context.drawImage(video, 0, 0, width, height);
+      setPosterFrame(canvas.toDataURL('image/jpeg', 0.84));
+    } catch (error) {
+      // The native paused video frame remains the fallback if poster capture is unavailable.
+      console.warn('Unable to capture reel preview frame:', error);
+    }
+  };
+
   const togglePlayback = () => {
     if (!videoRef.current) return;
 
@@ -46,6 +69,7 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
 
   const handlePlay = () => {
     onPlaybackStart(videoRef.current);
+    setHasStarted(true);
     setIsPlaying(true);
   };
 
@@ -76,6 +100,7 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
           playsInline
           loop
           preload="metadata"
+          onLoadedData={handleVideoLoadedData}
           onPlay={handlePlay}
           onPause={handlePause}
           onEnded={handlePause}
@@ -84,11 +109,19 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
           tabIndex={isPlaying ? 0 : -1}
           aria-label={`Reel ${index + 1}; press Enter or Space to pause while playing`}
         />
+        {posterFrame && !hasStarted && (
+          <img
+            src={posterFrame}
+            alt=""
+            aria-hidden="true"
+            className="ted-reel-poster-frame pointer-events-none absolute inset-0 z-[1] h-full w-full object-cover"
+          />
+        )}
         {!isPlaying && (
           <button
             type="button"
             onClick={togglePlayback}
-            className="ted-reel-play-overlay absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 backdrop-blur-[2px] transition-all hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#EB0028]"
+            className="ted-reel-play-overlay absolute inset-0 z-10 flex cursor-pointer items-center justify-center bg-black/40 backdrop-blur-[2px] transition-all hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#EB0028]"
             aria-label={`Play reel ${index + 1}`}
           >
             <span className="ted-reel-play-orb flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-2xl backdrop-blur-md transition-transform group-hover:scale-110">
@@ -106,7 +139,59 @@ const ReelCard = ({ post, index, onPlaybackStart }) => {
 
 const SocialMedia = () => {
   const activeVideoRef = useRef(null);
+  const reelsTrackRef = useRef(null);
+  const didAutoPeekRef = useRef(false);
+  const userInteractedRef = useRef(false);
+  const peekTimerRef = useRef(null);
+  const settleTimerRef = useRef(null);
+  const [showSwipeCue, setShowSwipeCue] = useState(true);
   const prefersReducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    const track = reelsTrackRef.current;
+    if (!track || prefersReducedMotion || typeof window === 'undefined') return undefined;
+    if (!window.matchMedia('(max-width: 639px)').matches) return undefined;
+
+    const cancelAutoPeek = () => {
+      userInteractedRef.current = true;
+      setShowSwipeCue(false);
+      if (peekTimerRef.current) window.clearTimeout(peekTimerRef.current);
+      if (settleTimerRef.current) window.clearTimeout(settleTimerRef.current);
+    };
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting || entry.intersectionRatio < 0.35 || didAutoPeekRef.current) return;
+      didAutoPeekRef.current = true;
+      observer.disconnect();
+
+      peekTimerRef.current = window.setTimeout(() => {
+        if (userInteractedRef.current || !track.isConnected) return;
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        if (maxScroll < 28) return;
+
+        track.scrollTo({ left: Math.min(58, maxScroll), behavior: 'smooth' });
+        settleTimerRef.current = window.setTimeout(() => {
+          if (!userInteractedRef.current && track.isConnected) {
+            track.scrollTo({ left: 0, behavior: 'smooth' });
+          }
+        }, 1050);
+      }, 520);
+    }, { threshold: [0.35, 0.6] });
+
+    observer.observe(track);
+    track.addEventListener('touchstart', cancelAutoPeek, { passive: true });
+    track.addEventListener('wheel', cancelAutoPeek, { passive: true });
+    track.addEventListener('keydown', cancelAutoPeek);
+
+    return () => {
+      observer.disconnect();
+      track.removeEventListener('touchstart', cancelAutoPeek);
+      track.removeEventListener('wheel', cancelAutoPeek);
+      track.removeEventListener('keydown', cancelAutoPeek);
+      if (peekTimerRef.current) window.clearTimeout(peekTimerRef.current);
+      if (settleTimerRef.current) window.clearTimeout(settleTimerRef.current);
+    };
+  }, [prefersReducedMotion]);
 
   const handlePlaybackStart = (video) => {
     if (activeVideoRef.current && activeVideoRef.current !== video) {
@@ -139,8 +224,8 @@ const SocialMedia = () => {
           </div>
         </Motion.div>
 
-        <div className="ted-reels-swipe-cue" aria-hidden="true"><span>SWIPE TO EXPLORE</span><i /></div>
-        <div className="ted-reels-track mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-4" role="group" aria-label="TEDxIIMT event reels">
+        {showSwipeCue && <div className="ted-reels-swipe-cue" aria-hidden="true"><span>SWIPE TO EXPLORE</span><ArrowRight /></div>}
+        <div ref={reelsTrackRef} className="ted-reels-track mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-4" role="group" aria-label="TEDxIIMT event reels; swipe horizontally on mobile to see all four reels" tabIndex={0}>
           {reelVideos.map((src, index) => {
             return (
               <ReelCard
