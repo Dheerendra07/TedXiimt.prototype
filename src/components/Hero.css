@@ -345,6 +345,7 @@
 
 /* A small, meaningful brand signature occupies the intentional open corner above the campus frame. */
 .tedx-hero__idea-trace {
+  display: none;
   position: absolute;
   z-index: 1;
   top: clamp(28px, 4.2vh, 48px);
