@@ -237,6 +237,45 @@ const Hero = () => {
       </div>
 
       <div className="tedx-hero__visual-wrap">
+        <div className="tedx-hero__idea-trace" aria-hidden="true">
+          <div className="tedx-hero__idea-trace-heading">
+            <span>IDEAS IN MOTION</span>
+            <i />
+            <span>01 — 03</span>
+          </div>
+          <svg className="tedx-hero__idea-trace-art" viewBox="0 0 320 124" fill="none" focusable="false">
+            <defs>
+              <linearGradient id="tedx-idea-flow" x1="16" y1="104" x2="304" y2="18" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stopColor="#EB0028" stopOpacity=".18" />
+                <stop offset=".38" stopColor="#DCE3EA" stopOpacity=".82" />
+                <stop offset=".7" stopColor="#A78BFA" stopOpacity=".86" />
+                <stop offset="1" stopColor="#EB0028" stopOpacity=".88" />
+              </linearGradient>
+              <radialGradient id="tedx-idea-node" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(0 0) rotate(90) scale(18)">
+                <stop stopColor="#EB0028" stopOpacity=".28" />
+                <stop offset="1" stopColor="#EB0028" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+            <path d="M12 28H308M12 62H308M12 96H308M54 8V112M130 8V112M206 8V112M282 8V112" stroke="#D5DDE7" strokeOpacity=".075" strokeWidth=".7" strokeDasharray="2 6" />
+            <path d="M14 96C49 96 69 84 86 58C103 32 122 23 143 35C164 47 160 83 184 88C211 94 227 59 244 42C261 24 277 18 306 12" stroke="#EB0028" strokeOpacity=".16" strokeWidth="7" strokeLinecap="round" />
+            <path className="tedx-hero__idea-trace-line" d="M14 96C49 96 69 84 86 58C103 32 122 23 143 35C164 47 160 83 184 88C211 94 227 59 244 42C261 24 277 18 306 12" stroke="url(#tedx-idea-flow)" strokeWidth="1.7" strokeLinecap="round" />
+            <path d="M14 96C49 96 69 84 86 58" stroke="#EB0028" strokeOpacity=".66" strokeWidth=".8" strokeDasharray="2 5" />
+            <circle cx="14" cy="96" r="17" fill="url(#tedx-idea-node)" />
+            <circle cx="184" cy="88" r="17" fill="url(#tedx-idea-node)" />
+            <circle cx="306" cy="12" r="17" fill="url(#tedx-idea-node)" />
+            <circle cx="14" cy="96" r="4" fill="#EB0028" />
+            <circle cx="184" cy="88" r="3.4" fill="#DCE3EA" />
+            <circle cx="306" cy="12" r="4" fill="#EB0028" />
+            <circle cx="14" cy="96" r="7" stroke="#EB0028" strokeOpacity=".7" strokeWidth=".8" />
+            <circle cx="184" cy="88" r="6.5" stroke="#DCE3EA" strokeOpacity=".62" strokeWidth=".8" />
+            <circle cx="306" cy="12" r="7" stroke="#EB0028" strokeOpacity=".7" strokeWidth=".8" />
+          </svg>
+          <div className="tedx-hero__idea-trace-stages">
+            <span><i>01</i> QUESTION</span>
+            <span><i>02</i> SHIFT</span>
+            <span><i>03</i> IMPACT</span>
+          </div>
+        </div>
         <div className="tedx-hero__photo-frame">
           <AnimatePresence initial={false} mode="sync">
             <Motion.img
