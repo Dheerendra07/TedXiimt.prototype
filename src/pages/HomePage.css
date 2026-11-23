@@ -3261,6 +3261,24 @@ body:has(.ted-home) footer .max-w-7xl > div:last-child {
   }
 }
 
+@media (min-width: 640px) and (max-width: 1023px) {
+  .ted-home-reels .ted-reels-track {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: clamp(18px, 3vw, 28px);
+  }
+
+  .ted-home-reels .ted-reel-card {
+    width: min(100%, 360px);
+    max-width: 360px;
+    margin-inline: auto;
+  }
+
+  .ted-home-reels .ted-reels-section {
+    padding-inline: clamp(24px, 4vw, 42px);
+  }
+}
+
 @media (max-width: 639px) {
   .ted-home-reels > section > .ted-reels-inner {
     width: 100% !important;
